@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "WorkAlone_Android"
+rootProject.name = "WorkAlone"
 include(":app")
  
