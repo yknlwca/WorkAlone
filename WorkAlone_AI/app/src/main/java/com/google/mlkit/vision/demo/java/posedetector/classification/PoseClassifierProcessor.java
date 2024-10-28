@@ -36,7 +36,7 @@ import java.util.Locale;
  */
 public class PoseClassifierProcessor {
   private static final String TAG = "PoseClassifierProcessor";
-  private static final String POSE_SAMPLES_FILE = "pose/pose_data.csv";
+  private static final String POSE_SAMPLES_FILE = "pose/plank.csv";
 
   // Specify classes for which we want rep counting.
   // These are the labels in the given {@code POSE_SAMPLES_FILE}. You can set your own class labels
@@ -46,11 +46,11 @@ public class PoseClassifierProcessor {
   private static final String JUMPING_JACKS_CLASS= "jumping_jacks_down";
   private static final String PULLUPS_CLASS= "pullups_down";
   private static final String SITUP_CLASS= "situp_down";
-
+  private static final String PLANK_CLASS="plank_on";
 
 
   private static final String[] POSE_CLASSES = {
-    PUSHUPS_CLASS, SQUATS_CLASS, JUMPING_JACKS_CLASS, PULLUPS_CLASS, SITUP_CLASS
+    PUSHUPS_CLASS, SQUATS_CLASS, JUMPING_JACKS_CLASS, PULLUPS_CLASS, SITUP_CLASS,PLANK_CLASS
   };
 
   private final boolean isStreamMode;

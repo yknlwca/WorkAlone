@@ -1,19 +1,19 @@
-#Thu Oct 24 15:46:27 KST 2024
-base.0=C\:\\Users\\SSAFY\\Desktop\\PJT3\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
-base.1=C\:\\Users\\SSAFY\\Desktop\\PJT3\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
-base.10=C\:\\Users\\SSAFY\\Desktop\\PJT3\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\5\\classes.dex
-base.11=C\:\\Users\\SSAFY\\Desktop\\PJT3\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\7\\classes.dex
-base.12=C\:\\Users\\SSAFY\\Desktop\\PJT3\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\8\\classes.dex
-base.13=C\:\\Users\\SSAFY\\Desktop\\PJT3\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\9\\classes.dex
-base.14=C\:\\Users\\SSAFY\\Desktop\\PJT3\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes2.dex
-base.2=C\:\\Users\\SSAFY\\Desktop\\PJT3\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\11\\classes.dex
-base.3=C\:\\Users\\SSAFY\\Desktop\\PJT3\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\12\\classes.dex
-base.4=C\:\\Users\\SSAFY\\Desktop\\PJT3\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\13\\classes.dex
-base.5=C\:\\Users\\SSAFY\\Desktop\\PJT3\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\14\\classes.dex
-base.6=C\:\\Users\\SSAFY\\Desktop\\PJT3\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\15\\classes.dex
-base.7=C\:\\Users\\SSAFY\\Desktop\\PJT3\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\1\\classes.dex
-base.8=C\:\\Users\\SSAFY\\Desktop\\PJT3\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\3\\classes.dex
-base.9=C\:\\Users\\SSAFY\\Desktop\\PJT3\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\4\\classes.dex
+#Mon Oct 28 16:55:02 KST 2024
+base.0=C\:\\Users\\SSAFY\\Desktop\\workalone\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
+base.1=C\:\\Users\\SSAFY\\Desktop\\workalone\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
+base.10=C\:\\Users\\SSAFY\\Desktop\\workalone\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\5\\classes.dex
+base.11=C\:\\Users\\SSAFY\\Desktop\\workalone\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\7\\classes.dex
+base.12=C\:\\Users\\SSAFY\\Desktop\\workalone\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\8\\classes.dex
+base.13=C\:\\Users\\SSAFY\\Desktop\\workalone\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\9\\classes.dex
+base.14=C\:\\Users\\SSAFY\\Desktop\\workalone\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes2.dex
+base.2=C\:\\Users\\SSAFY\\Desktop\\workalone\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\11\\classes.dex
+base.3=C\:\\Users\\SSAFY\\Desktop\\workalone\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\12\\classes.dex
+base.4=C\:\\Users\\SSAFY\\Desktop\\workalone\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\13\\classes.dex
+base.5=C\:\\Users\\SSAFY\\Desktop\\workalone\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\14\\classes.dex
+base.6=C\:\\Users\\SSAFY\\Desktop\\workalone\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\15\\classes.dex
+base.7=C\:\\Users\\SSAFY\\Desktop\\workalone\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\1\\classes.dex
+base.8=C\:\\Users\\SSAFY\\Desktop\\workalone\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\3\\classes.dex
+base.9=C\:\\Users\\SSAFY\\Desktop\\workalone\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\4\\classes.dex
 path.0=classes.dex
 path.1=0/classes.dex
 path.10=5/classes.dex
