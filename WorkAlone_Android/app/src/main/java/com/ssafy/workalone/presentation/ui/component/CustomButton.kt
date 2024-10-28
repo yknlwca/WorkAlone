@@ -1,4 +1,4 @@
-package com.ssafy.workalone.components
+package com.ssafy.workalone.presentation.ui.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -10,8 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ssafy.workalone.ui.theme.WalkOneBlue500
-import com.ssafy.workalone.ui.theme.WalkOneGray50
+import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
+import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 
 @Composable
 fun CustomButton(

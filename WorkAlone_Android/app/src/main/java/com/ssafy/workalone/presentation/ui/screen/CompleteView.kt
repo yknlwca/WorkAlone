@@ -1,6 +1,5 @@
-package com.ssafy.workalone
+package com.ssafy.workalone.presentation.ui.screen
 
-import android.widget.Space
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,9 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -33,13 +29,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ssafy.workalone.components.CloseButton
-import com.ssafy.workalone.components.CustomButton
-import com.ssafy.workalone.ui.theme.WalkOneBlue500
-import com.ssafy.workalone.ui.theme.WalkOneGray500
-import com.ssafy.workalone.ui.theme.WalkOneGray100
-import com.ssafy.workalone.ui.theme.WalkOneGray300
-import com.ssafy.workalone.ui.theme.WalkOneGray50
+import com.ssafy.workalone.R
+import com.ssafy.workalone.presentation.ui.component.CloseButton
+import com.ssafy.workalone.presentation.ui.component.CustomButton
+import com.ssafy.workalone.presentation.ui.theme.WalkOneGray100
+import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
+import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 
 @Composable
 fun CompleteView(
