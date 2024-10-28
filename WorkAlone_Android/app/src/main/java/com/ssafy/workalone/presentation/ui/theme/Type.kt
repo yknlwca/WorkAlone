@@ -1,4 +1,4 @@
-package com.ssafy.workalone.ui.theme
+package com.ssafy.workalone.presentation.ui.theme
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
