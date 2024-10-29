@@ -46,11 +46,14 @@ public class PoseClassifierProcessor {
   private static final String JUMPING_JACKS_CLASS= "jumping_jacks_down";
   private static final String PULLUPS_CLASS= "pullups_down";
   private static final String SITUP_CLASS= "situp_down";
-  private static final String PLANK_CLASS="plank_on";
+  private static final String PLANK_CLASS="plank";
+  private static long plankStartTime = 0;  // 플랭크 시작 시간
+
+
 
 
   private static final String[] POSE_CLASSES = {
-    PUSHUPS_CLASS, SQUATS_CLASS, JUMPING_JACKS_CLASS, PULLUPS_CLASS, SITUP_CLASS,PLANK_CLASS
+          PUSHUPS_CLASS, SQUATS_CLASS, JUMPING_JACKS_CLASS, PULLUPS_CLASS, SITUP_CLASS,PLANK_CLASS
   };
 
   private final boolean isStreamMode;
@@ -76,7 +79,7 @@ public class PoseClassifierProcessor {
     List<PoseSample> poseSamples = new ArrayList<>();
     try {
       BufferedReader reader = new BufferedReader(
-          new InputStreamReader(context.getAssets().open(POSE_SAMPLES_FILE)));
+              new InputStreamReader(context.getAssets().open(POSE_SAMPLES_FILE)));
       String csvLine = reader.readLine();
       while (csvLine != null) {
         // If line is not a valid {@link PoseSample}, we'll get null and skip adding to the list.
@@ -113,25 +116,40 @@ public class PoseClassifierProcessor {
 
     // Update {@link RepetitionCounter}s if {@code isStreamMode}.
     if (isStreamMode) {
-      // Feed pose to smoothing even if no pose found.
       classification = emaSmoothing.getSmoothedResult(classification);
 
-      // Return early without updating repCounter if no pose found.
       if (pose.getAllPoseLandmarks().isEmpty()) {
         result.add(lastRepResult);
         return result;
       }
 
       for (RepetitionCounter repCounter : repCounters) {
-        int repsBefore = repCounter.getNumRepeats();
-        int repsAfter = repCounter.addClassificationResult(classification);
-        if (repsAfter > repsBefore) {
-          // Play a fun beep when rep counter updates.
-          ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
-          tg.startTone(ToneGenerator.TONE_PROP_BEEP);
-          lastRepResult = String.format(
-              Locale.US, "%s : %d reps", repCounter.getClassName(), repsAfter);
-          break;
+        // 플랭크 클래스일 때 지속 시간 측정
+        if (repCounter.getClassName().equals(PLANK_CLASS)) {
+          if (classification.getMaxConfidenceClass().equals(PLANK_CLASS)) {
+            System.out.println("plank class start log");
+
+            if (plankStartTime == 0) {
+              plankStartTime = System.currentTimeMillis(); // 시작 시간 기록
+            }
+
+            long elapsedTime = (System.currentTimeMillis() - plankStartTime) / 1000; // 경과 시간 계산
+
+            System.out.println("time: "+elapsedTime);
+            lastRepResult = String.format(Locale.US, "%s : %d seconds", PLANK_CLASS, elapsedTime);
+          } else {
+            plankStartTime = 0; // 플랭크가 아닌 경우 시작 시간 초기화
+          }
+        } else {
+          // 반복 횟수 카운터
+          int repsBefore = repCounter.getNumRepeats();
+          int repsAfter = repCounter.addClassificationResult(classification);
+          if (repsAfter > repsBefore) {
+            ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
+            tg.startTone(ToneGenerator.TONE_PROP_BEEP);
+            lastRepResult = String.format(Locale.US, "%s : %d reps", repCounter.getClassName(), repsAfter);
+            break;
+          }
         }
       }
       result.add(lastRepResult);
@@ -141,11 +159,11 @@ public class PoseClassifierProcessor {
     if (!pose.getAllPoseLandmarks().isEmpty()) {
       String maxConfidenceClass = classification.getMaxConfidenceClass();
       String maxConfidenceClassResult = String.format(
-          Locale.US,
-          "%s : %.2f confidence",
-          maxConfidenceClass,
-          classification.getClassConfidence(maxConfidenceClass)
-              / poseClassifier.confidenceRange());
+              Locale.US,
+              "%s : %.2f confidence",
+              maxConfidenceClass,
+              classification.getClassConfidence(maxConfidenceClass)
+                      / poseClassifier.confidenceRange());
       result.add(maxConfidenceClassResult);
     }
 
