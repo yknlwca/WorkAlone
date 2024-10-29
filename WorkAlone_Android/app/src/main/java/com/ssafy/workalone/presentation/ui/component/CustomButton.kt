@@ -34,5 +34,4 @@ fun CustomButton(
             fontSize = 16.sp
         )
     }
-
 }
