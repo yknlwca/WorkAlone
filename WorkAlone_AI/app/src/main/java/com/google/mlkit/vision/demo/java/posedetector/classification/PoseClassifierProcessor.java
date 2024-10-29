@@ -45,7 +45,7 @@ public class PoseClassifierProcessor {
   private static final String PULLUPS_CLASS = "pullups_down";
   private static final String SITUP_CLASS = "situp_down";
   private static final String PLANK_CLASS = "plank";
-  private static long plankStartTime = 0;  // 플랭크 시작 시간
+  private static long plankStartTime = 0;
 
   private TextToSpeech textToSpeech;
   private Context context;
@@ -65,7 +65,7 @@ public class PoseClassifierProcessor {
     Preconditions.checkState(Looper.myLooper() != Looper.getMainLooper());
     this.isStreamMode = isStreamMode;
     this.context = context;
-    initializeTextToSpeech();  // TextToSpeech 초기화
+    initializeTextToSpeech();
     if (isStreamMode) {
       emaSmoothing = new EMASmoothing();
       repCounters = new ArrayList<>();
@@ -77,7 +77,7 @@ public class PoseClassifierProcessor {
   private void initializeTextToSpeech() {
     textToSpeech = new TextToSpeech(context, status -> {
       if (status == TextToSpeech.SUCCESS) {
-        textToSpeech.setLanguage(Locale.US);
+        textToSpeech.setLanguage(Locale.KOREAN); // 한국어로 설정
       } else {
         Log.e(TAG, "TextToSpeech initialization failed");
       }
@@ -130,9 +130,9 @@ public class PoseClassifierProcessor {
             }
 
             long elapsedTime = (System.currentTimeMillis() - plankStartTime) / 1000;
-            lastRepResult = String.format(Locale.US, "%s : %d seconds", PLANK_CLASS, elapsedTime);
+            lastRepResult = String.format(Locale.KOREAN, "%s : %d 초", PLANK_CLASS, elapsedTime);
 
-            if (elapsedTime % 5 == 0) {  // 5초마다 음성 안내
+            if (elapsedTime % 3 == 0) {
               speakResult(lastRepResult);
             }
           } else {
@@ -144,8 +144,8 @@ public class PoseClassifierProcessor {
           if (repsAfter > repsBefore) {
             ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
             tg.startTone(ToneGenerator.TONE_PROP_BEEP);
-            lastRepResult = String.format(Locale.US, "%s : %d reps", repCounter.getClassName(), repsAfter);
-            speakResult(lastRepResult);  // reps 안내 음성 출력
+            lastRepResult = String.format(Locale.KOREAN, "%s : %d", repCounter.getClassName(), repsAfter);
+            speakResult(String.valueOf(repsAfter)); // 숫자를 그대로 음성으로 읽음
             break;
           }
         }
@@ -156,7 +156,7 @@ public class PoseClassifierProcessor {
     if (!pose.getAllPoseLandmarks().isEmpty()) {
       String maxConfidenceClass = classification.getMaxConfidenceClass();
       String maxConfidenceClassResult = String.format(
-              Locale.US,
+              Locale.KOREAN,
               "%s : %.2f confidence",
               maxConfidenceClass,
               classification.getClassConfidence(maxConfidenceClass)
