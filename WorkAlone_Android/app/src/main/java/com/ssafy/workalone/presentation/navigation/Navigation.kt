@@ -19,9 +19,9 @@ fun Navigation(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.ExerciseListScreen.route
+        startDestination = Screen.ExerciseList.route
     ) {
-        composable(Screen.ExerciseListScreen.route) {
+        composable(Screen.ExerciseList.route) {
             ExerciseListScreen(navController, viewModel)
         }
 
@@ -34,7 +34,7 @@ fun Navigation(
                 })
         ) { entry ->
             val id = if (entry.arguments != null) entry.arguments!!.getLong("id") else 0L
-            ExerciseDetailScreen(navController = navController, viewModel, id)
+            ExerciseDetailScreen( navController = navController, viewModel, id)
         }
     }
 }
