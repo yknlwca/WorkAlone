@@ -30,6 +30,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import android.speech.tts.TextToSpeech;
 
 /**
  * Accepts a stream of {@link Pose} for classification and Rep counting.
@@ -38,26 +39,22 @@ public class PoseClassifierProcessor {
   private static final String TAG = "PoseClassifierProcessor";
   private static final String POSE_SAMPLES_FILE = "pose/plank.csv";
 
-  // Specify classes for which we want rep counting.
-  // These are the labels in the given {@code POSE_SAMPLES_FILE}. You can set your own class labels
-  // for your pose samples.
   private static final String PUSHUPS_CLASS = "pushups_down";
   private static final String SQUATS_CLASS = "squats_down";
-  private static final String JUMPING_JACKS_CLASS= "jumping_jacks_down";
-  private static final String PULLUPS_CLASS= "pullups_down";
-  private static final String SITUP_CLASS= "situp_down";
-  private static final String PLANK_CLASS="plank";
+  private static final String JUMPING_JACKS_CLASS = "jumping_jacks_down";
+  private static final String PULLUPS_CLASS = "pullups_down";
+  private static final String SITUP_CLASS = "situp_down";
+  private static final String PLANK_CLASS = "plank";
   private static long plankStartTime = 0;  // 플랭크 시작 시간
 
-
-
+  private TextToSpeech textToSpeech;
+  private Context context;
 
   private static final String[] POSE_CLASSES = {
-          PUSHUPS_CLASS, SQUATS_CLASS, JUMPING_JACKS_CLASS, PULLUPS_CLASS, SITUP_CLASS,PLANK_CLASS
+          PUSHUPS_CLASS, SQUATS_CLASS, JUMPING_JACKS_CLASS, PULLUPS_CLASS, SITUP_CLASS, PLANK_CLASS
   };
 
   private final boolean isStreamMode;
-
   private EMASmoothing emaSmoothing;
   private List<RepetitionCounter> repCounters;
   private PoseClassifier poseClassifier;
@@ -67,12 +64,24 @@ public class PoseClassifierProcessor {
   public PoseClassifierProcessor(Context context, boolean isStreamMode) {
     Preconditions.checkState(Looper.myLooper() != Looper.getMainLooper());
     this.isStreamMode = isStreamMode;
+    this.context = context;
+    initializeTextToSpeech();  // TextToSpeech 초기화
     if (isStreamMode) {
       emaSmoothing = new EMASmoothing();
       repCounters = new ArrayList<>();
       lastRepResult = "";
     }
     loadPoseSamples(context);
+  }
+
+  private void initializeTextToSpeech() {
+    textToSpeech = new TextToSpeech(context, status -> {
+      if (status == TextToSpeech.SUCCESS) {
+        textToSpeech.setLanguage(Locale.US);
+      } else {
+        Log.e(TAG, "TextToSpeech initialization failed");
+      }
+    });
   }
 
   private void loadPoseSamples(Context context) {
@@ -82,7 +91,6 @@ public class PoseClassifierProcessor {
               new InputStreamReader(context.getAssets().open(POSE_SAMPLES_FILE)));
       String csvLine = reader.readLine();
       while (csvLine != null) {
-        // If line is not a valid {@link PoseSample}, we'll get null and skip adding to the list.
         PoseSample poseSample = PoseSample.getPoseSample(csvLine, ",");
         if (poseSample != null) {
           poseSamples.add(poseSample);
@@ -100,21 +108,12 @@ public class PoseClassifierProcessor {
     }
   }
 
-  /**
-   * Given a new {@link Pose} input, returns a list of formatted {@link String}s with Pose
-   * classification results.
-   *
-   * <p>Currently it returns up to 2 strings as following:
-   * 0: PoseClass : X reps
-   * 1: PoseClass : [0.0-1.0] confidence
-   */
   @WorkerThread
   public List<String> getPoseResult(Pose pose) {
     Preconditions.checkState(Looper.myLooper() != Looper.getMainLooper());
     List<String> result = new ArrayList<>();
     ClassificationResult classification = poseClassifier.classify(pose);
 
-    // Update {@link RepetitionCounter}s if {@code isStreamMode}.
     if (isStreamMode) {
       classification = emaSmoothing.getSmoothedResult(classification);
 
@@ -124,30 +123,29 @@ public class PoseClassifierProcessor {
       }
 
       for (RepetitionCounter repCounter : repCounters) {
-        // 플랭크 클래스일 때 지속 시간 측정
         if (repCounter.getClassName().equals(PLANK_CLASS)) {
           if (classification.getMaxConfidenceClass().equals(PLANK_CLASS)) {
-            System.out.println("plank class start log");
-
             if (plankStartTime == 0) {
-              plankStartTime = System.currentTimeMillis(); // 시작 시간 기록
+              plankStartTime = System.currentTimeMillis();
             }
 
-            long elapsedTime = (System.currentTimeMillis() - plankStartTime) / 1000; // 경과 시간 계산
-
-            System.out.println("time: "+elapsedTime);
+            long elapsedTime = (System.currentTimeMillis() - plankStartTime) / 1000;
             lastRepResult = String.format(Locale.US, "%s : %d seconds", PLANK_CLASS, elapsedTime);
+
+            if (elapsedTime % 5 == 0) {  // 5초마다 음성 안내
+              speakResult(lastRepResult);
+            }
           } else {
-            plankStartTime = 0; // 플랭크가 아닌 경우 시작 시간 초기화
+            plankStartTime = 0;
           }
         } else {
-          // 반복 횟수 카운터
           int repsBefore = repCounter.getNumRepeats();
           int repsAfter = repCounter.addClassificationResult(classification);
           if (repsAfter > repsBefore) {
             ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
             tg.startTone(ToneGenerator.TONE_PROP_BEEP);
             lastRepResult = String.format(Locale.US, "%s : %d reps", repCounter.getClassName(), repsAfter);
+            speakResult(lastRepResult);  // reps 안내 음성 출력
             break;
           }
         }
@@ -155,7 +153,6 @@ public class PoseClassifierProcessor {
       result.add(lastRepResult);
     }
 
-    // Add maxConfidence class of current frame to result if pose is found.
     if (!pose.getAllPoseLandmarks().isEmpty()) {
       String maxConfidenceClass = classification.getMaxConfidenceClass();
       String maxConfidenceClassResult = String.format(
@@ -170,4 +167,16 @@ public class PoseClassifierProcessor {
     return result;
   }
 
+  private void speakResult(String result) {
+    if (textToSpeech != null && !textToSpeech.isSpeaking()) {
+      textToSpeech.speak(result, TextToSpeech.QUEUE_FLUSH, null, null);
+    }
+  }
+
+  public void shutdown() {
+    if (textToSpeech != null) {
+      textToSpeech.stop();
+      textToSpeech.shutdown();
+    }
+  }
 }
