@@ -17,9 +17,14 @@
 package com.google.mlkit.vision.demo.java.posedetector.classification;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
+import android.os.Bundle;
 import android.os.Looper;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.util.Log;
 import androidx.annotation.WorkerThread;
 import com.google.common.base.Preconditions;
@@ -47,6 +52,15 @@ public class PoseClassifierProcessor {
   private static final String PLANK_CLASS = "plank";
   private static long plankStartTime = 0;
 
+
+  // 음석인식 부분
+  private SpeechRecognizer speechRecognizer;
+  private boolean isTracking = false; // "시작" 명령이 들어오면 true
+  private boolean isPaused = false;   //
+
+
+
+
   private TextToSpeech textToSpeech;
   private Context context;
 
@@ -71,17 +85,100 @@ public class PoseClassifierProcessor {
       repCounters = new ArrayList<>();
       lastRepResult = "";
     }
+    initializeSpeechRecognition();
     loadPoseSamples(context);
   }
 
   private void initializeTextToSpeech() {
     textToSpeech = new TextToSpeech(context, status -> {
       if (status == TextToSpeech.SUCCESS) {
-        textToSpeech.setLanguage(Locale.KOREAN); // 한국어로 설정
+        textToSpeech.setLanguage(Locale.KOREAN);
       } else {
         Log.e(TAG, "TextToSpeech initialization failed");
       }
     });
+  }
+
+  private void initializeSpeechRecognition() {
+    speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context);
+    speechRecognizer.setRecognitionListener(new RecognitionListener() {
+
+      @Override
+      public void onReadyForSpeech(Bundle bundle) {
+        Log.d(TAG, "음성 인식 준비됨");
+      }
+
+      @Override
+      public void onBeginningOfSpeech() {
+        Log.d(TAG, "음성 인식 시작됨");
+
+      }
+
+      @Override
+      public void onRmsChanged(float v) {
+
+      }
+
+      @Override
+      public void onBufferReceived(byte[] bytes) {
+
+      }
+
+      @Override
+      public void onEndOfSpeech() {
+        Log.d(TAG, "음성 인식 종료됨");
+      }
+
+      @Override
+      public void onError(int error) {
+        Log.e(TAG, "음성 인식 오류 발생: " + error);
+        if (error == SpeechRecognizer.ERROR_NO_MATCH || error == SpeechRecognizer.ERROR_SPEECH_TIMEOUT) {
+          startListening(); // 특정 오류에서만 재시작
+        }
+      }
+
+      @Override
+      public void onResults(Bundle results) {
+        List<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+        if (matches != null) {
+          for (String command : matches) {
+            if (command.equalsIgnoreCase("시작")) {
+              isTracking = true;
+              isPaused = false;
+              Log.d(TAG, "운동 추적 시작됨");
+            } else if (command.equalsIgnoreCase("중지")) {
+              isPaused = true;
+              Log.d(TAG, "운동 추적 일시 중지됨");
+            } else if (command.equalsIgnoreCase("종료")) {
+              isTracking = false;
+              shutdown();
+              Log.d(TAG, "운동 추적 종료됨");
+            }
+          }
+        }
+        // 명령을 지속적으로 듣기 위해 다시 시작
+        startListening();
+      }
+
+      @Override
+      public void onPartialResults(Bundle bundle) {
+
+      }
+
+      @Override
+      public void onEvent(int i, Bundle bundle) {
+
+      }
+
+      // RecognitionListener의 다른 메서드도 여기에 구현합니다.
+    });
+    startListening();
+  }
+  private void startListening() {
+    Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+    intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+    intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.KOREAN);
+    speechRecognizer.startListening(intent);
   }
 
   private void loadPoseSamples(Context context) {
@@ -108,11 +205,20 @@ public class PoseClassifierProcessor {
     }
   }
 
+
+
   @WorkerThread
   public List<String> getPoseResult(Pose pose) {
     Preconditions.checkState(Looper.myLooper() != Looper.getMainLooper());
     List<String> result = new ArrayList<>();
+
+
     ClassificationResult classification = poseClassifier.classify(pose);
+
+    if (!isTracking || isPaused) {
+      result.add("추적이 현재 일시 중지 또는 종료 상태입니다.");
+      return result;
+    }
 
     if (isStreamMode) {
       classification = emaSmoothing.getSmoothedResult(classification);
@@ -177,6 +283,11 @@ public class PoseClassifierProcessor {
     if (textToSpeech != null) {
       textToSpeech.stop();
       textToSpeech.shutdown();
+    }
+    if (speechRecognizer != null) {
+      speechRecognizer.stopListening();
+      speechRecognizer.cancel();
+      speechRecognizer.destroy();
     }
   }
 }
