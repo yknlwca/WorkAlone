@@ -16,7 +16,9 @@
 
 package com.google.mlkit.vision.demo.kotlin
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -39,6 +41,7 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -87,14 +90,41 @@ class CameraXLivePreviewActivity :
   private var lensFacing = CameraSelector.LENS_FACING_BACK
   private var cameraSelector: CameraSelector? = null
 
+  //audio
+  private fun requestAudioPermission() {
+    if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+      != PackageManager.PERMISSION_GRANTED) {
+      ActivityCompat.requestPermissions(
+        this, arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_RECORD_AUDIO_PERMISSION
+      )
+    }
+  }
+  override fun onRequestPermissionsResult(
+    requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+  ) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
+      if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        Log.d(TAG, "Audio permission granted")
+      } else {
+        Toast.makeText(this, "Audio permission is required for voice recognition", Toast.LENGTH_SHORT).show()
+      }
+    }
+  }
+
+
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Log.d(TAG, "onCreate")
+
     if (savedInstanceState != null) {
       selectedModel = savedInstanceState.getString(STATE_SELECTED_MODEL, POSE_DETECTION)
     }
     cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
     setContentView(R.layout.activity_vision_camerax_live_preview)
+    requestAudioPermission()
+
     previewView = findViewById(R.id.preview_view)
     if (previewView == null) {
       Log.d(TAG, "previewView is null")
@@ -243,6 +273,9 @@ class CameraXLivePreviewActivity :
     previewUseCase!!.setSurfaceProvider(previewView!!.getSurfaceProvider())
     camera = cameraProvider!!.bindToLifecycle(this, cameraSelector!!, previewUseCase)
   }
+
+
+  // audio
 
   private fun bindAnalysisUseCase() {
     if (cameraProvider == null) {
@@ -425,6 +458,7 @@ class CameraXLivePreviewActivity :
     private const val POSE_DETECTION = "Pose Detection"
 //    private const val SELFIE_SEGMENTATION = "Selfie Segmentation"
 //    private const val FACE_MESH_DETECTION = "Face Mesh Detection (Beta)"
+private const val REQUEST_RECORD_AUDIO_PERMISSION = 200
 
     private const val STATE_SELECTED_MODEL = "selected_model"
   }
