@@ -34,4 +34,11 @@ public class Member {
 	private int height;
 
 	private int weight;
+
+	public void updateNickname(String newNickname) {
+		this.nickname = newNickname;
+	}
+	public void updateHeight(int newHeight) { this.height = newHeight; }
+	public void updateWeight(int newWeight) { this.weight = newWeight; }
+
 }
