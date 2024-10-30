@@ -55,7 +55,7 @@ fun CompleteView(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(color = WalkOneGray50)
-                .padding(30.dp),
+                .padding(25.dp),
 
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -86,7 +86,7 @@ fun CompleteView(
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .background(color = WalkOneGray50)
-                .padding(30.dp),
+                .padding(25.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Column {

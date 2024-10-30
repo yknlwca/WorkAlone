@@ -51,6 +51,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.room.common.jvm)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
     val nav_version = "2.7.5"
     val compose_version = "1.6.0-alpha08"
     val room = "2.6.0"
