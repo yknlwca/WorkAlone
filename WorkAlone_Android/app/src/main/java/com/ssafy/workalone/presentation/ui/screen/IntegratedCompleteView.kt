@@ -203,5 +203,5 @@ fun IntegratedCompleteView() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewIntegratedCompleteView() {
-    IntegratedCompleteView()
+//    IntegratedCompleteView()
 }

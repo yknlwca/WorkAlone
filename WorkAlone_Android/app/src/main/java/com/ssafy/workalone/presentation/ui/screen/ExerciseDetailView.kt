@@ -1,6 +1,5 @@
 package com.ssafy.workalone.presentation.ui.screen
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -27,14 +26,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.ssafy.workalone.data.model.Exercise
+import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.AppBarView
 import com.ssafy.workalone.presentation.ui.component.CustomButton
-import com.ssafy.workalone.presentation.ui.component.YouTubePlayer
+import com.ssafy.workalone.presentation.ui.component.YouTubePlayerScreen
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
@@ -43,7 +42,7 @@ import com.ssafy.workalone.presentation.viewmodels.ExerciseViewModel
 
 
 @Composable
-fun ExerciseDetailScreen(
+fun ExerciseDetailView(
     navController: NavController,
     viewModel: ExerciseViewModel,
     id: Long
@@ -55,6 +54,8 @@ fun ExerciseDetailScreen(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
+            // 촬영 완료
+            navController.navigate(Screen.CompleteView.route)
             Toast.makeText(context, "촬영되었습니다.", Toast.LENGTH_SHORT).show()
         }
     }
@@ -76,23 +77,7 @@ fun ExerciseDetailScreen(
         topBar = {
             AppBarView(
                 title = exercise.value.title,
-                onBackNavClicked = { navController.navigateUp() }
-            )
-        },
-        bottomBar = {
-            CustomButton(
-                text = "운동 시작하기",
-                onClick = {
-                    val cameraPermissionCheck = ContextCompat.checkSelfPermission(
-                        context,
-                        android.Manifest.permission.CAMERA
-                    )
-                    if (cameraPermissionCheck != PackageManager.PERMISSION_GRANTED) {
-                        requestPermissionLauncher.launch(android.Manifest.permission.CAMERA)
-                    } else {
-                        startCamera(activity, takePictureLauncher)
-                    }
-                }
+                navController = navController
             )
         },
         scaffoldState = scaffoldState,
@@ -125,9 +110,8 @@ fun ExerciseDetailScreen(
 
                 // YouTube 영상
                 getYoutubeVideoId(exercise.value.content)?.let { it1 ->
-                    YouTubePlayer(
-                        youtubeVideoId = it1,
-                        lifecycleOwner = LocalLifecycleOwner.current
+                    YouTubePlayerScreen(
+                        videoId = it1
                     )
                 }
 
@@ -151,6 +135,21 @@ fun ExerciseDetailScreen(
                 SectionItem(title = "동작 수행", description = exercise.value.movement)
                 Spacer(modifier = Modifier.height(16.dp))
                 SectionItem(title = "호흡", description = exercise.value.breath)
+                Spacer(modifier = Modifier.height(32.dp))
+                CustomButton(
+                    text = "운동 시작하기",
+                    onClick = {
+                        val cameraPermissionCheck = ContextCompat.checkSelfPermission(
+                            context,
+                            android.Manifest.permission.CAMERA
+                        )
+                        if (cameraPermissionCheck != PackageManager.PERMISSION_GRANTED) {
+                            requestPermissionLauncher.launch(android.Manifest.permission.CAMERA)
+                        } else {
+                            startCamera(activity, takePictureLauncher)
+                        }
+                    },
+                )
             }
         }
     }

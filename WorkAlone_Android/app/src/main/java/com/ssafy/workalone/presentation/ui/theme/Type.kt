@@ -1,5 +1,7 @@
 package com.ssafy.workalone.presentation.ui.theme
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.text.TextStyle
@@ -258,4 +260,14 @@ val LocalWorkAloneTypography = staticCompositionLocalOf {
         XS01 = TextStyle.Default,
         XS02 = TextStyle.Default
     )
+}
+
+@Composable
+fun WorkAloneTheme(
+    typography: WorkAlone = Typography,
+    content: @Composable () -> Unit
+) {
+    CompositionLocalProvider(LocalWorkAloneTypography provides typography) {
+        content()
+    }
 }

@@ -5,6 +5,8 @@ plugins {
 }
 
 android {
+
+    viewBinding.isEnabled = true
     namespace = "com.ssafy.workalone"
     compileSdk = 34
 
@@ -51,8 +53,11 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.room.common.jvm)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
+    // 달력 compose
+    implementation("io.github.boguszpawlowski.composecalendar:composecalendar:1.3.0")
+    implementation("io.github.boguszpawlowski.composecalendar:kotlinx-datetime:1.3.0")
+
+
     val nav_version = "2.7.5"
     val compose_version = "1.6.0-alpha08"
     val room = "2.6.0"
@@ -67,7 +72,7 @@ dependencies {
     implementation("androidx.compose.material:material:$compose_version")
     implementation("androidx.compose.ui:ui-tooling-preview:$compose_version")
 
-    implementation ("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.1")
+    implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.1")
 
 
     implementation(libs.androidx.core.ktx)
@@ -79,6 +84,14 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     testImplementation(libs.junit)
+
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
+
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
