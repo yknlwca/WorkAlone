@@ -6,4 +6,5 @@ sealed class Screen(val route: String) {
     object ExerciseDetail : Screen("exercise-detail/{id}") {
         fun createRoute(id: Long) = "exercise-detail/$id"
     }
+    object CompleteView : Screen("exercise-complete")
 }
