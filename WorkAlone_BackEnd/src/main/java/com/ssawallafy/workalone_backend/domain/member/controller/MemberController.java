@@ -13,16 +13,20 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssawallafy.workalone_backend.domain.member.dto.MemberModifyReq;
 import com.ssawallafy.workalone_backend.domain.member.service.MemberService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Tag(name = "Member", description = "member api")
 public class MemberController {
 
 	private final MemberService memberService;
 
 	@PutMapping("/update")
+	@Operation(summary = "회원정보 수정", description = "회원의 닉네임, 키, 몸무게를 수정")
 	public ResponseEntity<?> modifyMember(@RequestBody MemberModifyReq memberModifyReq) {
 
 		Long memberId = 1L;
@@ -32,6 +36,7 @@ public class MemberController {
 	}
 
 	@DeleteMapping
+	@Operation(summary = "회원 탈퇴", description = "회원을 DB에서 삭제합니다.")
 	public ResponseEntity<?> deleteMember() {
 
 		long memberId = 1L;
