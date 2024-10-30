@@ -35,10 +35,10 @@ import androidx.compose.ui.unit.sp
 import androidx.room.Room
 import com.ssafy.workalone.R
 import com.ssafy.workalone.data.local.ExerciseRecordDatabase
-import com.ssafy.workalone.data.model.ExerciseRecord
 import com.ssafy.workalone.presentation.ui.component.CloseButton
 import com.ssafy.workalone.presentation.ui.component.CustomButton
-import com.ssafy.workalone.presentation.ui.component.ExerciseRecode
+import com.ssafy.workalone.presentation.ui.component.ExerciseRecord
+import com.ssafy.workalone.presentation.ui.component.ExerciseRecordDetail
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray100
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
@@ -53,7 +53,7 @@ data class ExerciseRecordData(
 )
 
 @Composable
-fun IntegratedCompleteView(viewModel: ExerciseRecordViewModel) {
+fun IntegratedCompleteView() {
     val exerciseRecordDataList = listOf(
         ExerciseRecordData("스쿼트","3세트 X 15회", 1801, 300),
         ExerciseRecordData("푸쉬업","4세트 X 12회", 1901, 250),
@@ -125,38 +125,11 @@ fun IntegratedCompleteView(viewModel: ExerciseRecordViewModel) {
                         .padding(15.dp),
                 ) {
                     //Box1
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            Arrangement.SpaceBetween
-                        ) {
-                            Row {
-                                Image(
-                                    painter = painterResource(R.drawable.time),
-                                    contentDescription = "Time Icon",
-                                    modifier = Modifier.size(24.dp)
-                                )
-                                Spacer(modifier = Modifier.width(16.dp))
-                                Text(
-                                    text = "총 운동 시간",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp
-                                )
-                            }
-
-                            Box {
-                                Text(
-                                    text = "${totalTime/60}:${String.format("%02d", totalTime % 60)}",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp
-                                )
-                            }
-                        }
-                    }
+                    ExerciseRecord(
+                        painterResource(R.drawable.time),
+                        "총 운동 시간",
+                        "${totalTime/60}:${String.format("%02d", totalTime % 60)}"
+                    )
 
                     Spacer(modifier = Modifier.height(10.dp))
 
@@ -167,39 +140,11 @@ fun IntegratedCompleteView(viewModel: ExerciseRecordViewModel) {
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    //Box3
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            Arrangement.SpaceBetween
-                        ) {
-                            Row {
-                                Image(
-                                    painter = painterResource(R.drawable.fire),
-                                    contentDescription = "Calorie Icon",
-                                    modifier = Modifier.size(24.dp)
-                                )
-                                Spacer(modifier = Modifier.width(16.dp))
-                                Text(
-                                    text = "총 소모 칼로리",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp
-                                )
-                            }
-
-                            Box {
-                                Text(
-                                    text = "${totalCalorie}kcal",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp
-                                )
-                            }
-                        }
-                    }
+                    ExerciseRecord(
+                        painterResource(R.drawable.fire),
+                        "총 소모 칼로리",
+                        "${totalCalorie}Kcal"
+                    )
                 }
             }
         }
@@ -227,7 +172,7 @@ fun IntegratedCompleteView(viewModel: ExerciseRecordViewModel) {
                 exerciseRecordDataList.forEach{ record ->
 
                     Column {
-                        ExerciseRecode(
+                        ExerciseRecordDetail(
                             record.title,
                             record.exerciseCount,
                             record.exerciseDuration,
