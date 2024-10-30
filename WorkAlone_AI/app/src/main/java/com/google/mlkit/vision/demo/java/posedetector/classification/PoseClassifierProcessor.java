@@ -110,32 +110,8 @@ public class PoseClassifierProcessor {
       }
     });
   }
-  private void checkAudioPermission() {
-    if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO)
-            != PackageManager.PERMISSION_GRANTED) {
-      // context가 Activity인지 확인
-      if (context instanceof Activity) {
-        ActivityCompat.requestPermissions(
-                (Activity) context,
-                new String[]{Manifest.permission.RECORD_AUDIO},
-                REQUEST_RECORD_AUDIO_PERMISSION);
-      } else {
-        Log.e(TAG, "Permission request failed: context is not an Activity");
-      }
-    }
-  }
 
-  // 권한 요청 결과를 확인하기 위해 Activity에서 이 메서드를 호출할 수 있습니다.
-  public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-    if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
-      if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-        Log.d(TAG, "Audio permission granted");
-      } else {
-        Log.d(TAG, "Audio permission denied");
-        // 권한 거부 시 사용자에게 알리기 등 추가 동작
-      }
-    }
-  }
+
 
   private void initializeSpeechRecognition() {
     speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context);
@@ -144,11 +120,13 @@ public class PoseClassifierProcessor {
       @Override
       public void onReadyForSpeech(Bundle bundle) {
         Log.d(TAG, "음성 인식 준비됨");
+        System.out.println("음석 인식 준비 됨");
       }
 
       @Override
       public void onBeginningOfSpeech() {
         Log.d(TAG, "음성 인식 시작됨");
+        System.out.println("음성 인식 시작");
 
       }
 
@@ -170,14 +148,20 @@ public class PoseClassifierProcessor {
       @Override
       public void onError(int error) {
         Log.e(TAG, "음성 인식 오류 발생: " + error);
-        if (error == SpeechRecognizer.ERROR_NO_MATCH || error == SpeechRecognizer.ERROR_SPEECH_TIMEOUT) {
-          startListening(); // 특정 오류에서만 재시작
-        }
+//error        if (error == SpeechRecognizer.ERROR_NO_MATCH || error == SpeechRecognizer.ERROR_SPEECH_TIMEOUT) {
+//          startListening(); // 특정 오류에서만 재시작
+//        }
       }
 
       @Override
       public void onResults(Bundle results) {
         List<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+        if (matches != null) {
+          for (String command : matches) {
+            Log.d(TAG, "음성 인식 결과: " + command); // 여기서 실시간으로 인식된 음성을 로그로 출력
+            // 기존 코드 유지
+          }
+        }
         if (matches != null) {
           for (String command : matches) {
             if (command.equalsIgnoreCase("시작")) {
@@ -255,6 +239,9 @@ public class PoseClassifierProcessor {
 
     if (!isTracking || isPaused) {
       result.add("추적이 현재 일시 중지 또는 종료 상태입니다.");
+      result.add("isTracking: "+isTracking);
+      result.add("isPaused: "+isPaused);
+
       return result;
     }
 
