@@ -83,6 +83,13 @@ public class PoseClassifierProcessor {
   private String lastRepResult;
   private Handler mainHandler = new Handler(Looper.getMainLooper());
 
+  private void requestAudioPermission(Activity activity) {
+    if (ContextCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO)
+            != PackageManager.PERMISSION_GRANTED) {
+      ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_AUDIO_PERMISSION);
+    }
+  }
+
   @WorkerThread
   public PoseClassifierProcessor(Context context, boolean isStreamMode) {
     Preconditions.checkState(Looper.myLooper() != Looper.getMainLooper());
@@ -148,9 +155,9 @@ public class PoseClassifierProcessor {
       @Override
       public void onError(int error) {
         Log.e(TAG, "음성 인식 오류 발생: " + error);
-//error        if (error == SpeechRecognizer.ERROR_NO_MATCH || error == SpeechRecognizer.ERROR_SPEECH_TIMEOUT) {
-//          startListening(); // 특정 오류에서만 재시작
-//        }
+        if (error == SpeechRecognizer.ERROR_NO_MATCH || error == SpeechRecognizer.ERROR_SPEECH_TIMEOUT) {
+          startListening(); // 오류 발생 시 자동으로 다시 듣기 시작
+        }
       }
 
       @Override
@@ -276,7 +283,7 @@ public class PoseClassifierProcessor {
             ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
             tg.startTone(ToneGenerator.TONE_PROP_BEEP);
             lastRepResult = String.format(Locale.KOREAN, "%s : %d", repCounter.getClassName(), repsAfter);
-            speakResult(String.valueOf(repsAfter)); // 숫자를 그대로 음성으로 읽음
+            speakResult(lastRepResult);
             break;
           }
         }

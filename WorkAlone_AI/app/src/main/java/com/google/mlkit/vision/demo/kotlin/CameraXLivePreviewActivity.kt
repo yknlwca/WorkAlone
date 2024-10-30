@@ -17,11 +17,11 @@
 package com.google.mlkit.vision.demo.kotlin
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
@@ -33,6 +33,7 @@ import android.widget.Spinner
 import android.widget.Toast
 import android.widget.ToggleButton
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraInfoUnavailableException
 import androidx.camera.core.CameraSelector
@@ -47,30 +48,15 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.common.annotation.KeepName
 import com.google.mlkit.common.MlKitException
-import com.google.mlkit.common.model.LocalModel
-import com.google.mlkit.vision.barcode.ZoomSuggestionOptions.ZoomCallback
 import com.google.mlkit.vision.demo.CameraXViewModel
 import com.google.mlkit.vision.demo.GraphicOverlay
 import com.google.mlkit.vision.demo.R
 import com.google.mlkit.vision.demo.VisionImageProcessor
-import com.google.mlkit.vision.demo.kotlin.barcodescanner.BarcodeScannerProcessor
-import com.google.mlkit.vision.demo.kotlin.facedetector.FaceDetectorProcessor
-import com.google.mlkit.vision.demo.kotlin.facemeshdetector.FaceMeshDetectorProcessor
-import com.google.mlkit.vision.demo.kotlin.labeldetector.LabelDetectorProcessor
-import com.google.mlkit.vision.demo.kotlin.objectdetector.ObjectDetectorProcessor
 import com.google.mlkit.vision.demo.kotlin.posedetector.PoseDetectorProcessor
-import com.google.mlkit.vision.demo.kotlin.segmenter.SegmenterProcessor
-import com.google.mlkit.vision.demo.kotlin.textdetector.TextRecognitionProcessor
 import com.google.mlkit.vision.demo.preference.PreferenceUtils
 import com.google.mlkit.vision.demo.preference.SettingsActivity
 import com.google.mlkit.vision.demo.preference.SettingsActivity.LaunchSource
-import com.google.mlkit.vision.label.custom.CustomImageLabelerOptions
-import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
-import com.google.mlkit.vision.text.chinese.ChineseTextRecognizerOptions
-import com.google.mlkit.vision.text.devanagari.DevanagariTextRecognizerOptions
-import com.google.mlkit.vision.text.japanese.JapaneseTextRecognizerOptions
-import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+
 
 /** Live preview demo app for ML Kit APIs using CameraX. */
 @KeepName
@@ -91,30 +77,32 @@ class CameraXLivePreviewActivity :
   private var cameraSelector: CameraSelector? = null
 
   //audio
-  private fun requestAudioPermission() {
-    if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-      != PackageManager.PERMISSION_GRANTED) {
-      ActivityCompat.requestPermissions(
-        this, arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_RECORD_AUDIO_PERMISSION
-      )
-    }
-  }
-  override fun onRequestPermissionsResult(
-    requestCode: Int, permissions: Array<out String>, grantResults: IntArray
-  ) {
-    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
-      if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-        Log.d(TAG, "Audio permission granted")
-      } else {
-        Toast.makeText(this, "Audio permission is required for voice recognition", Toast.LENGTH_SHORT).show()
-      }
-    }
-  }
+// audio private fun requestAudioPermission() {
+//    if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+//      != PackageManager.PERMISSION_GRANTED) {
+//      ActivityCompat.requestPermissions(
+//        this, arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_RECORD_AUDIO_PERMISSION
+//      )
+//    }
+//  }
+//  override fun onRequestPermissionsResult(
+//    requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+//  ) {
+//    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//    if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
+//      if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//        Log.d(TAG, "Audio permission granted")
+//      } else {
+//        Toast.makeText(this, "Audio permission is required for voice recognition", Toast.LENGTH_SHORT).show()
+//      }
+//    }
+//  }
+
 
 
 
   override fun onCreate(savedInstanceState: Bundle?) {
+
     super.onCreate(savedInstanceState)
     Log.d(TAG, "onCreate")
 
@@ -123,7 +111,9 @@ class CameraXLivePreviewActivity :
     }
     cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
     setContentView(R.layout.activity_vision_camerax_live_preview)
-    requestAudioPermission()
+
+
+    requestAudioPermission(this);
 
     previewView = findViewById(R.id.preview_view)
     if (previewView == null) {
@@ -179,6 +169,19 @@ class CameraXLivePreviewActivity :
       startActivity(intent)
     }
   }
+
+  private fun requestAudioPermission(activity: Activity) {
+    if (ContextCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO)
+      != PackageManager.PERMISSION_GRANTED
+    ) {
+      ActivityCompat.requestPermissions(
+        activity,
+        arrayOf(Manifest.permission.RECORD_AUDIO),
+        REQUEST_RECORD_AUDIO_PERMISSION
+      )
+    }
+  }
+
 
   override fun onSaveInstanceState(bundle: Bundle) {
     super.onSaveInstanceState(bundle)
