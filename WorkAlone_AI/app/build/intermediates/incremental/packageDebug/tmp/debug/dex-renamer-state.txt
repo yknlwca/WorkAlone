@@ -1,4 +1,4 @@
-#Tue Oct 29 14:01:07 KST 2024
+#Wed Oct 30 10:09:22 KST 2024
 base.0=C\:\\Users\\SSAFY\\finalpro\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
 base.1=C\:\\Users\\SSAFY\\finalpro\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
 base.10=C\:\\Users\\SSAFY\\finalpro\\S11P31S201\\WorkAlone_AI\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\5\\classes.dex
