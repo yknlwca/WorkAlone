@@ -16,8 +16,11 @@
 
 package com.google.mlkit.vision.demo.java.posedetector.classification;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Bundle;
@@ -28,6 +31,9 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
 import androidx.annotation.WorkerThread;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.google.common.base.Preconditions;
 import com.google.mlkit.vision.pose.Pose;
 import java.io.BufferedReader;
@@ -43,7 +49,8 @@ import android.speech.tts.TextToSpeech;
  */
 public class PoseClassifierProcessor {
   private static final String TAG = "PoseClassifierProcessor";
-  private static final String POSE_SAMPLES_FILE = "pose/plank.csv";
+  private static final String POSE_SAMPLES_FILE = "pose/pose_data.csv";
+  private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
 
   private static final String PUSHUPS_CLASS = "pushups_down";
   private static final String SQUATS_CLASS = "squats_down";
@@ -81,6 +88,8 @@ public class PoseClassifierProcessor {
     Preconditions.checkState(Looper.myLooper() != Looper.getMainLooper());
     this.isStreamMode = isStreamMode;
     this.context = context;
+
+
     initializeTextToSpeech();
     if (isStreamMode) {
       emaSmoothing = new EMASmoothing();
@@ -100,6 +109,32 @@ public class PoseClassifierProcessor {
         Log.e(TAG, "TextToSpeech initialization failed");
       }
     });
+  }
+  private void checkAudioPermission() {
+    if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO)
+            != PackageManager.PERMISSION_GRANTED) {
+      // context가 Activity인지 확인
+      if (context instanceof Activity) {
+        ActivityCompat.requestPermissions(
+                (Activity) context,
+                new String[]{Manifest.permission.RECORD_AUDIO},
+                REQUEST_RECORD_AUDIO_PERMISSION);
+      } else {
+        Log.e(TAG, "Permission request failed: context is not an Activity");
+      }
+    }
+  }
+
+  // 권한 요청 결과를 확인하기 위해 Activity에서 이 메서드를 호출할 수 있습니다.
+  public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
+      if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        Log.d(TAG, "Audio permission granted");
+      } else {
+        Log.d(TAG, "Audio permission denied");
+        // 권한 거부 시 사용자에게 알리기 등 추가 동작
+      }
+    }
   }
 
   private void initializeSpeechRecognition() {
