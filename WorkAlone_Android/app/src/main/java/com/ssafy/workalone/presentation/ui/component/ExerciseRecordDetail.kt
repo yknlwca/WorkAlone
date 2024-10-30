@@ -16,7 +16,7 @@ import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue400
 
 
 @Composable
-fun ExerciseRecode(
+fun ExerciseRecordDetail(
     title: String,
     exerciseCount: String,
     exerciseDuration: Int,
@@ -86,5 +86,5 @@ fun ExerciseRecode(
 @Preview(showBackground = true)
 @Composable
 fun ExerciseRecodePreview() {
-    ExerciseRecode("스쿼트","3세트 X 15회", 1800, 300)
+    ExerciseRecordDetail("스쿼트","3세트 X 15회", 1800, 300)
 }
