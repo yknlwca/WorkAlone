@@ -35,5 +35,5 @@ public class Exercise {
 
     @ColumnDefault(value = "false")
     @Column(columnDefinition = "TINYINT(1)")
-    private boolean isDeleted;
+    private boolean deleted;
 }
