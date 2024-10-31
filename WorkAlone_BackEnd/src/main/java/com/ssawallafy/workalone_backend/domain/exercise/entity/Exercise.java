@@ -24,7 +24,9 @@ public class Exercise {
     private String title;
 
     private int restTime;
+    @Column
     private int exerciseSet;
+    @Column
     private int setDetail;
 
     @Enumerated(EnumType.STRING)

@@ -1,5 +1,5 @@
 # 1단계: Gradle 빌드
-FROM gradle:7.6.0-jdk17 AS build
+FROM gradle:8.10.2-jdk17 AS build
 WORKDIR /app
 COPY . .
 RUN ./gradlew clean build
