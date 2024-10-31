@@ -4,10 +4,9 @@ import com.ssawallafy.workalone_backend.domain.exercise.dto.response.ExerciseDto
 import com.ssawallafy.workalone_backend.domain.exercise.service.ExerciseService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,11 +17,11 @@ public class ExerciseController {
 
     private final ExerciseService exerciseService;
 
-    // 추후에 RequestHeader 추가 해야함
+    //TODO: 추후에 RequestHeader 추가 해야함
     @GetMapping
-    ResponseEntity<?> getExercises() {
+    ResponseEntity<List<ExerciseDto>> getExercises() {
         Long memberId = 1L;
         List<ExerciseDto> exerciseDto = exerciseService.getExercises(memberId);
-        return ResponseEntity.ok(exerciseDto);
+        return new ResponseEntity<>(exerciseDto, HttpStatus.OK);
     }
 }
