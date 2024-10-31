@@ -30,19 +30,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ssafy.workalone.R
+import com.ssafy.workalone.presentation.ui.component.ExerciseRecord
 import com.ssafy.workalone.presentation.ui.component.CloseButton
 import com.ssafy.workalone.presentation.ui.component.CustomButton
+import com.ssafy.workalone.presentation.ui.component.IndividualExerciseRecord
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray100
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 
+
 @Composable
-fun CompleteView(
-    workoutCount: String = "3세트 X 15회",
-    minutes: String = "10",
-    seconds: String = "00",
-    totalCaloriesBurned: Int = 100
-){
+fun CompleteView(){
+
+    val exerciseCount: String = "3세트 X 15회"
+    val exerciseDuration: Int = 300
+    val calorie: Int = 100
+
     //전체 화면
     Column(
         modifier = Modifier
@@ -96,139 +99,13 @@ fun CompleteView(
                     fontSize = 18.sp
                 )
                 Spacer(modifier = Modifier.height(10.dp))
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = WalkOneGray100),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(15.dp),
-                    ) {
-                        //Box1
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                Arrangement.SpaceBetween
-                            ) {
-                                Row {
-                                    Image(
-                                        painter = painterResource(R.drawable.muscle),
-                                        contentDescription = "Muscle Icon",
-                                        modifier = Modifier
-                                            .size(24.dp)
-                                            .graphicsLayer(scaleX = -1f),
-                                    )
-                                    Spacer(modifier = Modifier.width(16.dp))
-                                    Text(
-                                        text = "운동횟수",
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 16.sp
-                                    )
-                                }
 
-                                Box {
-                                    Text(
-                                        text = "${workoutCount}",
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 16.sp
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        Divider(
-                            color = WalkOneGray300,
-                            thickness = 1.dp,
-                        )
-
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        //Box2
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                Arrangement.SpaceBetween
-                            ) {
-                                Row {
-                                    Image(
-                                        painter = painterResource(R.drawable.time),
-                                        contentDescription = "Time Icon",
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(16.dp))
-                                    Text(
-                                        text = "총 운동 시간",
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 16.sp
-                                    )
-                                }
-
-                                Box {
-                                    Text(
-                                        text = "${minutes}:${seconds}",
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 16.sp
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        Divider(
-                            color = WalkOneGray300,
-                            thickness = 1.dp,
-                        )
-
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        //Box3
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                Arrangement.SpaceBetween
-                            ) {
-                                Row {
-                                    Image(
-                                        painter = painterResource(R.drawable.fire),
-                                        contentDescription = "Calorie Icon",
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(16.dp))
-                                    Text(
-                                        text = "총 소모 칼로리",
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 16.sp
-                                    )
-                                }
-
-                                Box {
-                                    Text(
-                                        text = "${totalCaloriesBurned}kcal",
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 16.sp
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
+                //운동 기록 표
+                IndividualExerciseRecord(
+                    exerciseCount,
+                    exerciseDuration,
+                    calorie
+                )
             }
 
             //확인 버튼
