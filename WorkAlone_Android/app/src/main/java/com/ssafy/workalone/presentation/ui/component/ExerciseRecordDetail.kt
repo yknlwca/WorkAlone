@@ -14,7 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue400
 
-
+// 기록 상세 컴포넌트
 @Composable
 fun ExerciseRecordDetail(
     title: String,

@@ -29,7 +29,7 @@ import com.ssafy.workalone.presentation.ui.screen.IntegratedCompleteView
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray100
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
 
-
+//운동 기록 컴포넌트
 @Composable
 fun ExerciseRecord(
     imagePainter: Painter,
