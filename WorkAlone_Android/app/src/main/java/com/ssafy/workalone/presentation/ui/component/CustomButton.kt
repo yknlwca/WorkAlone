@@ -27,7 +27,7 @@ fun CustomButton(
         shape = RoundedCornerShape(5.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp) // 버튼 높이
+            .height(50.dp)
     ) {
         Text(
             text = text,

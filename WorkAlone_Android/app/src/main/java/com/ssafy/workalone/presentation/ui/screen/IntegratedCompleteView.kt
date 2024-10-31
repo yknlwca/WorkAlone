@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -14,7 +15,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -56,10 +61,14 @@ data class IntegratedExerciseRecordData(
 // 운동 완료 화면(통합형)
 @Composable
 fun IntegratedCompleteView() {
-    val integratedExerciseRecordDataList = listOf(
+    val integratedExerciseRecordDataList: List<IntegratedExerciseRecordData> = listOf(
         IntegratedExerciseRecordData("스쿼트","3세트 X 15회", 1801, 300),
         IntegratedExerciseRecordData("푸쉬업","4세트 X 12회", 1901, 250),
-        IntegratedExerciseRecordData("플랭크","5세트 X 10회", 2000, 200)
+        IntegratedExerciseRecordData("플랭크","5세트 X 10회", 2000, 200),
+        IntegratedExerciseRecordData("플랭크","5세트 X 10회", 2000, 200),
+        IntegratedExerciseRecordData("플랭크","5세트 X 10회", 2000, 200),
+        IntegratedExerciseRecordData("플랭크","5세트 X 10회", 2000, 200),
+        IntegratedExerciseRecordData("플랭크","5세트 X 10회", 2000, 200),
     )
 
     val totalTime: Int = 3000
@@ -102,7 +111,7 @@ fun IntegratedCompleteView() {
             )
         }
 
-        //운동기록
+        //운동 기록
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -116,12 +125,14 @@ fun IntegratedCompleteView() {
             )
             Spacer(modifier = Modifier.height(10.dp))
 
+            // 운동 기록 표
             IntegratedExerciseRecord(
                 totalTime,
                 totalCalorie
             )
         }
 
+        //기록 상세
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -130,38 +141,47 @@ fun IntegratedCompleteView() {
                 .padding(25.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
+            //기록 상세 문구 및 표
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(bottom = 20.dp),
+            ) {
+                Column {
+                    Text(
+                        text = "기록 상세",
+                        fontWeight = FontWeight.Black,
+                        fontSize = 18.sp,
+                        modifier = Modifier
+                            .padding(bottom = 20.dp)
+                    )
 
-            Column {
-                Text(
-                    text = "기록 상세",
-                    fontWeight = FontWeight.Black,
-                    fontSize = 18.sp,
-                    modifier = Modifier
-                        .padding(bottom = 20.dp)
-                )
+                    LazyColumn {
 
-                //기록 상세 표
-                integratedExerciseRecordDataList.forEach{ record ->
+                        // 기록 상세 표
+                        items(integratedExerciseRecordDataList) { record ->
+                            Column {
+                                ExerciseRecordDetail(
+                                    record.title,
+                                    record.exerciseCount,
+                                    record.exerciseDuration,
+                                    record.calorie
+                                )
 
-                    Column {
-                        ExerciseRecordDetail(
-                            record.title,
-                            record.exerciseCount,
-                            record.exerciseDuration,
-                            record.calorie
-                        )
+                                Spacer(modifier = Modifier.height(10.dp))
 
-                        Spacer(modifier = Modifier.height(10.dp))
+                                Divider(
+                                    color = WalkOneGray300,
+                                    thickness = 1.dp,
+                                )
 
-                        Divider(
-                            color = WalkOneGray300,
-                            thickness = 1.dp,
-                        )
-
-                        Spacer(modifier = Modifier.height(10.dp))
+                                Spacer(modifier = Modifier.height(10.dp))
+                            }
+                        }
                     }
                 }
             }
+
 
             //확인 버튼
             CustomButton(
