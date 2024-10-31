@@ -50,7 +50,7 @@ import android.speech.tts.TextToSpeech;
 public class PoseClassifierProcessor {
   private static final String TAG = "PoseClassifierProcessor";
   private static final String POSE_SAMPLES_FILE = "pose/pose_data.csv";
-  private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+  public static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
 
   private static final String PUSHUPS_CLASS = "pushups_down";
   private static final String SQUATS_CLASS = "squats_down";
@@ -118,7 +118,14 @@ public class PoseClassifierProcessor {
     });
   }
 
-
+  public void requestAudioPermissionIfNeeded (Activity activity) {
+    if (ContextCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO)
+            != PackageManager.PERMISSION_GRANTED) {
+      ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_AUDIO_PERMISSION);
+    } else {
+      Log.d(TAG, "Audio permission already granted.");
+    }
+  }
 
   private void initializeSpeechRecognition() {
     speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context);
@@ -155,9 +162,22 @@ public class PoseClassifierProcessor {
       @Override
       public void onError(int error) {
         Log.e(TAG, "음성 인식 오류 발생: " + error);
-        if (error == SpeechRecognizer.ERROR_NO_MATCH || error == SpeechRecognizer.ERROR_SPEECH_TIMEOUT) {
-          startListening(); // 오류 발생 시 자동으로 다시 듣기 시작
+        switch (error) {
+          case SpeechRecognizer.ERROR_NETWORK:
+            Log.e(TAG, "네트워크 오류");
+            break;
+          case SpeechRecognizer.ERROR_AUDIO:
+            Log.e(TAG, "오디오 입력 오류");
+            break;
+          case SpeechRecognizer.ERROR_NO_MATCH:
+            Log.e(TAG, "일치하는 결과 없음");
+            break;
+          case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
+            Log.e(TAG, "음성 입력 시간 초과");
+            break;
+          // 추가 오류 코드 확인 가능
         }
+        startListening(); // 오류 발생 시 다시 듣기 시작
       }
 
       @Override
@@ -280,8 +300,8 @@ public class PoseClassifierProcessor {
           int repsBefore = repCounter.getNumRepeats();
           int repsAfter = repCounter.addClassificationResult(classification);
           if (repsAfter > repsBefore) {
-            ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
-            tg.startTone(ToneGenerator.TONE_PROP_BEEP);
+         //   ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
+           // tg.startTone(ToneGenerator.TONE_PROP_BEEP);
             lastRepResult = String.format(Locale.KOREAN, "%s : %d", repCounter.getClassName(), repsAfter);
             speakResult(lastRepResult);
             break;
