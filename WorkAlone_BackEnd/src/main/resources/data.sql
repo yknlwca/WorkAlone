@@ -24,9 +24,9 @@ VALUES (1, '스쿼트 루틴', 30, 2, 10, 'SQUAT', 'COUNT', 1),
        (1, '푸쉬업 챌린지', 60, 3, 15, 'PUSHUP', 'TIMER', 0),
        (1, '플랭크 버티기', 30, 4, 12, 'PLANK', 'COUNT', 0),
        (1, '싯업 시리즈', 60, 2, 8, 'SITUP', 'TIMER', 0),
-       (1, '통합 운동', 30, 3, 20, 'INTEGRATED', 'MIX', 0),
+       (1, '통합 운동', 30, NULL, NULL, 'INTEGRATED', 'MIX', 0),
        (1, '푸쉬업 훈련', 60, 1, 7, 'PUSHUP', 'COUNT', 0),
        (1, '스쿼트 챌린지', 30, 2, 14, 'SQUAT', 'TIMER', 0),
        (1, '싯업 루틴', 60, 4, 18, 'SITUP', 'TIMER', 0),
        (1, '플랭크 인내력', 30, 3, 9, 'PLANK', 'COUNT', 0),
-       (1, '전신 통합 운동', 60, 2, 11, 'INTEGRATED', 'MIX', 0);
+       (1, '전신 통합 운동', 60, NULL, NULL, 'INTEGRATED', 'MIX', 0);
