@@ -8,14 +8,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.ssafy.workalone.R
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 
 @Composable
-fun CloseButton(onClick: () -> Unit) {
+fun CloseButton(navController: NavController) {
     Icon(
         painter = painterResource(id = R.drawable.baseline_close_28),
         contentDescription = "Close",
         modifier = Modifier
             .size(24.dp)
-            .clickable { onClick() }
+            .clickable {
+                navController.navigate("home-screen") {
+                    popUpTo("home-screen") { inclusive = true }
+                }
+            }
     )
 }

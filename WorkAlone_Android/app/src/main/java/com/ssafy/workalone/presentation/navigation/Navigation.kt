@@ -11,10 +11,11 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.ssafy.workalone.presentation.ui.screen.CompleteView
+import com.ssafy.workalone.presentation.ui.screen.IndividualCompleteView
 import com.ssafy.workalone.presentation.ui.screen.ExerciseDetailView
 import com.ssafy.workalone.presentation.ui.screen.ExerciseListView
 import com.ssafy.workalone.presentation.ui.screen.HomeView
+import com.ssafy.workalone.presentation.ui.screen.IntegratedCompleteView
 import com.ssafy.workalone.presentation.viewmodels.ExerciseViewModel
 
 @Composable
@@ -32,9 +33,9 @@ fun Navigation(
     NavHost(
         navController = navController,
 //        startDestination = Screen.ExerciseList.route
-        startDestination = Screen.HomeScreen.route
+        startDestination = Screen.Home.route
     ) {
-        composable(Screen.HomeScreen.route){
+        composable(Screen.Home.route){
             HomeView(navController)
         }
 
@@ -54,9 +55,15 @@ fun Navigation(
             ExerciseDetailView(navController = navController, viewModel, id)
         }
 
-        composable(Screen.CompleteView.route) {
-            CompleteView(
-//                navController = navController
+        composable(Screen.IndividualComplete.route) {
+            IndividualCompleteView(
+                navController = navController
+            )
+        }
+
+        composable(Screen.IntegratedComplete.route) {
+            IntegratedCompleteView(
+                navController = navController
             )
         }
     }

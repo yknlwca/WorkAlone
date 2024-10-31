@@ -1,5 +1,6 @@
 package com.ssafy.workalone.presentation.ui.screen
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -34,6 +35,7 @@ import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.AppBarView
 import com.ssafy.workalone.presentation.ui.component.CustomButton
 import com.ssafy.workalone.presentation.ui.component.YouTubePlayerScreen
+import com.ssafy.workalone.presentation.ui.theme.LocalWorkAloneTypography
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
@@ -55,7 +57,7 @@ fun ExerciseDetailView(
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             // 촬영 완료
-            navController.navigate(Screen.CompleteView.route)
+            navController.navigate(Screen.IndividualComplete.route)
             Toast.makeText(context, "촬영되었습니다.", Toast.LENGTH_SHORT).show()
         }
     }
@@ -73,83 +75,88 @@ fun ExerciseDetailView(
     val exercise = viewModel.getExerciseById(id)
         .collectAsState(initial = Exercise(0L, "", "", "", "", "", "", 0))
     val scrollState = rememberScrollState()
-    Scaffold(
-        topBar = {
-            AppBarView(
-                title = exercise.value.title,
-                navController = navController
-            )
-        },
-        scaffoldState = scaffoldState,
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(it)
-                .fillMaxSize()
-                .background(WalkOneGray300),
-            verticalArrangement = Arrangement.spacedBy(5.dp),
+    WorkAloneTheme {
+        val typography = LocalWorkAloneTypography.current
+
+
+        Scaffold(
+            topBar = {
+                AppBarView(
+                    title = exercise.value.title,
+                    navController = navController
+                )
+            },
+            scaffoldState = scaffoldState,
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(WalkOneGray50)
-                    .padding(30.dp),
+                    .padding(it)
+                    .fillMaxSize()
+                    .background(WalkOneGray300),
+                verticalArrangement = Arrangement.spacedBy(5.dp),
             ) {
-                // 제목 및 부제목
-                Text(
-                    text = exercise.value.title,
-                    style = WorkAloneTheme.typography.Heading02,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                Text(
-                    text = exercise.value.subTitle,
-                    style = WorkAloneTheme.typography.Heading04,
-                    color = WalkOneBlue500,
-                    modifier = Modifier.padding(bottom = 24.dp)
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(WalkOneGray50)
+                        .padding(30.dp),
+                ) {
+                    // 제목 및 부제목
+                    Text(
+                        text = exercise.value.title,
+                        style = typography.Heading02,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Text(
+                        text = exercise.value.subTitle,
+                        style = typography.Heading04,
+                        color = WalkOneBlue500,
+                        modifier = Modifier.padding(bottom = 24.dp)
+                    )
 
-                // YouTube 영상
-                getYoutubeVideoId(exercise.value.content)?.let { it1 ->
-                    YouTubePlayerScreen(
-                        videoId = it1
+                    // YouTube 영상
+                    getYoutubeVideoId(exercise.value.content)?.let { it1 ->
+                        YouTubePlayerScreen(
+                            videoId = it1
+                        )
+                    }
+
+                }
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(WalkOneGray50)
+                        .padding(30.dp)
+                        .verticalScroll(scrollState),
+                    verticalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    // 운동 방법
+                    Text(
+                        text = "운동 방법",
+                        style = WorkAloneTheme.typography.Heading03,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    SectionItem(title = "기본 자세", description = exercise.value.basicPose)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    SectionItem(title = "동작 수행", description = exercise.value.movement)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    SectionItem(title = "호흡", description = exercise.value.breath)
+                    Spacer(modifier = Modifier.height(32.dp))
+                    CustomButton(
+                        text = "운동 시작하기",
+                        onClick = {
+                            val cameraPermissionCheck = ContextCompat.checkSelfPermission(
+                                context,
+                                android.Manifest.permission.CAMERA
+                            )
+                            if (cameraPermissionCheck != PackageManager.PERMISSION_GRANTED) {
+                                requestPermissionLauncher.launch(android.Manifest.permission.CAMERA)
+                            } else {
+                                startCamera(activity, takePictureLauncher)
+                            }
+                        },
                     )
                 }
-
-            }
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(WalkOneGray50)
-                    .padding(30.dp)
-                    .verticalScroll(scrollState),
-                verticalArrangement = Arrangement.SpaceBetween,
-            ) {
-                // 운동 방법
-                Text(
-                    text = "운동 방법",
-                    style = WorkAloneTheme.typography.Heading03,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-                SectionItem(title = "기본 자세", description = exercise.value.basicPose)
-                Spacer(modifier = Modifier.height(16.dp))
-                SectionItem(title = "동작 수행", description = exercise.value.movement)
-                Spacer(modifier = Modifier.height(16.dp))
-                SectionItem(title = "호흡", description = exercise.value.breath)
-                Spacer(modifier = Modifier.height(32.dp))
-                CustomButton(
-                    text = "운동 시작하기",
-                    onClick = {
-                        val cameraPermissionCheck = ContextCompat.checkSelfPermission(
-                            context,
-                            android.Manifest.permission.CAMERA
-                        )
-                        if (cameraPermissionCheck != PackageManager.PERMISSION_GRANTED) {
-                            requestPermissionLauncher.launch(android.Manifest.permission.CAMERA)
-                        } else {
-                            startCamera(activity, takePictureLauncher)
-                        }
-                    },
-                )
             }
         }
     }
@@ -177,6 +184,7 @@ fun SectionItem(title: String, description: String) {
 }
 
 // 카메라 실행 함수
+@SuppressLint("QueryPermissionsNeeded")
 private fun startCamera(activity: Activity?, takePictureLauncher: ActivityResultLauncher<Intent>) {
     activity?.let {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)

@@ -22,6 +22,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.ssafy.workalone.R
 import com.ssafy.workalone.presentation.ui.component.CloseButton
 import com.ssafy.workalone.presentation.ui.component.CustomButton
@@ -31,7 +33,7 @@ import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 
 //운동 완료 화면(개별형)
 @Composable
-fun CompleteView(){
+fun IndividualCompleteView(navController: NavController) {
 
     val exerciseCount: String = "3세트 X 15회"
     val exerciseDuration: Int = 300
@@ -57,7 +59,7 @@ fun CompleteView(){
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End // Row의 끝에 배치
             ) {
-                CloseButton(onClick = { /* X 버튼 클릭 이벤트 */ })
+                CloseButton(navController)
             }
 
             Text(
@@ -102,7 +104,7 @@ fun CompleteView(){
             //확인 버튼
             CustomButton(
                 text = "확인",
-                onClick = { /* 버튼 클릭 이벤트 */})
+                onClick = { /* 버튼 클릭 이벤트 */ })
         }
     }
 }
@@ -110,5 +112,6 @@ fun CompleteView(){
 @Preview(showBackground = true)
 @Composable
 fun PreviewCompleteView() {
-    CompleteView()
+    val fakeNavController = rememberNavController()
+    IndividualCompleteView(navController = fakeNavController)
 }

@@ -54,8 +54,10 @@ android {
 
 dependencies {
     // 달력 compose
-    implementation("io.github.boguszpawlowski.composecalendar:composecalendar:1.3.0")
-    implementation("io.github.boguszpawlowski.composecalendar:kotlinx-datetime:1.3.0")
+    implementation ("io.github.boguszpawlowski.composecalendar:composecalendar:1.3.0")
+
+    // separate artifact with utilities for working with kotlinx-datetime
+    implementation ("io.github.boguszpawlowski.composecalendar:kotlinx-datetime:1.3.0")
 
 
     val nav_version = "2.7.5"
