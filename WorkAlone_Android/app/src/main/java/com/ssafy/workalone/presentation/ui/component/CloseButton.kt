@@ -15,7 +15,7 @@ fun CloseButton(onClick: () -> Unit) {
         painter = painterResource(id = R.drawable.baseline_close_28),
         contentDescription = "Close",
         modifier = Modifier
-            .size(24.dp) // 아이콘 크기
+            .size(24.dp)
             .clickable { onClick() }
     )
 }
