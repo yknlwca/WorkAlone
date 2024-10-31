@@ -45,7 +45,7 @@ import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.viewmodels.ExerciseRecordViewModel
 import com.ssafy.workalone.presentation.viewmodels.ExerciseViewModel
 
-data class ExerciseRecordData(
+data class IntegratedExerciseRecordData(
     val title: String,
     val exerciseCount: String,
     val exerciseDuration: Int,
@@ -54,10 +54,10 @@ data class ExerciseRecordData(
 
 @Composable
 fun IntegratedCompleteView() {
-    val exerciseRecordDataList = listOf(
-        ExerciseRecordData("스쿼트","3세트 X 15회", 1801, 300),
-        ExerciseRecordData("푸쉬업","4세트 X 12회", 1901, 250),
-        ExerciseRecordData("플랭크","5세트 X 10회", 2000, 200)
+    val integratedExerciseRecordDataList = listOf(
+        IntegratedExerciseRecordData("스쿼트","3세트 X 15회", 1801, 300),
+        IntegratedExerciseRecordData("푸쉬업","4세트 X 12회", 1901, 250),
+        IntegratedExerciseRecordData("플랭크","5세트 X 10회", 2000, 200)
     )
 
     val totalTime: Int = 3000
@@ -169,7 +169,7 @@ fun IntegratedCompleteView() {
 
 //                Spacer(modifier = Modifier.height(10.dp))
 
-                exerciseRecordDataList.forEach{ record ->
+                integratedExerciseRecordDataList.forEach{ record ->
 
                     Column {
                         ExerciseRecordDetail(
