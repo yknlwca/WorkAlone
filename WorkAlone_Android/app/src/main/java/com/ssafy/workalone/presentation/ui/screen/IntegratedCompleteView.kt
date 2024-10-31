@@ -39,6 +39,7 @@ import com.ssafy.workalone.presentation.ui.component.CloseButton
 import com.ssafy.workalone.presentation.ui.component.CustomButton
 import com.ssafy.workalone.presentation.ui.component.ExerciseRecord
 import com.ssafy.workalone.presentation.ui.component.ExerciseRecordDetail
+import com.ssafy.workalone.presentation.ui.component.IntegratedExerciseRecord
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray100
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
@@ -52,6 +53,7 @@ data class IntegratedExerciseRecordData(
     val calorie: Int
 )
 
+// 운동 완료 화면(통합형)
 @Composable
 fun IntegratedCompleteView() {
     val integratedExerciseRecordDataList = listOf(
@@ -81,7 +83,7 @@ fun IntegratedCompleteView() {
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End // Row의 끝에 배치
+                horizontalArrangement = Arrangement.End
             ) {
                 CloseButton(onClick = { /* X 버튼 클릭 이벤트 */ })
             }
@@ -106,7 +108,6 @@ fun IntegratedCompleteView() {
                 .fillMaxWidth()
                 .background(color = WalkOneGray50)
                 .padding(25.dp),
-//            verticalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
                 text = "운동 기록",
@@ -114,39 +115,11 @@ fun IntegratedCompleteView() {
                 fontSize = 18.sp
             )
             Spacer(modifier = Modifier.height(10.dp))
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = WalkOneGray100),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(15.dp),
-                ) {
-                    //Box1
-                    ExerciseRecord(
-                        painterResource(R.drawable.time),
-                        "총 운동 시간",
-                        "${totalTime/60}:${String.format("%02d", totalTime % 60)}"
-                    )
 
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Divider(
-                        color = WalkOneGray300,
-                        thickness = 1.dp,
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    ExerciseRecord(
-                        painterResource(R.drawable.fire),
-                        "총 소모 칼로리",
-                        "${totalCalorie}Kcal"
-                    )
-                }
-            }
+            IntegratedExerciseRecord(
+                totalTime,
+                totalCalorie
+            )
         }
 
         Column(
@@ -167,8 +140,7 @@ fun IntegratedCompleteView() {
                         .padding(bottom = 20.dp)
                 )
 
-//                Spacer(modifier = Modifier.height(10.dp))
-
+                //기록 상세 표
                 integratedExerciseRecordDataList.forEach{ record ->
 
                     Column {
@@ -203,5 +175,5 @@ fun IntegratedCompleteView() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewIntegratedCompleteView() {
-//    IntegratedCompleteView()
+    IntegratedCompleteView()
 }
