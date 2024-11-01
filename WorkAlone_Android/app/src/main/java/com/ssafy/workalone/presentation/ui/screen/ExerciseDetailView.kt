@@ -20,17 +20,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Text
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import com.ssafy.workalone.data.model.Exercise
 import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.AppBarView
 import com.ssafy.workalone.presentation.ui.component.CustomButton
@@ -47,10 +50,16 @@ import com.ssafy.workalone.presentation.viewmodels.ExerciseViewModel
 fun ExerciseDetailView(
     navController: NavController,
     viewModel: ExerciseViewModel,
-    id: Long
+    id: Long, exerciseType: String
 ) {
     val context = LocalContext.current
     val activity = context as? Activity
+    val scaffoldState = rememberScaffoldState()
+    val exercises = viewModel.getExerciseById(id, exerciseType)
+        .collectAsState(initial = listOf())
+    var currentIndex by remember { mutableStateOf(0) }
+    var currentExercise = exercises.value.getOrNull(currentIndex)
+    val scrollState = rememberScrollState()
     // 카메라 실행 런처
     val takePictureLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -71,101 +80,109 @@ fun ExerciseDetailView(
                 Toast.makeText(context, "카메라 권한이 필요합니다", Toast.LENGTH_LONG).show()
             }
         }
-    val scaffoldState = rememberScaffoldState()
-    val exercise = viewModel.getExerciseById(id)
-        .collectAsState(initial = Exercise(0L, "", "", "", "", "", "", 0))
-    val scrollState = rememberScrollState()
+
     WorkAloneTheme {
         val typography = LocalWorkAloneTypography.current
-
-
         Scaffold(
             topBar = {
                 AppBarView(
-                    title = exercise.value.title,
+                    title = currentExercise?.title ?: "Loading...",
                     navController = navController
                 )
             },
             scaffoldState = scaffoldState,
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(it)
-                    .fillMaxSize()
-                    .background(WalkOneGray300),
-                verticalArrangement = Arrangement.spacedBy(5.dp),
-            ) {
+        ) { paddingValue ->
+            currentExercise?.let { exerciseData ->
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(WalkOneGray50)
-                        .padding(30.dp),
-                ) {
-                    // 제목 및 부제목
-                    Text(
-                        text = exercise.value.title,
-                        style = typography.Heading02,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    Text(
-                        text = exercise.value.subTitle,
-                        style = typography.Heading04,
-                        color = WalkOneBlue500,
-                        modifier = Modifier.padding(bottom = 24.dp)
-                    )
-
-                    // YouTube 영상
-                    getYoutubeVideoId(exercise.value.content)?.let { it1 ->
-                        YouTubePlayerScreen(
-                            videoId = it1
-                        )
-                    }
-
-                }
-                Column(
-                    modifier = Modifier
+                        .padding(paddingValue)
                         .fillMaxSize()
-                        .background(WalkOneGray50)
-                        .padding(30.dp)
-                        .verticalScroll(scrollState),
-                    verticalArrangement = Arrangement.SpaceBetween,
+                        .background(WalkOneGray300),
+                    verticalArrangement = Arrangement.spacedBy(5.dp),
                 ) {
-                    // 운동 방법
-                    Text(
-                        text = "운동 방법",
-                        style = WorkAloneTheme.typography.Heading03,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-                    SectionItem(title = "기본 자세", description = exercise.value.basicPose)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    SectionItem(title = "동작 수행", description = exercise.value.movement)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    SectionItem(title = "호흡", description = exercise.value.breath)
-                    Spacer(modifier = Modifier.height(32.dp))
-                    CustomButton(
-                        text = "운동 시작하기",
-                        onClick = {
-                            val cameraPermissionCheck = ContextCompat.checkSelfPermission(
-                                context,
-                                android.Manifest.permission.CAMERA
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(WalkOneGray50)
+                            .padding(30.dp),
+                    ) {
+                        // 제목 및 부제목
+                        Text(
+                            text = exerciseData.title,
+                            style = typography.Heading02,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        Text(
+                            text = exerciseData.subTitle,
+                            style = typography.Heading04,
+                            color = WalkOneBlue500,
+                            modifier = Modifier.padding(bottom = 24.dp)
+                        )
+
+                        // YouTube 영상 -> 나중에 직접 찍은 동영상으로 바꿔야함
+                        getYoutubeVideoId("https://www.youtube.com/watch?v=50f62PSGY7k&pp=ygUJ7Iqk7L-87Yq4")?.let { it1 ->
+                            YouTubePlayerScreen(
+                                videoId = it1
                             )
-                            if (cameraPermissionCheck != PackageManager.PERMISSION_GRANTED) {
-                                requestPermissionLauncher.launch(android.Manifest.permission.CAMERA)
-                            } else {
-                                startCamera(activity, takePictureLauncher)
-                            }
-                        },
-                    )
+                        }
+
+                    }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(WalkOneGray50)
+                            .padding(30.dp)
+                            .verticalScroll(scrollState),
+                        verticalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        // 운동 방법
+                        Text(
+                            text = "운동 방법",
+                            style = WorkAloneTheme.typography.Heading03,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                        SectionItem(title = "기본 자세", description = exerciseData.basicPose)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        SectionItem(title = "동작 수행", description = exerciseData.movement)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        SectionItem(title = "호흡", description = exerciseData.breath)
+                        Spacer(modifier = Modifier.height(32.dp))
+                        if (currentIndex < exercises.value.size - 1) {
+                            CustomButton(
+                                text = "다음 운동 보기",
+                                onClick = {
+                                    currentIndex += 1
+                                }
+                            )
+                        } else {
+                            CustomButton(
+                                text = "운동 시작하기",
+                                onClick = {
+                                    val cameraPermissionCheck = ContextCompat.checkSelfPermission(
+                                        context,
+                                        android.Manifest.permission.CAMERA
+                                    )
+                                    if (cameraPermissionCheck != PackageManager.PERMISSION_GRANTED) {
+                                        requestPermissionLauncher.launch(android.Manifest.permission.CAMERA)
+                                    } else {
+                                        startCamera(activity, takePictureLauncher)
+                                    }
+                                },
+                            )
+                        }
+                    }
                 }
             }
         }
     }
 }
 
-private fun getYoutubeVideoId(url: String): String? {
+private fun getYoutubeVideoId(url: String?): String? {
+    if (url.isNullOrEmpty()) return null
     val regex = "v=([^&]+)".toRegex()
     return regex.find(url)?.groupValues?.get(1)
 }
+
 
 @Composable
 fun SectionItem(title: String, description: String) {

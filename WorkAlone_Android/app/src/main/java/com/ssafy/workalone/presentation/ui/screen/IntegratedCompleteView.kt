@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -14,23 +13,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -39,45 +28,39 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import androidx.room.Room
 import com.ssafy.workalone.R
-import com.ssafy.workalone.data.local.ExerciseRecordDatabase
 import com.ssafy.workalone.presentation.ui.component.CloseButton
 import com.ssafy.workalone.presentation.ui.component.ConfettiAnimation
 import com.ssafy.workalone.presentation.ui.component.CustomButton
-import com.ssafy.workalone.presentation.ui.component.ExerciseRecord
 import com.ssafy.workalone.presentation.ui.component.ExerciseRecordDetail
 import com.ssafy.workalone.presentation.ui.component.IntegratedExerciseRecord
-import com.ssafy.workalone.presentation.ui.theme.WalkOneGray100
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
-import com.ssafy.workalone.presentation.viewmodels.ExerciseRecordViewModel
-import com.ssafy.workalone.presentation.viewmodels.ExerciseViewModel
 import kotlin.math.roundToInt
 
 data class IntegratedExerciseRecordData(
     val title: String,
     val exerciseCount: String,
     val exerciseDuration: Int,
+    val calorie: Int
 )
 
 // 운동 완료 화면(통합형)
 @Composable
 fun IntegratedCompleteView(navController: NavController) {
     val integratedExerciseRecordDataList: List<IntegratedExerciseRecordData> = listOf(
-        IntegratedExerciseRecordData("스쿼트", "3세트 X 15회", 1801),
-        IntegratedExerciseRecordData("푸쉬업", "4세트 X 12회", 1901),
-        IntegratedExerciseRecordData("플랭크", "5세트 X 10회", 2000),
-        IntegratedExerciseRecordData("플랭크", "5세트 X 10회", 2000),
-        IntegratedExerciseRecordData("플랭크", "5세트 X 10회", 2000),
-        IntegratedExerciseRecordData("플랭크", "5세트 X 10회", 2000),
-        IntegratedExerciseRecordData("플랭크", "5세트 X 10회", 2000),
+        IntegratedExerciseRecordData("스쿼트", "3세트 X 15회", 1801, 300),
+        IntegratedExerciseRecordData("푸쉬업", "4세트 X 12회", 1901, 250),
+        IntegratedExerciseRecordData("플랭크", "5세트 X 10회", 2000, 200),
+        IntegratedExerciseRecordData("플랭크", "5세트 X 10회", 2000, 200),
+        IntegratedExerciseRecordData("플랭크", "5세트 X 10회", 2000, 200),
+        IntegratedExerciseRecordData("플랭크", "5세트 X 10회", 2000, 200),
+        IntegratedExerciseRecordData("플랭크", "5세트 X 10회", 2000, 200),
     )
 
     val totalTime: Int = 3000
     val totalCalorie: Int = 300
-
-    val exerciseType: String = "윗몸일으키기"
+    val exerciseType: String = "윗몸일으키키"
     val weight = 60
 
     //전체 화면
@@ -163,9 +146,7 @@ fun IntegratedCompleteView(navController: NavController) {
                             modifier = Modifier
                                 .padding(bottom = 20.dp)
                         )
-
                         LazyColumn {
-
                             // 기록 상세 표
                             items(integratedExerciseRecordDataList) { record ->
                                 val calorie: Int =
@@ -197,12 +178,11 @@ fun IntegratedCompleteView(navController: NavController) {
 
                                     Spacer(modifier = Modifier.height(10.dp))
                                 }
+
                             }
                         }
                     }
                 }
-
-
                 //확인 버튼
                 CustomButton(
                     text = "확인",

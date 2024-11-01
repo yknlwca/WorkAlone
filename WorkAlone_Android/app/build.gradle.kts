@@ -53,10 +53,19 @@ android {
 }
 
 dependencies {
-    // 달력 compose
-    implementation ("io.github.boguszpawlowski.composecalendar:composecalendar:1.3.0")
+    // define a BOM and its version
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
 
-    // separate artifact with utilities for working with kotlinx-datetime
+    // define any required OkHttp artifacts without version
+    implementation("com.squareup.okhttp3:okhttp")
+    implementation("com.squareup.okhttp3:logging-interceptor")
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    // Gson
+    implementation(libs.gson)
+    // 달력 compose
+    implementation("io.github.boguszpawlowski.composecalendar:composecalendar:1.3.0")
     implementation ("io.github.boguszpawlowski.composecalendar:kotlinx-datetime:1.3.0")
 
     //Lottie(콘페티 애니메이션 재생)
@@ -64,12 +73,6 @@ dependencies {
 
     val nav_version = "2.7.5"
     val compose_version = "1.6.0-alpha08"
-    val room = "2.6.0"
-
-    // Room
-    implementation("androidx.room:room-runtime:$room")
-    implementation("androidx.room:room-ktx:$room")
-    kapt("androidx.room:room-compiler:$room")
 
     implementation("androidx.navigation:navigation-compose:$nav_version")
     implementation("androidx.compose.ui:ui:$compose_version")

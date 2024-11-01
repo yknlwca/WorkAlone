@@ -1,8 +1,6 @@
 package com.ssafy.workalone.presentation.ui.screen
 
 import android.annotation.SuppressLint
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,8 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,9 +30,6 @@ import com.ssafy.workalone.presentation.ui.theme.LocalWorkAloneTypography
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray900
 import com.ssafy.workalone.presentation.ui.theme.WorkAloneTheme
 import com.ssafy.workalone.presentation.viewmodels.CalendarViewModel
-import io.github.boguszpawlowski.composecalendar.rememberSelectableCalendarState
-import io.github.boguszpawlowski.composecalendar.selection.SelectionMode
-import java.time.LocalDate
 
 @SuppressLint("NewApi")
 @Composable
