@@ -43,6 +43,7 @@ import androidx.room.Room
 import com.ssafy.workalone.R
 import com.ssafy.workalone.data.local.ExerciseRecordDatabase
 import com.ssafy.workalone.presentation.ui.component.CloseButton
+import com.ssafy.workalone.presentation.ui.component.ConfettiAnimation
 import com.ssafy.workalone.presentation.ui.component.CustomButton
 import com.ssafy.workalone.presentation.ui.component.ExerciseRecord
 import com.ssafy.workalone.presentation.ui.component.ExerciseRecordDetail
@@ -80,132 +81,136 @@ fun IntegratedCompleteView(navController: NavController) {
     val weight = 60
 
     //전체 화면
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = WalkOneGray300),
-        verticalArrangement = Arrangement.spacedBy(5.dp)
+            .background(color = WalkOneGray300)
     ) {
-        // 운동 인증 완료 문구 & 이미지
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = WalkOneGray50)
-                .padding(25.dp),
-
-            horizontalAlignment = Alignment.CenterHorizontally
+            verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+            // 운동 인증 완료 문구 & 이미지
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = WalkOneGray50)
+                    .padding(25.dp),
+
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                CloseButton(navController)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    CloseButton(navController)
+                }
+
+                Text(
+                    text = "운동 인증 완료!",
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 24.sp,
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.work),
+                    contentDescription = "Workout Complete Icon",
+                    modifier = Modifier.size(120.dp)
+                )
             }
 
-            Text(
-                text = "운동 인증 완료!",
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold,
-                fontSize = 24.sp,
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Image(
-                painter = painterResource(id = R.drawable.work),
-                contentDescription = "Workout Complete Icon",
-                modifier = Modifier.size(120.dp)
-            )
-        }
-
-        //운동 기록
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = WalkOneGray50)
-                .padding(25.dp),
-        ) {
-            Text(
-                text = "운동 기록",
-                fontWeight = FontWeight.Black,
-                fontSize = 18.sp
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // 운동 기록 표
-            IntegratedExerciseRecord(
-                totalTime,
-                totalCalorie
-            )
-        }
-
-        //기록 상세
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .background(color = WalkOneGray50)
-                .padding(25.dp),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            //기록 상세 문구 및 표
-            Box(
+            //운동 기록
+            Column(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(bottom = 20.dp),
+                    .fillMaxWidth()
+                    .background(color = WalkOneGray50)
+                    .padding(25.dp),
             ) {
-                Column {
-                    Text(
-                        text = "기록 상세",
-                        fontWeight = FontWeight.Black,
-                        fontSize = 18.sp,
-                        modifier = Modifier
-                            .padding(bottom = 20.dp)
-                    )
+                Text(
+                    text = "운동 기록",
+                    fontWeight = FontWeight.Black,
+                    fontSize = 18.sp
+                )
+                Spacer(modifier = Modifier.height(10.dp))
 
-                    LazyColumn {
+                // 운동 기록 표
+                IntegratedExerciseRecord(
+                    totalTime,
+                    totalCalorie
+                )
+            }
 
-                        // 기록 상세 표
-                        items(integratedExerciseRecordDataList) { record ->
-                            val calorie: Int =
-                                if (exerciseType == "스쿼트") {
-                                    (6.0 * weight * (record.exerciseDuration/3600.0)).roundToInt()
-                                } else if (exerciseType == "푸쉬업") {
-                                    (4.0 * weight * (record.exerciseDuration/3600.0)).roundToInt()
-                                } else if (exerciseType == "윗몸일으키기") {
-                                    (4.0 * weight * (record.exerciseDuration/3600.0)).roundToInt()
-                                } else if (exerciseType == "플랭크") {
-                                    (3.0 * weight * (record.exerciseDuration/3600.0)).roundToInt()
-                                } else {
-                                    0
+            //기록 상세
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .background(color = WalkOneGray50)
+                    .padding(25.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                //기록 상세 문구 및 표
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(bottom = 20.dp),
+                ) {
+                    Column {
+                        Text(
+                            text = "기록 상세",
+                            fontWeight = FontWeight.Black,
+                            fontSize = 18.sp,
+                            modifier = Modifier
+                                .padding(bottom = 20.dp)
+                        )
+
+                        LazyColumn {
+
+                            // 기록 상세 표
+                            items(integratedExerciseRecordDataList) { record ->
+                                val calorie: Int =
+                                    if (exerciseType == "스쿼트") {
+                                        (6.0 * weight * (record.exerciseDuration / 3600.0)).roundToInt()
+                                    } else if (exerciseType == "푸쉬업") {
+                                        (4.0 * weight * (record.exerciseDuration / 3600.0)).roundToInt()
+                                    } else if (exerciseType == "윗몸일으키기") {
+                                        (4.0 * weight * (record.exerciseDuration / 3600.0)).roundToInt()
+                                    } else if (exerciseType == "플랭크") {
+                                        (3.0 * weight * (record.exerciseDuration / 3600.0)).roundToInt()
+                                    } else {
+                                        0
+                                    }
+                                Column {
+                                    ExerciseRecordDetail(
+                                        record.title,
+                                        record.exerciseCount,
+                                        record.exerciseDuration,
+                                        calorie
+                                    )
+
+                                    Spacer(modifier = Modifier.height(10.dp))
+
+                                    Divider(
+                                        color = WalkOneGray300,
+                                        thickness = 1.dp,
+                                    )
+
+                                    Spacer(modifier = Modifier.height(10.dp))
                                 }
-                            Column {
-                                ExerciseRecordDetail(
-                                    record.title,
-                                    record.exerciseCount,
-                                    record.exerciseDuration,
-                                    calorie
-                                )
-
-                                Spacer(modifier = Modifier.height(10.dp))
-
-                                Divider(
-                                    color = WalkOneGray300,
-                                    thickness = 1.dp,
-                                )
-
-                                Spacer(modifier = Modifier.height(10.dp))
                             }
                         }
                     }
                 }
+
+
+                //확인 버튼
+                CustomButton(
+                    text = "확인",
+                    onClick = { /* 버튼 클릭 이벤트 */ }
+                )
             }
-
-
-            //확인 버튼
-            CustomButton(
-                text = "확인",
-                onClick = { /* 버튼 클릭 이벤트 */ }
-            )
         }
+        ConfettiAnimation()
     }
 }
 
