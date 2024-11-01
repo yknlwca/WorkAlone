@@ -3,6 +3,7 @@ package com.ssafy.workalone.presentation.ui.screen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +27,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.ssafy.workalone.R
 import com.ssafy.workalone.presentation.ui.component.CloseButton
+import com.ssafy.workalone.presentation.ui.component.ConfettiAnimation
 import com.ssafy.workalone.presentation.ui.component.CustomButton
 import com.ssafy.workalone.presentation.ui.component.IndividualExerciseRecord
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
@@ -54,72 +56,76 @@ fun IndividualCompleteView(navController: NavController) {
         }
 
     //전체 화면
-    Column(
+    Box(
         modifier = Modifier
-            .fillMaxSize()
-            .background(color = WalkOneGray300),
-        verticalArrangement = Arrangement.spacedBy(5.dp)
+        .fillMaxSize()
+        .background(color = WalkOneGray300)
     ) {
-        // 운동 인증 완료 문구 & 이미지
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = WalkOneGray50)
-                .padding(25.dp),
-
-            horizontalAlignment = Alignment.CenterHorizontally
+            verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End // Row의 끝에 배치
+            // 운동 인증 완료 문구 & 이미지
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = WalkOneGray50)
+                    .padding(25.dp),
+
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                CloseButton(navController)
-            }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End // Row의 끝에 배치
+                ) {
+                    CloseButton(navController)
+                }
 
-            Text(
-                text = "운동 인증 완료!",
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold,
-                fontSize = 24.sp,
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Image(
-                painter = painterResource(id = R.drawable.work),
-                contentDescription = "Workout Complete Icon",
-                modifier = Modifier.size(120.dp)
-            )
-        }
-
-        //운동기록
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .background(color = WalkOneGray50)
-                .padding(25.dp),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column {
                 Text(
-                    text = "운동 기록",
-                    fontWeight = FontWeight.Black,
-                    fontSize = 18.sp
+                    text = "운동 인증 완료!",
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 24.sp,
                 )
-                Spacer(modifier = Modifier.height(10.dp))
-
-                //운동 기록 표
-                IndividualExerciseRecord(
-                    exerciseCount,
-                    exerciseDuration,
-                    calorie
+                Spacer(modifier = Modifier.height(16.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.work),
+                    contentDescription = "Workout Complete Icon",
+                    modifier = Modifier.size(120.dp)
                 )
             }
 
-            //확인 버튼
-            CustomButton(
-                text = "확인",
-                onClick = { /* 버튼 클릭 이벤트 */ })
+            //운동기록
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .background(color = WalkOneGray50)
+                    .padding(25.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(
+                        text = "운동 기록",
+                        fontWeight = FontWeight.Black,
+                        fontSize = 18.sp
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    //운동 기록 표
+                    IndividualExerciseRecord(
+                        exerciseCount,
+                        exerciseDuration,
+                        calorie
+                    )
+                }
+
+                //확인 버튼
+                CustomButton(
+                    text = "확인",
+                    onClick = { /* 버튼 클릭 이벤트 */ })
+            }
         }
+        ConfettiAnimation()
     }
 }
 
