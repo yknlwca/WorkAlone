@@ -25,6 +25,9 @@ fun IntegratedExerciseRecord(
     exerciseDuration: Int,
     calorie: Int
 ){
+    val hours: Int = exerciseDuration/3600
+    val minutes: Int = (exerciseDuration%3600)/60
+    val seconds: Int = exerciseDuration%60
 
     Card(
         modifier = Modifier
@@ -40,7 +43,11 @@ fun IntegratedExerciseRecord(
             ExerciseRecord(
                 painterResource(R.drawable.time),
                 "총 운동 시간",
-                "${exerciseDuration/60}:${String.format("%02d", exerciseDuration % 60)}"
+                if (hours > 0){
+                    "${String.format("%02d", hours)}:${String.format("%02d", minutes)}:${String.format("%02d", seconds)}"
+                } else {
+                    "${String.format("%02d", minutes)}:${String.format("%02d", seconds)}"
+                }
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -64,5 +71,5 @@ fun IntegratedExerciseRecord(
 @Preview(showBackground = true)
 @Composable
 fun PreviewCompleteView() {
-    IntegratedExerciseRecord(3000, 300)
+    IntegratedExerciseRecord(30001, 300)
 }

@@ -23,8 +23,7 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background)
                 ) {
-//                    Navigation()
-                    ExerciseTimer()
+                    Navigation()
                 }
             }
         }
