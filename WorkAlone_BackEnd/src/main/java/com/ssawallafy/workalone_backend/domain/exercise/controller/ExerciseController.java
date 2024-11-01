@@ -28,7 +28,7 @@ public class ExerciseController {
 
     //TODO: 추후에 RequestHeader 추가 해야함
     @GetMapping("/{exercise_id}")
-    ResponseEntity<?> getExercisesDetails(@PathVariable(name = "exercise_id") Long exerciseId, @RequestParam(name = "exercise_type") String exerciseType) {
+    ResponseEntity<?> getExercisesDetails(@PathVariable(name = "exercise_id") Long exerciseId, @RequestParam(name = "exerciseType") String exerciseType) {
         //TODO: memberId를 검증하는 로직 필요
         Long memberId = 1L;
         List<ExerciseDetailDto> exerciseDetailDtos = exerciseService.getExercisesDetails(exerciseId, exerciseType);

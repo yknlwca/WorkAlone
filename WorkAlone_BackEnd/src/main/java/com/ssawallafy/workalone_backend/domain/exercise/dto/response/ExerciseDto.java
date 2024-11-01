@@ -13,8 +13,8 @@ public class ExerciseDto {
     private Long exerciseId;
     private String title;
     private int restTime;
-    private int exerciseSet;
-    private int setDetail;
+    private Integer exerciseSet;
+    private Integer setDetail;
     private Kind exerciseType;
     private Set setType;
 

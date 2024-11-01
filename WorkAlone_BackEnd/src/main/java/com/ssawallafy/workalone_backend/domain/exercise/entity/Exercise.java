@@ -25,9 +25,9 @@ public class Exercise {
 
     private int restTime;
     @Column
-    private int exerciseSet;
+    private Integer exerciseSet;
     @Column
-    private int setDetail;
+    private Integer setDetail;
 
     @Enumerated(EnumType.STRING)
     private Kind exerciseType;
