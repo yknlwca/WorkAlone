@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,15 +29,37 @@ import androidx.compose.ui.unit.sp
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray500
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+// 운동 타이머 컴포넌트
 @Composable
-fun RepCounter(){
+fun ExerciseTimer(){
 
-    var isPaused: Boolean = false
-    val totalReps: Int = 15
-    var currentReps by remember { mutableStateOf(0) }
+    var isPaused by remember { mutableStateOf(false) }
+    var goalTime by remember { mutableStateOf(600) }
     val totalSets: Int = 3
     var currentSet by remember { mutableStateOf(1) }
+
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            while (goalTime > 0) {
+                if (!isPaused) {
+                    // 1초 대기
+                    delay(1000L)
+                    // 일시정지가 아닐 때만 감소
+                    if (!isPaused) {
+                        goalTime -= 1
+                    }
+                } else {
+                    // 일시정지 상태에서 짧은 대기
+                    delay(100L)
+                }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -56,22 +80,22 @@ fun RepCounter(){
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "${currentReps}",
+                text = "${String.format("%02d", goalTime/60)}",
                 fontSize = 56.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .alignByBaseline()
             )
             Text(
-                text = "/",
-                fontSize = 28.sp,
+                text = ":",
+                fontSize = 56.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .alignByBaseline()
             )
             Text(
-                text = "${totalReps}회",
-                fontSize = 28.sp,
+                text = "${String.format("%02d", goalTime%60)}",
+                fontSize = 56.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .alignByBaseline()
@@ -121,7 +145,7 @@ fun RepCounter(){
                     WalkOneBlue500,
                     WalkOneGray50,
                     WalkOneBlue500,
-                    onClick = {}
+                    onClick = { isPaused = !isPaused }
                 )
             }
         } else {
@@ -153,7 +177,7 @@ fun RepCounter(){
                         WalkOneGray50,
                         WalkOneBlue500,
                         WalkOneBlue500,
-                        onClick = {}
+                        onClick = { isPaused = !isPaused }
                     )
                 }
             }
@@ -163,6 +187,6 @@ fun RepCounter(){
 
 @Preview(showBackground = true)
 @Composable
-fun previewRepCounter(){
-    RepCounter()
+fun previewExerciseTimer(){
+    ExerciseTimer()
 }
