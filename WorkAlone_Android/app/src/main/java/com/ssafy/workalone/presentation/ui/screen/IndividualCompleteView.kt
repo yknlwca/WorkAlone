@@ -30,14 +30,28 @@ import com.ssafy.workalone.presentation.ui.component.CustomButton
 import com.ssafy.workalone.presentation.ui.component.IndividualExerciseRecord
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
+import kotlin.math.roundToInt
 
 //운동 완료 화면(개별형)
 @Composable
 fun IndividualCompleteView(navController: NavController) {
 
     val exerciseCount: String = "3세트 X 15회"
-    val exerciseDuration: Int = 300
-    val calorie: Int = 100
+    val exerciseDuration: Int = 1808
+    val exerciseType: String = "푸쉬업"
+    val weight = 60
+    val calorie: Int =
+        if (exerciseType == "스쿼트") {
+            (6.0 * weight * (exerciseDuration/3600.0)).roundToInt()
+        } else if (exerciseType == "푸쉬업") {
+            (4.0 * weight * (exerciseDuration/3600.0)).roundToInt()
+        } else if (exerciseType == "윗몸일으키기") {
+            (4.0 * weight * (exerciseDuration/3600.0)).roundToInt()
+        } else if (exerciseType == "플랭크") {
+            (3.0 * weight * (exerciseDuration/3600.0)).roundToInt()
+        } else {
+            0
+        }
 
     //전체 화면
     Column(

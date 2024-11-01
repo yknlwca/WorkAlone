@@ -69,3 +69,8 @@ fun ExerciseRecord(
         }
     }
 }
+@Preview(showBackground = true)
+@Composable
+fun previewExerciseRecode() {
+    ExerciseRecord(painterResource(R.drawable.time),"총 운동 시간", "100Kcal")
+}

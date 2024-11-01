@@ -52,29 +52,32 @@ import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.viewmodels.ExerciseRecordViewModel
 import com.ssafy.workalone.presentation.viewmodels.ExerciseViewModel
+import kotlin.math.roundToInt
 
 data class IntegratedExerciseRecordData(
     val title: String,
     val exerciseCount: String,
     val exerciseDuration: Int,
-    val calorie: Int
 )
 
 // 운동 완료 화면(통합형)
 @Composable
 fun IntegratedCompleteView(navController: NavController) {
     val integratedExerciseRecordDataList: List<IntegratedExerciseRecordData> = listOf(
-        IntegratedExerciseRecordData("스쿼트", "3세트 X 15회", 1801, 300),
-        IntegratedExerciseRecordData("푸쉬업", "4세트 X 12회", 1901, 250),
-        IntegratedExerciseRecordData("플랭크", "5세트 X 10회", 2000, 200),
-        IntegratedExerciseRecordData("플랭크", "5세트 X 10회", 2000, 200),
-        IntegratedExerciseRecordData("플랭크", "5세트 X 10회", 2000, 200),
-        IntegratedExerciseRecordData("플랭크", "5세트 X 10회", 2000, 200),
-        IntegratedExerciseRecordData("플랭크", "5세트 X 10회", 2000, 200),
+        IntegratedExerciseRecordData("스쿼트", "3세트 X 15회", 1801),
+        IntegratedExerciseRecordData("푸쉬업", "4세트 X 12회", 1901),
+        IntegratedExerciseRecordData("플랭크", "5세트 X 10회", 2000),
+        IntegratedExerciseRecordData("플랭크", "5세트 X 10회", 2000),
+        IntegratedExerciseRecordData("플랭크", "5세트 X 10회", 2000),
+        IntegratedExerciseRecordData("플랭크", "5세트 X 10회", 2000),
+        IntegratedExerciseRecordData("플랭크", "5세트 X 10회", 2000),
     )
 
     val totalTime: Int = 3000
     val totalCalorie: Int = 300
+
+    val exerciseType: String = "윗몸일으키기"
+    val weight = 60
 
     //전체 화면
     Column(
@@ -162,12 +165,24 @@ fun IntegratedCompleteView(navController: NavController) {
 
                         // 기록 상세 표
                         items(integratedExerciseRecordDataList) { record ->
+                            val calorie: Int =
+                                if (exerciseType == "스쿼트") {
+                                    (6.0 * weight * (record.exerciseDuration/3600.0)).roundToInt()
+                                } else if (exerciseType == "푸쉬업") {
+                                    (4.0 * weight * (record.exerciseDuration/3600.0)).roundToInt()
+                                } else if (exerciseType == "윗몸일으키기") {
+                                    (4.0 * weight * (record.exerciseDuration/3600.0)).roundToInt()
+                                } else if (exerciseType == "플랭크") {
+                                    (3.0 * weight * (record.exerciseDuration/3600.0)).roundToInt()
+                                } else {
+                                    0
+                                }
                             Column {
                                 ExerciseRecordDetail(
                                     record.title,
                                     record.exerciseCount,
                                     record.exerciseDuration,
-                                    record.calorie
+                                    calorie
                                 )
 
                                 Spacer(modifier = Modifier.height(10.dp))
