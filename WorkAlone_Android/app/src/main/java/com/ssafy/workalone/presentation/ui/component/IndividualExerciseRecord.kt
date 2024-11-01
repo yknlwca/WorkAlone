@@ -26,7 +26,8 @@ fun IndividualExerciseRecord(
     exerciseDuration: Int,
     calorie: Int
 ) {
-    val minutes: Int = exerciseDuration/60
+    val hours: Int = exerciseDuration/3600
+    val minutes: Int = (exerciseDuration%3600)/60
     val seconds: Int = exerciseDuration%60
 
     Card(
@@ -59,7 +60,11 @@ fun IndividualExerciseRecord(
             ExerciseRecord(
                 painterResource(R.drawable.time),
                 "총 운동 시간",
-                "${minutes}:${String.format("%02d", seconds)}"
+                if (hours > 0){
+                    "${String.format("%02d", hours)}:${String.format("%02d", minutes)}:${String.format("%02d", seconds)}"
+                } else {
+                    "${String.format("%02d", minutes)}:${String.format("%02d", seconds)}"
+                }
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -84,5 +89,5 @@ fun IndividualExerciseRecord(
 @Preview(showBackground = true)
 @Composable
 fun PreviewIndividualExerciseRecord() {
-    IndividualExerciseRecord("3세트 X 15회",300, 100)
+    IndividualExerciseRecord("3세트 X 15회",30100, 100)
 }
