@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.ssafy.workalone.R
 import com.ssafy.workalone.data.model.Exercise
+import com.ssafy.workalone.presentation.ui.theme.LocalWorkAloneTypography
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray700
@@ -32,70 +33,82 @@ import com.ssafy.workalone.presentation.ui.theme.WorkAloneTheme
 
 @Composable
 fun ExerciseItem(exercise: Exercise, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 16.dp)
-            .clickable { onClick() },
-        elevation = 8.dp,
-        backgroundColor = WalkOneGray50,
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+    WorkAloneTheme {
+        val typography = LocalWorkAloneTypography.current
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp, horizontal = 16.dp)
+                .clickable { onClick() },
+            elevation = 8.dp,
+            backgroundColor = WalkOneGray50,
+            shape = RoundedCornerShape(16.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .size(60.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(WalkOneGray50)
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                val imageResId = exercise.picture ?: R.drawable.time
-                Image(
-                    painter = painterResource(id = imageResId),
-                    contentDescription = "Exercise Image",
+                Box(
                     modifier = Modifier
                         .size(60.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .align(Alignment.Center),
-                    contentScale = ContentScale.Crop
-                )
-            }
+                        .background(WalkOneGray50)
+                ) {
+                    var imageResId = R.drawable.w_logo
+                    if (exercise.exerciseType.equals("SQUAT")) {
+                        imageResId = R.drawable.squat
+                    } else if (exercise.exerciseType.equals("PUSHUP")) {
+                        imageResId = R.drawable.push_up
+                    } else if (exercise.exerciseType.equals("SITUP")) {
+                        imageResId = R.drawable.sit_up
+                    } else if (exercise.exerciseType.equals("PLANK")) {
+                        imageResId = R.drawable.plank
+                    }
+                    Image(
+                        painter = painterResource(id = imageResId),
+                        contentDescription = "Exercise Image",
+                        modifier = Modifier
+                            .size(60.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .align(Alignment.Center),
+                        contentScale = ContentScale.Crop
+                    )
+                }
 
-            Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(16.dp))
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = 8.dp)
-            ) {
-                Text(
-                    text = exercise.title,
-                    style = WorkAloneTheme.typography.Heading02,
-                    color = WalkOneBlue500,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                Row {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 8.dp)
+                ) {
                     Text(
-                        text = "3" + "세트",
-                        style = WorkAloneTheme.typography.Body03,
-                        color = WalkOneGray700,
+                        text = exercise.title,
+                        style = typography.Heading02,
+                        color = WalkOneBlue500,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
-                    Spacer(modifier = Modifier.padding(4.dp))
-                    Text(
-                        text = "X",
-                        style = WorkAloneTheme.typography.Body03,
-                        color = WalkOneGray700,
-                    )
-                    Spacer(modifier = Modifier.padding(4.dp))
-                    Text(
-                        text = "15" + "세트",
-                        style = WorkAloneTheme.typography.Body03,
-                        color = WalkOneGray700,
-                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row {
+                        Text(
+                            text = "3" + "세트",
+                            style = typography.Body03,
+                            color = WalkOneGray700,
+                        )
+                        Spacer(modifier = Modifier.padding(4.dp))
+                        Text(
+                            text = "X",
+                            style = typography.Body03,
+                            color = WalkOneGray700,
+                        )
+                        Spacer(modifier = Modifier.padding(4.dp))
+                        Text(
+                            text = "15" + "세트",
+                            style = typography.Body03,
+                            color = WalkOneGray700,
+                        )
+                    }
                 }
             }
         }
