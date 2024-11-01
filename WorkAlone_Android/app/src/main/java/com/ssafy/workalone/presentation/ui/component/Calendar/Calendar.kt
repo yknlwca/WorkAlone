@@ -1,13 +1,10 @@
-package com.ssafy.workalone.presentation.ui.component
+package com.ssafy.workalone.presentation.ui.component.Calendar
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,33 +15,31 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.Key.Companion.F
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ssafy.workalone.presentation.ui.component.ExerciseRecordDetail
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue100
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue600
-import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue800
-import com.ssafy.workalone.presentation.ui.theme.WorkAloneTheme
+import com.ssafy.workalone.presentation.viewmodels.CalendarViewModel
+import io.github.boguszpawlowski.composecalendar.CalendarState
 import io.github.boguszpawlowski.composecalendar.SelectableCalendar
 import io.github.boguszpawlowski.composecalendar.day.DayState
-import io.github.boguszpawlowski.composecalendar.header.MonthState
 import io.github.boguszpawlowski.composecalendar.rememberSelectableCalendarState
+import io.github.boguszpawlowski.composecalendar.selection.DynamicSelectionState
 import io.github.boguszpawlowski.composecalendar.selection.SelectionMode
 import io.github.boguszpawlowski.composecalendar.selection.SelectionState
 import io.github.boguszpawlowski.composecalendar.week.DefaultDaysOfWeekHeader
@@ -54,26 +49,22 @@ import java.time.LocalDate
 @SuppressLint("NewApi")
 @Composable
 fun Calendar(
-    markedDates: List<LocalDate> = listOf() // 운동 기록 표시할 날짜 목록
+    viewModel: CalendarViewModel
 ) {
-    // 단일 선택 달력
-    val calendarState = rememberSelectableCalendarState(
-        initialSelectionMode = SelectionMode.Single,
-    )
-    var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
+    val calendarState = rememberSelectableCalendarState(initialSelectionMode = SelectionMode.Single)
+    val selectedDate = viewModel.selectedDate
     Column(modifier = Modifier
         .fillMaxWidth()
-        .padding(16.dp)) {
+        .padding(horizontal = 24.dp)) {
         SelectableCalendar(
             calendarState = calendarState,
             dayContent = { dayState ->
                 CustomDay(
                     state = dayState,
-                    markedDates = markedDates,
                     onClick = {
-                        selectedDate = it
-                        // 해당 날짜 운동 호출 Default = LocalDate.now()
-                    }
+                        viewModel.changeSelectedDate(it)
+                    },
+                    viewModel = viewModel
                 )
             },
             monthHeader = { monthState ->
@@ -85,8 +76,12 @@ fun Calendar(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = selectedDate?.let { "선택한 날짜: ${it.year}년 ${it.monthValue}월 ${it.dayOfMonth}일" }
-                ?: "선택한 날짜: ",
+            text = selectedDate.value?.let { "${it.monthValue} / ${it.dayOfMonth}" }
+                ?: "선택된 날짜가 없습니다.",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.ExtraBold,
+            color = Color.Black,
+
         )
         ExerciseRecordDetail(title = "스쿼트", "3 세트", 1000, 500)
         ExerciseRecordDetail(title = "푸쉬업", "2 세트", 500, 600)
@@ -94,47 +89,26 @@ fun Calendar(
     }
 }
 
-@SuppressLint("NewApi")
-@Composable
-fun CustomMonthHeader(
-    monthState: MonthState,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
 
-        Text(
-            text = "${monthState.currentMonth.year}년 ${monthState.currentMonth.monthValue}월",
-            fontSize = 20.sp,
-            color = Color.Black,
-            textAlign = TextAlign.Center
-        )
-    }
-}
 
 @SuppressLint("NewApi")
 @Composable
 fun <T : SelectionState> CustomDay(
     state: DayState<T>,
-    modifier: Modifier = Modifier,
     selectionColor: Color = WalkOneBlue500,
     currentDayColor: Color = WalkOneBlue600,
-    markedDates: List<LocalDate> = listOf(),
-    onClick: (LocalDate) -> Unit = {}
+    onClick: (LocalDate) -> Unit = {},
+    viewModel: CalendarViewModel
 ) {
     val date = state.date
     val selectionState = state.selectionState
-    val isSelected = selectionState.isDateSelected(date)
-    val isMarked = markedDates.contains(date)
+    val isSelected = viewModel.selectedDate.value == date
+    val isMarked = viewModel.markedDates.contains(date)
     val isToday = date == LocalDate.now()
     val isCurrentMonth = state.isFromCurrentMonth
 
     Card(
-        modifier = modifier
+        modifier = Modifier
             .aspectRatio(1f)
             .padding(2.dp),
         shape = RoundedCornerShape(8.dp),
@@ -175,12 +149,8 @@ fun <T : SelectionState> CustomDay(
 @Preview(showBackground = true)
 @Composable
 fun a() {
+    // 단일 선택 달력
     Calendar(
-        markedDates = listOf(
-            LocalDate.of(2024, 10, 5),
-            LocalDate.of(2024, 10, 10),
-            LocalDate.of(2024, 10, 15),
-            LocalDate.of(2024, 10, 20)
-        )
+        viewModel = viewModel()
     )
 }
