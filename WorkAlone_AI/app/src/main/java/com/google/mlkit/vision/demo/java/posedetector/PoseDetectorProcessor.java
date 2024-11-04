@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import com.google.mlkit.vision.pose.PoseLandmark;
+import com.google.mlkit.vision.pose.Pose;
 
 /** A processor to run pose detector. */
 public class PoseDetectorProcessor
@@ -121,6 +123,12 @@ public class PoseDetectorProcessor
             classificationExecutor,
             task -> {
               Pose pose = task.getResult();
+
+              if (!isFullBodyVisible(pose)) {
+                Log.d(TAG, "Full body is not visible. Skipping frame.");
+                return null; // 주요 랜드마크가 감지되지 않으면 null 반환
+              }
+
               List<String> classificationResult = new ArrayList<>();
               if (runClassification) {
                 if (poseClassifierProcessor == null) {
@@ -136,14 +144,25 @@ public class PoseDetectorProcessor
   protected void onSuccess(
       @NonNull PoseWithClassification poseWithClassification,
       @NonNull GraphicOverlay graphicOverlay) {
-    graphicOverlay.add(
-        new PoseGraphic(
-            graphicOverlay,
-            poseWithClassification.pose,
-            showInFrameLikelihood,
-            visualizeZ,
-            rescaleZForVisualization,
-            poseWithClassification.classificationResult));
+//    graphicOverlay.add(
+//        new PoseGraphic(
+//            graphicOverlay,
+//            poseWithClassification.pose,
+//            showInFrameLikelihood,
+//            visualizeZ,
+//            rescaleZForVisualization,
+//            poseWithClassification.classificationResult));
+
+    if (poseWithClassification != null) { // null 체크 추가
+      graphicOverlay.add(
+              new PoseGraphic(
+                      graphicOverlay,
+                      poseWithClassification.pose,
+                      showInFrameLikelihood,
+                      visualizeZ,
+                      rescaleZForVisualization,
+                      poseWithClassification.classificationResult));
+    }
   }
 
   @Override
@@ -156,4 +175,35 @@ public class PoseDetectorProcessor
     // Use MlImage in Pose Detection by default, change it to OFF to switch to InputImage.
     return true;
   }
+
+
+
+
+
+  // 주요 랜드마크가 모두 감지되었는지 확인하는 메서드 추가
+  private boolean isFullBodyVisible(Pose pose) {
+    // 전체 신체를 인식하는 데 필요한 주요 랜드마크 (어깨, 손목, 엉덩이, 발목 등)
+    int[] requiredLandmarks = {
+            PoseLandmark.LEFT_SHOULDER,
+            PoseLandmark.RIGHT_SHOULDER,
+            PoseLandmark.LEFT_HIP,
+            PoseLandmark.RIGHT_HIP,
+            PoseLandmark.LEFT_WRIST,
+            PoseLandmark.RIGHT_WRIST,
+            PoseLandmark.LEFT_ANKLE,
+            PoseLandmark.RIGHT_ANKLE
+    };
+
+    for (int landmarkType : requiredLandmarks) {
+      PoseLandmark landmark = pose.getPoseLandmark(landmarkType);
+      if (landmark == null) {
+        // 주요 랜드마크가 하나라도 감지되지 않으면 전체 신체가 보이지 않음
+        return false;
+      }
+    }
+    return true; // 주요 랜드마크가 모두 감지된 경우
+  }
+
+
+
 }
