@@ -34,7 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import com.ssafy.workalone.mlkit.kotlin.LivePreviewActivity
+import com.ssafy.workalone.mlkit.java.CameraXLivePreviewActivity
 import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.AppBarView
 import com.ssafy.workalone.presentation.ui.component.CustomButton
@@ -165,7 +165,7 @@ fun ExerciseDetailView(
                                     if (cameraPermissionCheck != PackageManager.PERMISSION_GRANTED) {
                                         requestPermissionLauncher.launch(android.Manifest.permission.CAMERA)
                                     } else {
-                                        val intent = Intent(context, LivePreviewActivity::class.java)
+                                        val intent = Intent(context, CameraXLivePreviewActivity::class.java)
                                         context.startActivity(intent)
                                     }
                                 },

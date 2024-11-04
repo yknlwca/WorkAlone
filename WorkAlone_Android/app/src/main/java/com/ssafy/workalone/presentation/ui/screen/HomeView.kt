@@ -1,7 +1,6 @@
 package com.ssafy.workalone.presentation.ui.screen
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.background
@@ -26,8 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.ssafy.workalone.mlkit.java.LivePreviewActivity
-import com.ssafy.workalone.presentation.navigation.Screen
+import com.ssafy.workalone.mlkit.java.CameraXLivePreviewActivity
 import com.ssafy.workalone.presentation.ui.component.AppBarView
 import com.ssafy.workalone.presentation.ui.component.Calendar.Calendar
 import com.ssafy.workalone.presentation.ui.component.CustomButton
@@ -92,7 +90,7 @@ fun HomeView(navController: NavController, userName: String = "아무개") {
                         text = "챌린지 이동하기",
                         onClick = {
 //                            navController.navigate(Screen.ExerciseList.route)
-                            val intent = Intent(context, LivePreviewActivity::class.java)
+                            val intent = Intent(context, CameraXLivePreviewActivity::class.java)
 Log.d("123","여기여기")
                             context.startActivity(intent)
                         },

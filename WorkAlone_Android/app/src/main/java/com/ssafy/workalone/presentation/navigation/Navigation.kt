@@ -11,7 +11,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.ssafy.workalone.mlkit.kotlin.LivePreviewActivity
 import com.ssafy.workalone.presentation.ui.screen.ExerciseDetailView
 import com.ssafy.workalone.presentation.ui.screen.ExerciseListView
 import com.ssafy.workalone.presentation.ui.screen.HomeView

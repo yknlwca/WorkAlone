@@ -93,13 +93,15 @@ public final class CameraXLivePreviewActivity extends AppCompatActivity
   private CameraSelector cameraSelector;
   private PoseClassifierProcessor poseClassifierProcessor;
 
-  @Override
+
+
+    @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     Log.d(TAG, "onCreate");
 
     // 권한 추가
-    poseClassifierProcessor.requestAudioPermissionIfNeeded(this);
+//    poseClassifierProcessor.requestAudioPermissionIfNeeded(this);
 
     if (savedInstanceState != null) {
       selectedModel = savedInstanceState.getString(STATE_SELECTED_MODEL, POSE_DETECTION);
