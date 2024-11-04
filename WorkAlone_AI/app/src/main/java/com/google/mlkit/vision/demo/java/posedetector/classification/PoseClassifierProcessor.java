@@ -292,7 +292,7 @@ public class PoseClassifierProcessor {
             }
 
             long elapsedTime = (System.currentTimeMillis() - plankStartTime) / 1000;
-            lastRepResult = String.format(Locale.KOREAN, "%s : %d 초", PLANK_CLASS, elapsedTime);
+            lastRepResult = String.format(Locale.KOREAN, "%s : %d 초", PLANK_CLASS, elapsedTime, " iaTracking: "+isTracking+"  isPaues: "+isPaused);
 
             if (elapsedTime % 5 == 0) {
               speakResult(String.valueOf(elapsedTime)+"초 경과");
