@@ -268,11 +268,25 @@ public class PoseClassifierProcessor {
 
     ClassificationResult classification = poseClassifier.classify(pose);
 
-    if (!isTracking || isPaused) {
-      result.add("추적이 현재 일시 중지 또는 종료 상태입니다.");
-      result.add("isTracking: "+isTracking);
-      result.add("isPaused: "+isPaused);
+//    if (!isTracking || isPaused) {
+//      result.add("추적이 현재 일시 중지 또는 종료 상태입니다.");
+//      result.add("isTracking: "+isTracking);
+//      result.add("isPaused: "+isPaused);
+//
+//      return result;
+//    }
 
+    if (!isTracking) {
+      result.add("추적이 종료되었습니다.");
+      result.add("isTracking: " + isTracking);
+      result.add("isPaused: " + isPaused);
+      return result;
+    }
+
+    if (isPaused) {
+      result.add("추적이 현재 일시 중지 상태입니다.");
+      result.add("isTracking: " + isTracking);
+      result.add("isPaused: " + isPaused);
       return result;
     }
 
@@ -306,7 +320,7 @@ public class PoseClassifierProcessor {
           if (repsAfter > repsBefore) {
 
 
-            lastRepResult = String.format(Locale.KOREAN, "%s : %d", repCounter.getClassName(), repsAfter);
+            lastRepResult = String.format(Locale.KOREAN, "%s : %d", repCounter.getClassName(), repsAfter," iaTracking: "+isTracking+"  isPaues: "+isPaused);
             speakResult(String.valueOf(repsAfter));
             break;
           }
