@@ -18,12 +18,14 @@ import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue400
 @Composable
 fun ExerciseRecordDetail(
     title: String,
-    exerciseCount: String,
-    exerciseDuration: Int,
+    setCount: Int,
+    exerciseCount: Int = 0,
+    exerciseDuration: Int = 0,
+    totalExerciseDuration: Int,
     calorie: Int
 ){
-    val minutes: Int = exerciseDuration/60
-    val seconds: Int = exerciseDuration%60
+    val minutes: Int = totalExerciseDuration/60
+    val seconds: Int = totalExerciseDuration%60
 
     Column(
         modifier = Modifier
@@ -43,7 +45,12 @@ fun ExerciseRecordDetail(
             )
 
             Text(
-                text = exerciseCount,
+                text =
+                    if(exerciseDuration == 0){
+                        "${setCount}세트 X ${exerciseCount}회"
+                    } else {
+                        "${setCount}세트 X ${exerciseDuration}초"
+                    },
                 fontWeight = FontWeight.Black,
                 fontSize = 16.sp
             )
@@ -86,5 +93,5 @@ fun ExerciseRecordDetail(
 @Preview(showBackground = true)
 @Composable
 fun ExerciseRecodePreview() {
-    ExerciseRecordDetail("스쿼트","3세트 X 15회", 1800, 300)
+    ExerciseRecordDetail("스쿼트",3, 0, 5, 1800, 300)
 }
