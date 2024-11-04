@@ -127,6 +127,9 @@ public class PoseClassifierProcessor {
     }
   }
 
+
+  // 음성 인식 부분
+
   private void initializeSpeechRecognition() {
     speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context);
     speechRecognizer.setRecognitionListener(new RecognitionListener() {
@@ -195,7 +198,7 @@ public class PoseClassifierProcessor {
               isTracking = true;
               isPaused = false;
               Log.d(TAG, "운동 추적 시작됨");
-            } else if (command.equalsIgnoreCase("중지")) {
+            } else if (command.equalsIgnoreCase("정지")) {
               isPaused = true;
               Log.d(TAG, "운동 추적 일시 중지됨");
             } else if (command.equalsIgnoreCase("종료")) {
@@ -219,7 +222,7 @@ public class PoseClassifierProcessor {
 
       }
 
-      // RecognitionListener의 다른 메서드도 여기에 구현합니다.
+
     });
     startListening();
   }
@@ -255,6 +258,7 @@ public class PoseClassifierProcessor {
   }
 
 
+  // 운동 reps,시간 보여주는곳
 
   @WorkerThread
   public List<String> getPoseResult(Pose pose) {
@@ -264,11 +268,25 @@ public class PoseClassifierProcessor {
 
     ClassificationResult classification = poseClassifier.classify(pose);
 
-    if (!isTracking || isPaused) {
-      result.add("추적이 현재 일시 중지 또는 종료 상태입니다.");
-      result.add("isTracking: "+isTracking);
-      result.add("isPaused: "+isPaused);
+//    if (!isTracking || isPaused) {
+//      result.add("추적이 현재 일시 중지 또는 종료 상태입니다.");
+//      result.add("isTracking: "+isTracking);
+//      result.add("isPaused: "+isPaused);
+//
+//      return result;
+//    }
 
+    if (!isTracking) {
+      result.add("추적이 종료되었습니다.");
+      result.add("isTracking: " + isTracking);
+      result.add("isPaused: " + isPaused);
+      return result;
+    }
+
+    if (isPaused) {
+      result.add("추적이 현재 일시 중지 상태입니다.");
+      result.add("isTracking: " + isTracking);
+      result.add("isPaused: " + isPaused);
       return result;
     }
 
@@ -288,10 +306,10 @@ public class PoseClassifierProcessor {
             }
 
             long elapsedTime = (System.currentTimeMillis() - plankStartTime) / 1000;
-            lastRepResult = String.format(Locale.KOREAN, "%s : %d 초", PLANK_CLASS, elapsedTime);
+            lastRepResult = String.format(Locale.KOREAN, "%s : %d 초", PLANK_CLASS, elapsedTime, " iaTracking: "+isTracking+"  isPaues: "+isPaused);
 
-            if (elapsedTime % 3 == 0) {
-              speakResult(lastRepResult);
+            if (elapsedTime % 5 == 0) {
+              speakResult(String.valueOf(elapsedTime)+"초 경과");
             }
           } else {
             plankStartTime = 0;
@@ -300,10 +318,10 @@ public class PoseClassifierProcessor {
           int repsBefore = repCounter.getNumRepeats();
           int repsAfter = repCounter.addClassificationResult(classification);
           if (repsAfter > repsBefore) {
-         //   ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
-           // tg.startTone(ToneGenerator.TONE_PROP_BEEP);
-            lastRepResult = String.format(Locale.KOREAN, "%s : %d", repCounter.getClassName(), repsAfter);
-            speakResult(lastRepResult);
+
+
+            lastRepResult = String.format(Locale.KOREAN, "%s : %d", repCounter.getClassName(), repsAfter," iaTracking: "+isTracking+"  isPaues: "+isPaused);
+            speakResult(String.valueOf(repsAfter));
             break;
           }
         }

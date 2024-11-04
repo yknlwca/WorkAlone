@@ -1,11 +1,24 @@
 package com.ssafy.workalone.data.repository
-//
-//import com.ssafy.workalone.data.local.ExerciseRecordDao
-//import com.ssafy.workalone.data.model.ExerciseRecord
-//import kotlinx.coroutines.flow.Flow
-//
-//class ExerciseRecordRepository(private val exerciseRecordDao: ExerciseRecordDao) {
-//    fun getAllExerciseRecords(): Flow<List<ExerciseRecord>> = exerciseRecordDao.getAllExerciseRecords()
-//
-//    suspend fun insertExerciseRecords(exerciseRecords: List<ExerciseRecord>) = exerciseRecordDao.insertExerciseRecords(exerciseRecords)
-//}
+
+import com.ssafy.workalone.data.model.ExerciseRecord
+import com.ssafy.workalone.data.remote.ExerciseService
+import com.ssafy.workalone.data.remote.RetrofitFactory
+import com.ssafy.workalone.global.exception.handleApiError
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+
+class ExerciseRecordRepository(
+    private val exerciseService: ExerciseService =
+        RetrofitFactory.getInstance().create(ExerciseService::class.java)
+) {
+    fun getExersiceRecords(): Flow<List<ExerciseRecord>> = flow {
+        val response = exerciseService.getExerciseRecords()
+        if (response.isSuccessful) {
+            response.body()?.let { emit(it) }
+        } else {
+            handleApiError(response.code(), response.errorBody()?.string())
+        }
+    }.flowOn(Dispatchers.IO)
+}

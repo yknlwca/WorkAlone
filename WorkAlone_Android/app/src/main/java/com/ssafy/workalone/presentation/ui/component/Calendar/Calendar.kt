@@ -76,8 +76,8 @@ fun Calendar(
             color = Color.Black,
 
         )
-        ExerciseRecordDetail(title = "스쿼트", "3 세트", 1000, 500)
-        ExerciseRecordDetail(title = "푸쉬업", "2 세트", 500, 600)
+        ExerciseRecordDetail(title = "스쿼트", 3, 15, 0, 1000, 500)
+        ExerciseRecordDetail(title = "푸쉬업", 2, 20, 0,  500, 600)
 
     }
 }
