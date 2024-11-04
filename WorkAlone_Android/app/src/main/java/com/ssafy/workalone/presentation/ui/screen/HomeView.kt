@@ -1,6 +1,9 @@
 package com.ssafy.workalone.presentation.ui.screen
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,11 +20,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.ssafy.workalone.mlkit.java.LivePreviewActivity
 import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.AppBarView
 import com.ssafy.workalone.presentation.ui.component.Calendar.Calendar
@@ -37,6 +42,8 @@ fun HomeView(navController: NavController, userName: String = "아무개") {
     WorkAloneTheme {
         val typography = LocalWorkAloneTypography.current
         val viewModel:CalendarViewModel = viewModel()
+        val context = LocalContext.current
+
         Scaffold(
             topBar = {
                 AppBarView("HOME")
@@ -84,7 +91,10 @@ fun HomeView(navController: NavController, userName: String = "아무개") {
                     CustomButton(
                         text = "챌린지 이동하기",
                         onClick = {
-                            navController.navigate(Screen.ExerciseList.route)
+//                            navController.navigate(Screen.ExerciseList.route)
+                            val intent = Intent(context, LivePreviewActivity::class.java)
+Log.d("123","여기여기")
+                            context.startActivity(intent)
                         },
                     )
                 }

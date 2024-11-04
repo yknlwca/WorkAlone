@@ -31,7 +31,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.google.mlkit.vision.demo.BuildConfig;
+import com.ssafy.workalone.BuildConfig;
 import com.ssafy.workalone.R;
 
 /** Demo app chooser which allows you pick from all available testing Activities. */

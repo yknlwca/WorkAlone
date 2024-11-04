@@ -6,9 +6,10 @@ plugins {
 
 android {
     buildFeatures {
-        dataBinding = true
+        buildConfig = true
+        viewBinding = false
     }
-    viewBinding.isEnabled = true
+//    viewBinding.isEnabled = true
     namespace = "com.ssafy.workalone"
     compileSdk = 34
 
@@ -61,7 +62,12 @@ android {
         }
     }
 }
-
+//repositories {
+//    // Depending on AndroidX Snapshot Builds to get the latest CameraX libs.
+//    maven {
+//        url = uri("https://androidx.dev/snapshots/builds/6787662/artifacts/repository/")
+//    }
+//}
 
 dependencies {
     // define a BOM and its version
@@ -207,12 +213,12 @@ dependencies {
     androidTestImplementation ("androidx.test.ext:junit:1.1.3")
 
     // ViewModel and LiveData
-    implementation ("androidx.lifecycle:lifecycle-livedata:2.3.1")
-    implementation ("androidx.lifecycle:lifecycle-viewmodel:2.3.1")
-
-    implementation ("androidx.appcompat:appcompat:1.2.0")
-    implementation ("androidx.annotation:annotation:1.2.0")
-    implementation ("androidx.constraintlayout:constraintlayout:2.0.4")
+//    implementation ("androidx.lifecycle:lifecycle-livedata:2.3.1")
+//    implementation ("androidx.lifecycle:lifecycle-viewmodel:2.3.1")
+//
+//    implementation ("androidx.appcompat:appcompat:1.2.0")
+//    implementation ("androidx.annotation:annotation:1.2.0")
+//    implementation ("androidx.constraintlayout:constraintlayout:2.0.4")
 
     // CameraX
     implementation ("androidx.camera:camera-camera2:1.0.0-SNAPSHOT")

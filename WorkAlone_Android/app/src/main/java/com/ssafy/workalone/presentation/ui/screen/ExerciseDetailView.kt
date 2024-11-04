@@ -34,10 +34,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import com.ssafy.workalone.mlkit.kotlin.LivePreviewActivity
 import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.AppBarView
 import com.ssafy.workalone.presentation.ui.component.CustomButton
-import com.ssafy.workalone.presentation.ui.component.YouTubePlayerScreen
 import com.ssafy.workalone.presentation.ui.theme.LocalWorkAloneTypography
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
@@ -119,12 +119,12 @@ fun ExerciseDetailView(
                             modifier = Modifier.padding(bottom = 24.dp)
                         )
 
-                        // YouTube 영상 -> 나중에 직접 찍은 동영상으로 바꿔야함
-                        getYoutubeVideoId("https://www.youtube.com/watch?v=50f62PSGY7k&pp=ygUJ7Iqk7L-87Yq4")?.let { it1 ->
-                            YouTubePlayerScreen(
-                                videoId = it1
-                            )
-                        }
+//                        // YouTube 영상 -> 나중에 직접 찍은 동영상으로 바꿔야함
+//                        getYoutubeVideoId("https://www.youtube.com/watch?v=50f62PSGY7k&pp=ygUJ7Iqk7L-87Yq4")?.let { it1 ->
+//                            YouTubePlayerScreen(
+//                                videoId = it1
+//                            )
+//                        }
 
                     }
                     Column(
@@ -165,7 +165,8 @@ fun ExerciseDetailView(
                                     if (cameraPermissionCheck != PackageManager.PERMISSION_GRANTED) {
                                         requestPermissionLauncher.launch(android.Manifest.permission.CAMERA)
                                     } else {
-                                        startCamera(activity, takePictureLauncher)
+                                        val intent = Intent(context, LivePreviewActivity::class.java)
+                                        context.startActivity(intent)
                                     }
                                 },
                             )
