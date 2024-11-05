@@ -89,7 +89,7 @@ public final class CameraXLivePreviewActivity extends AppCompatActivity
   private boolean needUpdateGraphicOverlayImageSourceInfo;
 
   private String selectedModel = POSE_DETECTION;
-  private int lensFacing = CameraSelector.LENS_FACING_BACK;
+  private int lensFacing = CameraSelector.LENS_FACING_FRONT;
   private CameraSelector cameraSelector;
   private PoseClassifierProcessor poseClassifierProcessor;
 
@@ -295,7 +295,7 @@ public final class CameraXLivePreviewActivity extends AppCompatActivity
               PreferenceUtils.shouldShowPoseDetectionInFrameLikelihoodLivePreview(this);
           boolean visualizeZ = PreferenceUtils.shouldPoseDetectionVisualizeZ(this);
           boolean rescaleZ = PreferenceUtils.shouldPoseDetectionRescaleZForVisualization(this);
-          boolean runClassification = PreferenceUtils.shouldPoseDetectionRunClassification(this);
+          boolean runClassification = true;
           imageProcessor =
               new PoseDetectorProcessor(
                   this,
@@ -303,7 +303,7 @@ public final class CameraXLivePreviewActivity extends AppCompatActivity
                   shouldShowInFrameLikelihood,
                   visualizeZ,
                   rescaleZ,
-                  runClassification,
+                      runClassification,
                   /* isStreamMode = */ true);
           break;
 

@@ -172,7 +172,7 @@ public class PreferenceUtils {
     boolean enableMultipleObjects =
         sharedPreferences.getBoolean(context.getString(prefKeyForMultipleObjects), false);
     boolean enableClassification =
-        sharedPreferences.getBoolean(context.getString(prefKeyForClassification), true);
+        sharedPreferences.getBoolean(String.valueOf(true), true);
 
     CustomObjectDetectorOptions.Builder builder =
         new CustomObjectDetectorOptions.Builder(localModel).setDetectorMode(mode);
