@@ -29,7 +29,7 @@ import com.ssafy.workalone.presentation.ui.theme.WalkOneGray500
 @Composable
 fun RepCounter(){
 
-    var isPaused: Boolean = false
+    var isPaused by remember { mutableStateOf(false) }
     val totalReps: Int = 15
     var currentReps by remember { mutableStateOf(0) }
     val totalSets: Int = 3
@@ -119,7 +119,7 @@ fun RepCounter(){
                     WalkOneBlue500,
                     WalkOneGray50,
                     WalkOneBlue500,
-                    onClick = {}
+                    onClick = { isPaused = !isPaused }
                 )
             }
         } else {
@@ -151,7 +151,7 @@ fun RepCounter(){
                         WalkOneGray50,
                         WalkOneBlue500,
                         WalkOneBlue500,
-                        onClick = {}
+                        onClick = { isPaused = !isPaused }
                     )
                 }
             }

@@ -64,7 +64,7 @@ fun ExerciseTimer(){
     Column(
         modifier = Modifier
             .background(
-                color = WalkOneGray500,
+                color = WalkOneGray50,
                 shape = RoundedCornerShape(
                     topStart = 20.dp,
                     topEnd = 20.dp,
