@@ -72,10 +72,7 @@ fun Navigation(
             )
         }
 
-        composable(Screen.IntegratedComplete.route) {
-            IntegratedCompleteView(
-                navController = navController
-            )
-        }
+
+
     }
 }

@@ -22,14 +22,15 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import kotlinx.coroutines.delay
 
 @Composable
-fun ConfettiAnimation(animationDuration: Long = 5000L) {
+fun ConfettiAnimation(animationDuration: Long = 8000L) {
     val composition by rememberLottieComposition(LottieCompositionSpec.Asset("confetti.json"))
     var isPlaying by remember { mutableStateOf(true) }
     var isVisible by remember { mutableStateOf(true) }
 
     val process by animateLottieCompositionAsState(
         composition = composition,
-        isPlaying = isPlaying
+        isPlaying = isPlaying,
+        speed = 1.5f
     )
 
     // 일정 시간 후 애니메이션 중지 및 숨김 처리
