@@ -22,23 +22,23 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.Task;
 import com.google.android.odml.image.MlImage;
 import com.google.mlkit.vision.common.InputImage;
-
 import com.google.mlkit.vision.pose.Pose;
 import com.google.mlkit.vision.pose.PoseDetection;
 import com.google.mlkit.vision.pose.PoseDetector;
 import com.google.mlkit.vision.pose.PoseDetectorOptionsBase;
-import com.ssafy.workalone.mlkit.GraphicOverlay;
-import com.ssafy.workalone.mlkit.java.VisionProcessorBase;
-import com.ssafy.workalone.mlkit.java.posedetector.classification.PoseClassifierProcessor;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import com.google.mlkit.vision.pose.PoseLandmark;
+import com.google.mlkit.vision.pose.Pose;
+import com.ssafy.workalone.mlkit.GraphicOverlay;
+import com.ssafy.workalone.mlkit.java.VisionProcessorBase;
+import com.ssafy.workalone.mlkit.java.posedetector.classification.PoseClassifierProcessor;
 
 /** A processor to run pose detector. */
 public class PoseDetectorProcessor
-    extends VisionProcessorBase<PoseDetectorProcessor.PoseWithClassification> {
+        extends VisionProcessorBase<PoseDetectorProcessor.PoseWithClassification> {
   private static final String TAG = "PoseDetectorProcessor";
 
   private final PoseDetector detector;
@@ -72,13 +72,13 @@ public class PoseDetectorProcessor
   }
 
   public PoseDetectorProcessor(
-      Context context,
-      PoseDetectorOptionsBase options,
-      boolean showInFrameLikelihood,
-      boolean visualizeZ,
-      boolean rescaleZForVisualization,
-      boolean runClassification,
-      boolean isStreamMode) {
+          Context context,
+          PoseDetectorOptionsBase options,
+          boolean showInFrameLikelihood,
+          boolean visualizeZ,
+          boolean rescaleZForVisualization,
+          boolean runClassification,
+          boolean isStreamMode) {
     super(context);
     this.showInFrameLikelihood = showInFrameLikelihood;
     this.visualizeZ = visualizeZ;
@@ -99,53 +99,70 @@ public class PoseDetectorProcessor
   @Override
   protected Task<PoseWithClassification> detectInImage(InputImage image) {
     return detector
-        .process(image)
-        .continueWith(
-            classificationExecutor,
-            task -> {
-              Pose pose = task.getResult();
-              List<String> classificationResult = new ArrayList<>();
-              if (runClassification) {
-                if (poseClassifierProcessor == null) {
-                  poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode);
-                }
-                classificationResult = poseClassifierProcessor.getPoseResult(pose);
-              }
-              return new PoseWithClassification(pose, classificationResult);
-            });
+            .process(image)
+            .continueWith(
+                    classificationExecutor,
+                    task -> {
+                      Pose pose = task.getResult();
+                      List<String> classificationResult = new ArrayList<>();
+                      if (runClassification) {
+                        if (poseClassifierProcessor == null) {
+                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode);
+                        }
+                        classificationResult = poseClassifierProcessor.getPoseResult(pose);
+                      }
+                      return new PoseWithClassification(pose, classificationResult);
+                    });
   }
 
   @Override
   protected Task<PoseWithClassification> detectInImage(MlImage image) {
     return detector
-        .process(image)
-        .continueWith(
-            classificationExecutor,
-            task -> {
-              Pose pose = task.getResult();
-              List<String> classificationResult = new ArrayList<>();
-              if (runClassification) {
-                if (poseClassifierProcessor == null) {
-                  poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode);
-                }
-                classificationResult = poseClassifierProcessor.getPoseResult(pose);
-              }
-              return new PoseWithClassification(pose, classificationResult);
-            });
+            .process(image)
+            .continueWith(
+                    classificationExecutor,
+                    task -> {
+                      Pose pose = task.getResult();
+
+                      if (!isFullBodyVisible(pose)) {
+                        Log.d(TAG, "Full body is not visible. Skipping frame.");
+                        return null; // 주요 랜드마크가 감지되지 않으면 null 반환
+                      }
+
+                      List<String> classificationResult = new ArrayList<>();
+                      if (runClassification) {
+                        if (poseClassifierProcessor == null) {
+                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode);
+                        }
+                        classificationResult = poseClassifierProcessor.getPoseResult(pose);
+                      }
+                      return new PoseWithClassification(pose, classificationResult);
+                    });
   }
 
   @Override
   protected void onSuccess(
-      @NonNull PoseWithClassification poseWithClassification,
-      @NonNull GraphicOverlay graphicOverlay) {
-    graphicOverlay.add(
-        new PoseGraphic(
-            graphicOverlay,
-            poseWithClassification.pose,
-            showInFrameLikelihood,
-            visualizeZ,
-            rescaleZForVisualization,
-            poseWithClassification.classificationResult));
+          @NonNull PoseWithClassification poseWithClassification,
+          @NonNull GraphicOverlay graphicOverlay) {
+//    graphicOverlay.add(
+//        new PoseGraphic(
+//            graphicOverlay,
+//            poseWithClassification.pose,
+//            showInFrameLikelihood,
+//            visualizeZ,
+//            rescaleZForVisualization,
+//            poseWithClassification.classificationResult));
+
+    if (poseWithClassification != null) { // null 체크 추가
+      graphicOverlay.add(
+              new PoseGraphic(
+                      graphicOverlay,
+                      poseWithClassification.pose,
+                      showInFrameLikelihood,
+                      visualizeZ,
+                      rescaleZForVisualization,
+                      poseWithClassification.classificationResult));
+    }
   }
 
   @Override
@@ -158,4 +175,37 @@ public class PoseDetectorProcessor
     // Use MlImage in Pose Detection by default, change it to OFF to switch to InputImage.
     return true;
   }
+
+
+
+
+
+  // 주요 랜드마크가 모두 감지되었는지 확인하는 메서드 추가
+  private static final float LANDMARK_CONFIDENCE_THRESHOLD = 0.5f; // 신뢰도 임계값 설정
+
+  private boolean isFullBodyVisible(Pose pose) {
+    // 전체 신체를 인식하는 데 필요한 주요 랜드마크 (어깨, 손목, 엉덩이, 발목 등)
+    int[] requiredLandmarks = {
+            PoseLandmark.LEFT_SHOULDER,
+            PoseLandmark.RIGHT_SHOULDER,
+            PoseLandmark.LEFT_HIP,
+            PoseLandmark.RIGHT_HIP,
+            PoseLandmark.LEFT_WRIST,
+            PoseLandmark.RIGHT_WRIST,
+            PoseLandmark.LEFT_ANKLE,
+            PoseLandmark.RIGHT_ANKLE
+    };
+
+    for (int landmarkType : requiredLandmarks) {
+      PoseLandmark landmark = pose.getPoseLandmark(landmarkType);
+      if (landmark == null || landmark.getInFrameLikelihood() < LANDMARK_CONFIDENCE_THRESHOLD) {
+        // 주요 랜드마크가 하나라도 감지되지 않거나 신뢰도가 낮으면 전체 신체가 보이지 않음
+        return false;
+      }
+    }
+    return true; // 주요 랜드마크가 모두 감지되고 신뢰도 기준을 충족한 경우
+  }
+
+
+
 }
