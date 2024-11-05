@@ -2,7 +2,6 @@ package com.ssafy.workalone.presentation.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.ssafy.workalone.data.model.Exercise
 import com.ssafy.workalone.data.repository.ExerciseRepository
 import com.ssafy.workalone.global.exception.CustomException
@@ -19,7 +18,6 @@ class ExerciseViewModel(private val exerciseRepository: ExerciseRepository = Exe
     ViewModel() {
     // 내부에서만 변경 가능한 MutableLiveData
     private val _errorMessage = MutableStateFlow<String?>(null)
-
     // 외부에서 읽기 전용 LiveData
     val errorMessage: StateFlow<String?>
         get() = _errorMessage
@@ -67,15 +65,22 @@ class ExerciseViewModel(private val exerciseRepository: ExerciseRepository = Exe
     fun clearErrorMessage() {
         _errorMessage.value = null
     }
-}
 
-class ExerciseViewModelFactory(private val exerciseRepository: ExerciseRepository) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(ExerciseViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return ExerciseViewModel(exerciseRepository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
+
+    private val _isFullScreen = MutableStateFlow(false)
+    val isFullScreen:StateFlow<Boolean> get() = _isFullScreen
+
+    private val _playBackPosition = MutableStateFlow<Long?>(null)
+    val playBackPosition:StateFlow<Long?> get() = _playBackPosition
+
+    // 전체 화면 토글 함수
+    fun toggleFullScreen(position: Long?) {
+        _playBackPosition.value = position
+        _isFullScreen.value = !_isFullScreen.value
+    }
+
+    // 플레이백 위치 업데이트 함수
+    fun updatePlayBackPosition(position: Long) {
+        _playBackPosition.value = position
     }
 }

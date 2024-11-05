@@ -2,6 +2,7 @@ package com.ssafy.workalone.presentation.navigation
 
 sealed class Screen(val route: String) {
     object Home : Screen("home-screen")
+    object Login : Screen("login")
     object ExerciseList : Screen("exercise-list")
     object ExerciseDetail : Screen("exercise-detail/{exerciseId}/{exerciseType}") {
         fun createRoute(exerciseId: Long, exerciseType: String) =

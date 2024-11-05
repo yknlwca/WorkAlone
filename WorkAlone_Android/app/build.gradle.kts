@@ -87,6 +87,7 @@ dependencies {
 
     //Lottie(콘페티 애니메이션 재생)
     implementation ("com.airbnb.android:lottie-compose:5.2.0")
+    implementation(libs.androidx.tools.core)
 
     val nav_version = "2.7.5"
     val compose_version = "1.6.0-alpha08"
@@ -96,8 +97,8 @@ dependencies {
     implementation("androidx.compose.material:material:$compose_version")
     implementation("androidx.compose.ui:ui-tooling-preview:$compose_version")
 
-    implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.1")
-
+    implementation("androidx.media3:media3-exoplayer:1.3.1")
+    implementation("androidx.media3:media3-ui:1.3.1")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -111,10 +112,8 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
