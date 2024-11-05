@@ -33,9 +33,8 @@ VALUES (1, '스쿼트 루틴', 30, 2, 10, 'SQUAT', 'COUNT', 1),
 
 -- 예시: 통합 운동 '통합 운동'은 '스쿼트 루틴', '푸쉬업 챌린지', '플랭크 버티기'로 구성
 INSERT INTO exercise_order (integrated_id, individual_id, order_position)
-VALUES ((SELECT id FROM exercise WHERE title = '통합 운동'), (SELECT id FROM exercise WHERE title = '스쿼트 루틴'), 3),
+VALUES ((SELECT id FROM exercise WHERE title = '통합 운동'), (SELECT id FROM exercise WHERE title = '스쿼트 루틴'), 2),
        ((SELECT id FROM exercise WHERE title = '통합 운동'), (SELECT id FROM exercise WHERE title = '푸쉬업 챌린지'),1),
-       ((SELECT id FROM exercise WHERE title = '통합 운동'), (SELECT id FROM exercise WHERE title = '플랭크 버티기'), 2);
 
 -- 예시: 통합 운동 '전신 통합 운동'은 '싯업 시리즈', '스쿼트 챌린지', '푸쉬업 훈련'으로 구성
 INSERT INTO exercise_order (integrated_id, individual_id, order_position)
