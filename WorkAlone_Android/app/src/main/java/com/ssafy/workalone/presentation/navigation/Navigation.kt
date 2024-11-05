@@ -11,11 +11,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.ssafy.workalone.mlkit.java.CameraXLivePreviewActivity
 import com.ssafy.workalone.presentation.ui.screen.ExerciseDetailView
 import com.ssafy.workalone.presentation.ui.screen.ExerciseListView
 import com.ssafy.workalone.presentation.ui.screen.HomeView
-import com.ssafy.workalone.presentation.ui.screen.IndividualCompleteView
-import com.ssafy.workalone.presentation.ui.screen.IntegratedCompleteView
 import com.ssafy.workalone.presentation.viewmodels.ExerciseViewModel
 
 @Composable
@@ -65,12 +64,7 @@ fun Navigation(
                 ExerciseDetailView(navController = navController, viewModel, exerciseId, exerciseType)
             }
         }
-
-        composable(Screen.IndividualComplete.route) {
-            IndividualCompleteView(
-                navController = navController
-            )
-        }
+        composable("cameraScreen") { CameraXLivePreviewActivity() }
 
 
 

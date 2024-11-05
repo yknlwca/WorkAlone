@@ -17,6 +17,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,8 +27,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray600
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray900
@@ -53,6 +56,7 @@ fun StopwatchScreen(
         time = time,
         onBackNavClicked = onBackNavClicked
     )
+
 }
 
 @Composable
@@ -62,7 +66,7 @@ fun AppBarStopWatch(
     onBackNavClicked: () -> Unit = {}
 ) {
     TopAppBar(
-        backgroundColor = WalkOneGray50,
+        backgroundColor = Color.Transparent,
         contentColor = WalkOneGray900,
         elevation = 4.dp,
         title = {
@@ -83,12 +87,12 @@ fun AppBarStopWatch(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
 
-                Text(text = time,color = WalkOneGray900)
+                Text(text = time,color = Color.White)
             }
         },
         navigationIcon = {
             IconButton(onClick = { onBackNavClicked() }) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "뒤로 가기")
+                Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "뒤로 가기", tint = Color.White)
             }
         }
     )
