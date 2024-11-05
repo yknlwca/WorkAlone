@@ -1,8 +1,7 @@
 package com.ssawallafy.workalone_backend.domain.exercise.dto.response;
 
 import com.ssawallafy.workalone_backend.domain.exercise.entity.Exercise;
-import com.ssawallafy.workalone_backend.domain.exercise.entity.ExerciseInfo;
-import com.ssawallafy.workalone_backend.domain.exercise.entity.Kind;
+import com.ssawallafy.workalone_backend.domain.exercise.entity.ExerciseType;
 import com.ssawallafy.workalone_backend.domain.exercise.entity.Set;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +12,10 @@ public class ExerciseDetailDto {
     private Long exerciseId;
 
     private int exerciseSet;
-    private int setDetail;
+    private int exerciseRepeat;
+
+    private Integer restBtwSet;
+
     private Set setType;
 
     private String title;
@@ -22,17 +24,19 @@ public class ExerciseDetailDto {
     private String movement;
     private String breath;
 
-    public static ExerciseDetailDto of(Exercise exercise, ExerciseInfo exerciseInfo) {
+    public static ExerciseDetailDto of(Exercise exercise, ExerciseType exerciseType) {
         return ExerciseDetailDto.builder().
                 exerciseId(exercise.getId())
                 .exerciseSet(exercise.getExerciseSet())
-                .setDetail(exercise.getSetDetail())
+                .exerciseSet(exercise.getExerciseSet())
+                .exerciseRepeat(exercise.getExerciseRepeat())
+                .restBtwSet(exercise.getRestBtwSet())
                 .setType(exercise.getSetType())
-                .title(exerciseInfo.getTitle())
-                .subTitle(exerciseInfo.getSubTitle())
-                .basicPose(exerciseInfo.getBasicPose())
-                .movement(exerciseInfo.getMovement())
-                .breath(exerciseInfo.getBreath())
+                .title(exerciseType.getTitle())
+                .subTitle(exerciseType.getSubTitle())
+                .basicPose(exerciseType.getBasicPose())
+                .movement(exerciseType.getMovement())
+                .breath(exerciseType.getBreath())
                 .build();
     }
 }

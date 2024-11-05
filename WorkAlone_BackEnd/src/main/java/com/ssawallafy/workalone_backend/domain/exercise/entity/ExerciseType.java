@@ -10,16 +10,13 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class ExerciseInfo {
+public class ExerciseType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String title;
     private String subTitle;
     private String basicPose;
     private String movement;
     private String breath;
-
-    @Enumerated(EnumType.STRING)
-    private Kind exerciseType;
 }

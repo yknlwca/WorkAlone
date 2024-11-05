@@ -3,14 +3,13 @@ package com.ssawallafy.workalone_backend.domain.exercise.service;
 import com.ssawallafy.workalone_backend.domain.exercise.dto.response.ExerciseDetailDto;
 import com.ssawallafy.workalone_backend.domain.exercise.dto.response.ExerciseDto;
 import com.ssawallafy.workalone_backend.domain.exercise.entity.Exercise;
-import com.ssawallafy.workalone_backend.domain.exercise.entity.ExerciseInfo;
-import com.ssawallafy.workalone_backend.domain.exercise.entity.ExerciseOrder;
-import com.ssawallafy.workalone_backend.domain.exercise.entity.Kind;
+import com.ssawallafy.workalone_backend.domain.exercise.entity.ExerciseGroup;
+import com.ssawallafy.workalone_backend.domain.exercise.entity.ExerciseType;
 import com.ssawallafy.workalone_backend.domain.exercise.exception.ErrorCode;
 import com.ssawallafy.workalone_backend.domain.exercise.exception.ExerciseException;
-import com.ssawallafy.workalone_backend.domain.exercise.repository.ExerciseInfoRepository;
-import com.ssawallafy.workalone_backend.domain.exercise.repository.ExerciseOrderRepository;
+import com.ssawallafy.workalone_backend.domain.exercise.repository.ExerciseGroupRepository;
 import com.ssawallafy.workalone_backend.domain.exercise.repository.ExerciseRepository;
+import com.ssawallafy.workalone_backend.domain.exercise.repository.ExerciseTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,36 +20,39 @@ import java.util.*;
 public class ExerciseService {
 
     private final ExerciseRepository exerciseRepository;
-    private final ExerciseOrderRepository exerciseOrderRepository;
-    private final ExerciseInfoRepository exerciseInfoRepository;
+    private final ExerciseGroupRepository exerciseGroupRepository;
+    private final ExerciseTypeRepository exerciseTypeRepository;
 
     public List<ExerciseDto> getExercises(Long memberId) {
-        List<Exercise> exercises = exerciseRepository.findByMemberIdAndDeletedIsFalse(memberId);
-        return exercises.isEmpty() ? new ArrayList<>() : exercises.stream().map(ExerciseDto::of).toList();
+        // 통합형 테이블에서 운동 ID를 가져온다.
+        List<ExerciseGroup> exerciseGroups = exerciseGroupRepository.findByMemberId(memberId);
+
+        List<ExerciseDto> exerciseDtos = new ArrayList<>();
+        for (ExerciseGroup exerciseGroup : exerciseGroups) {
+            // 각 통합운동 ID에 속한 개별 운동을 가져온다.
+            List<Exercise> exercises = exerciseRepository.findByExerciseGroupAndDeletedIsFalse(exerciseGroup);
+            // 통합 운동인 경우와 개별 운동인 경우를 나눠서 반환한다.
+            if (exercises.size() > 1) {
+                exerciseDtos.add(ExerciseDto.ofIntegrated(exerciseGroup));
+            } else {
+                exerciseDtos.add(ExerciseDto.ofIndividual(exercises.get(0), exerciseGroup));
+            }
+        }
+        return exerciseDtos;
     }
 
-    public List<ExerciseDetailDto> getExercisesDetails(Long exerciseId, String exerciseType) {
-        Kind kind;
-        try {
-            kind = Kind.valueOf(exerciseType.toUpperCase());
-        } catch (Exception e) {
-            throw new ExerciseException(ErrorCode.EXERCISE_TYPE_NOT_CORRECT);
+    public List<ExerciseDetailDto> getExercisesDetails(Long groupId) {
+        // 통합운동 ID에 속한 개별 운동들을 가져온다.
+        List<Exercise> exercises = exerciseRepository.findByExerciseGroupIdAndDeletedIsFalseOrderBySeq(groupId);
+        if (exercises.isEmpty()) {
+            throw new ExerciseException(ErrorCode.EXERCISE_NOT_FOUND);
         }
-        // 개별형 운동 정보 반환
-        if(kind != Kind.INTEGRATED) {
-            ExerciseInfo exerciseInfo = exerciseInfoRepository.findByExerciseType(kind);
-            Exercise exercise = exerciseRepository.findById(exerciseId).orElseThrow(() -> new ExerciseException(ErrorCode.EXERCISE_NOT_FOUND));
-            return new ArrayList<>(Collections.singletonList(ExerciseDetailDto.of(exercise, exerciseInfo)));
+        List<ExerciseDetailDto> exerciseDetailDtos = new ArrayList<>();
+        for (Exercise exercise : exercises) {
+            // 각 개별운동에 대한 설명을 가져온다.
+            ExerciseType exerciseType = exerciseTypeRepository.findById(exercise.getExerciseType().getId()).orElseThrow(() -> new ExerciseException(ErrorCode.EXERCISE_TYPE_NOT_CORRECT));
+            exerciseDetailDtos.add(ExerciseDetailDto.of(exercise, exerciseType));
         }
-
-        // 통합형 운동 정보 반환
-        List<Long> orders = exerciseOrderRepository.findByIntegratedExerciseIdOrderByOrderPosition(exerciseId).stream().map(ExerciseOrder::getIndividualExercise).toList();
-        List<ExerciseDetailDto> result = new ArrayList<>(orders.size());
-        for (Long order : orders) {
-            Exercise exercise = exerciseRepository.findById(order).orElseThrow(() -> new ExerciseException(ErrorCode.EXERCISE_NOT_FOUND));
-            ExerciseInfo exerciseInfo = Optional.ofNullable(exerciseInfoRepository.findByExerciseType(exercise.getExerciseType())).orElseThrow(() -> new ExerciseException(ErrorCode.EXERCISE_TYPE_NOT_CORRECT));
-            result.add(ExerciseDetailDto.of(exercise, exerciseInfo));
-        }
-        return result;
+        return exerciseDetailDtos;
     }
 }

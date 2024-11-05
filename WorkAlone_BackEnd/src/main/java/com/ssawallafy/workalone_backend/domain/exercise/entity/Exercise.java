@@ -1,6 +1,5 @@
 package com.ssawallafy.workalone_backend.domain.exercise.entity;
 
-import com.ssawallafy.workalone_backend.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,19 +17,19 @@ public class Exercise {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "group_id")
+    private ExerciseGroup exerciseGroup;
 
-    private String title;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "type_id")
+    private ExerciseType exerciseType;
 
-    private int restTime;
-    @Column
-    private Integer exerciseSet;
-    @Column
-    private Integer setDetail;
+    private int seq;
 
-    @Enumerated(EnumType.STRING)
-    private Kind exerciseType;
+    private int exerciseSet;
+    private int exerciseRepeat;
+
+    private Integer restBtwSet;
 
     @Enumerated(EnumType.STRING)
     private Set setType;
