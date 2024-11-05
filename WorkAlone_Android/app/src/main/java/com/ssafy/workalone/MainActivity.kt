@@ -8,7 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.rememberNavController
 import com.ssafy.workalone.presentation.navigation.Navigation
+import com.ssafy.workalone.presentation.ui.component.ExerciseTimer
+import com.ssafy.workalone.presentation.ui.component.RepCounter
+import com.ssafy.workalone.presentation.ui.screen.IntegratedCompleteView
 import com.ssafy.workalone.presentation.ui.theme.WorkAloneTheme
 
 class MainActivity : ComponentActivity() {
