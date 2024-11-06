@@ -1,5 +1,6 @@
 package com.ssafy.workalone.presentation.ui.component
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,131 +37,382 @@ fun RepCounter(){
     val totalSets: Int = 3
     var currentSet by remember { mutableStateOf(1) }
 
-    Column(
-        modifier = Modifier
-            .background(
-                color = WalkOneGray50,
-                shape = RoundedCornerShape(
-                    topStart = 20.dp,
-                    topEnd = 20.dp,
-                    bottomStart = 0.dp,
-                    bottomEnd = 0.dp
-                ))
-            .fillMaxWidth()
-            .padding(25.dp),
+    val configuration = LocalConfiguration.current
 
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "${currentReps}",
-                fontSize = 56.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .alignByBaseline()
-            )
-            Text(
-                text = "/",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .alignByBaseline()
-            )
-            Text(
-                text = "${totalReps}회",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .alignByBaseline()
-            )
-        }
-
-        Row(
+    if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+        Column(
             modifier = Modifier
-                .padding(bottom = 30.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .background(
+                    color = WalkOneGray50,
+                    shape = RoundedCornerShape(
+                        topStart = 20.dp,
+                        topEnd = 20.dp,
+                        bottomStart = 0.dp,
+                        bottomEnd = 0.dp
+                    ))
+                .fillMaxWidth()
+                .padding(25.dp),
+
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(
-                text = "${currentSet}세트",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = WalkOneBlue500,
-                modifier = Modifier
-                    .alignByBaseline()
-            )
-            Text(
-                text = "|",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = WalkOneGray500,
-                modifier = Modifier
-                    .alignByBaseline()
-            )
-            Text(
-                text = "${totalSets}세트",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = WalkOneGray500,
-                modifier = Modifier
-                    .alignByBaseline()
-            )
-        }
-
-        if(!isPaused){
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-
-            ){
-                CustomButton(
-                    "일시정지",
-                    WalkOneBlue500,
-                    WalkOneGray50,
-                    WalkOneBlue500,
-                    onClick = { isPaused = !isPaused }
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "${currentReps}",
+                    fontSize = 56.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .alignByBaseline()
+                )
+                Text(
+                    text = "/",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .alignByBaseline()
+                )
+                Text(
+                    text = "${totalReps}회",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .alignByBaseline()
                 )
             }
-        } else {
+
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-            ){
-                Box(
+                    .padding(bottom = 30.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "${currentSet}세트",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = WalkOneBlue500,
                     modifier = Modifier
-                        .weight(1f)
+                        .alignByBaseline()
+                )
+                Text(
+                    text = "|",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = WalkOneGray500,
+                    modifier = Modifier
+                        .alignByBaseline()
+                )
+                Text(
+                    text = "${totalSets}세트",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = WalkOneGray500,
+                    modifier = Modifier
+                        .alignByBaseline()
+                )
+            }
+
+            if(!isPaused){
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+
                 ){
                     CustomButton(
-                        "종료하기",
+                        "일시정지",
                         WalkOneBlue500,
                         WalkOneGray50,
-                        WalkOneBlue500,
-                        onClick = {}
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(10.dp))
-
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                ) {
-                    CustomButton(
-                        "계속하기",
-                        WalkOneGray50,
-                        WalkOneBlue500,
                         WalkOneBlue500,
                         onClick = { isPaused = !isPaused }
                     )
                 }
+            } else {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ){
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                    ){
+                        CustomButton(
+                            "종료하기",
+                            WalkOneBlue500,
+                            WalkOneGray50,
+                            WalkOneBlue500,
+                            onClick = {}
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(10.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                    ) {
+                        CustomButton(
+                            "계속하기",
+                            WalkOneGray50,
+                            WalkOneBlue500,
+                            WalkOneBlue500,
+                            onClick = { isPaused = !isPaused }
+                        )
+                    }
+                }
+            }
+        }
+    } else {
+        Row(
+            modifier = Modifier
+                .background(
+                    color = WalkOneGray50,
+                    shape = RoundedCornerShape(
+                        topStart = 20.dp,
+                        topEnd = 20.dp,
+                        bottomStart = 0.dp,
+                        bottomEnd = 0.dp
+                    ))
+                .fillMaxWidth()
+                .padding(25.dp),
+
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "${currentReps}",
+                    fontSize = 56.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .alignByBaseline()
+                )
+                Text(
+                    text = "/",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .alignByBaseline()
+                )
+                Text(
+                    text = "${totalReps}회",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .alignByBaseline()
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "${currentSet}세트",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = WalkOneBlue500,
+                    modifier = Modifier
+                        .alignByBaseline()
+                )
+                Text(
+                    text = "|",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = WalkOneGray500,
+                    modifier = Modifier
+                        .alignByBaseline()
+                )
+                Text(
+                    text = "${totalSets}세트",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = WalkOneGray500,
+                    modifier = Modifier
+                        .alignByBaseline()
+                )
+            }
+
+            if(!isPaused){
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+
+                ){
+                    CustomButton(
+                        "일시정지",
+                        WalkOneBlue500,
+                        WalkOneGray50,
+                        WalkOneBlue500,
+                        onClick = { isPaused = !isPaused }
+                    )
+                }
+            } else {
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                ){
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                    ){
+                        CustomButton(
+                            "종료하기",
+                            WalkOneBlue500,
+                            WalkOneGray50,
+                            WalkOneBlue500,
+                            onClick = {}
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(10.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                    ) {
+                        CustomButton(
+                            "계속하기",
+                            WalkOneGray50,
+                            WalkOneBlue500,
+                            WalkOneBlue500,
+                            onClick = { isPaused = !isPaused }
+                        )
+                    }
+                }
             }
         }
     }
+
+//    Column(
+//        modifier = Modifier
+//            .background(
+//                color = WalkOneGray50,
+//                shape = RoundedCornerShape(
+//                    topStart = 20.dp,
+//                    topEnd = 20.dp,
+//                    bottomStart = 0.dp,
+//                    bottomEnd = 0.dp
+//                ))
+//            .fillMaxWidth()
+//            .padding(25.dp),
+//
+//        horizontalAlignment = Alignment.CenterHorizontally,
+//    ) {
+//        Row(
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//            Text(
+//                text = "${currentReps}",
+//                fontSize = 56.sp,
+//                fontWeight = FontWeight.Bold,
+//                modifier = Modifier
+//                    .alignByBaseline()
+//            )
+//            Text(
+//                text = "/",
+//                fontSize = 28.sp,
+//                fontWeight = FontWeight.Bold,
+//                modifier = Modifier
+//                    .alignByBaseline()
+//            )
+//            Text(
+//                text = "${totalReps}회",
+//                fontSize = 28.sp,
+//                fontWeight = FontWeight.Bold,
+//                modifier = Modifier
+//                    .alignByBaseline()
+//            )
+//        }
+//
+//        Row(
+//            modifier = Modifier
+//                .padding(bottom = 30.dp),
+//            horizontalArrangement = Arrangement.spacedBy(10.dp),
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//            Text(
+//                text = "${currentSet}세트",
+//                fontSize = 18.sp,
+//                fontWeight = FontWeight.Bold,
+//                color = WalkOneBlue500,
+//                modifier = Modifier
+//                    .alignByBaseline()
+//            )
+//            Text(
+//                text = "|",
+//                fontSize = 18.sp,
+//                fontWeight = FontWeight.Bold,
+//                color = WalkOneGray500,
+//                modifier = Modifier
+//                    .alignByBaseline()
+//            )
+//            Text(
+//                text = "${totalSets}세트",
+//                fontSize = 18.sp,
+//                fontWeight = FontWeight.Bold,
+//                color = WalkOneGray500,
+//                modifier = Modifier
+//                    .alignByBaseline()
+//            )
+//        }
+//
+//        if(!isPaused){
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//
+//            ){
+//                CustomButton(
+//                    "일시정지",
+//                    WalkOneBlue500,
+//                    WalkOneGray50,
+//                    WalkOneBlue500,
+//                    onClick = { isPaused = !isPaused }
+//                )
+//            }
+//        } else {
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//            ){
+//                Box(
+//                    modifier = Modifier
+//                        .weight(1f)
+//                ){
+//                    CustomButton(
+//                        "종료하기",
+//                        WalkOneBlue500,
+//                        WalkOneGray50,
+//                        WalkOneBlue500,
+//                        onClick = {}
+//                    )
+//                }
+//
+//                Spacer(modifier = Modifier.width(10.dp))
+//
+//                Box(
+//                    modifier = Modifier
+//                        .weight(1f)
+//                ) {
+//                    CustomButton(
+//                        "계속하기",
+//                        WalkOneGray50,
+//                        WalkOneBlue500,
+//                        WalkOneBlue500,
+//                        onClick = { isPaused = !isPaused }
+//                    )
+//                }
+//            }
+//        }
+//    }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Portrait", widthDp = 360, heightDp = 640)
+@Preview(name = "Landscape", widthDp = 640, heightDp = 360)
 @Composable
 fun previewRepCounter(){
     RepCounter()
