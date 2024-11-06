@@ -34,10 +34,12 @@ import kotlinx.coroutines.launch
 
 // 운동 타이머 컴포넌트
 @Composable
-fun ExerciseTimer(){
+fun ExerciseTimer(
+    initialGoalTime: Int
+){
 
     var isPaused by remember { mutableStateOf(false) }
-    var goalTime by remember { mutableStateOf(600) }
+    var goalTime by remember { mutableStateOf(initialGoalTime) }
     val totalSets: Int = 3
     var currentSet by remember { mutableStateOf(1) }
 
@@ -188,5 +190,5 @@ fun ExerciseTimer(){
 @Preview(showBackground = true)
 @Composable
 fun previewExerciseTimer(){
-    ExerciseTimer()
+    ExerciseTimer(10)
 }
