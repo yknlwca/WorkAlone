@@ -10,6 +10,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.ssafy.workalone.presentation.navigation.Navigation
 import com.ssafy.workalone.presentation.navigation.Screen
+import com.ssafy.workalone.presentation.ui.component.ExerciseTimer
 import com.ssafy.workalone.presentation.ui.theme.WorkAloneTheme
 
 class MainActivity : ComponentActivity() {

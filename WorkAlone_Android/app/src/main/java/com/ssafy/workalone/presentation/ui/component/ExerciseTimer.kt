@@ -34,29 +34,30 @@ import kotlinx.coroutines.launch
 
 // 운동 타이머 컴포넌트
 @Composable
-fun ExerciseTimer(){
+fun ExerciseTimer(
+    initialGoalTime: Int,
+    initialCurrentSet: Int,
+    initialTotalSets: Int
+
+){
 
     var isPaused by remember { mutableStateOf(false) }
-    var goalTime by remember { mutableStateOf(600) }
-    val totalSets: Int = 3
-    var currentSet by remember { mutableStateOf(1) }
-
-    val coroutineScope = rememberCoroutineScope()
+    var goalTime by remember { mutableStateOf(initialGoalTime) }
+    val totalSets: Int = initialTotalSets
+    var currentSet by remember { mutableStateOf(initialCurrentSet) }
 
     LaunchedEffect(Unit) {
-        coroutineScope.launch {
-            while (goalTime > 0) {
+        while (goalTime > 0) {
+            if (!isPaused) {
+                // 1초 대기
+                delay(1000L)
+                // 일시정지가 아닐 때만 감소
                 if (!isPaused) {
-                    // 1초 대기
-                    delay(1000L)
-                    // 일시정지가 아닐 때만 감소
-                    if (!isPaused) {
-                        goalTime -= 1
-                    }
-                } else {
-                    // 일시정지 상태에서 짧은 대기
-                    delay(100L)
+                    goalTime -= 1
                 }
+            } else {
+                // 일시정지 상태에서 짧은 대기
+                delay(100L)
             }
         }
     }
@@ -188,5 +189,5 @@ fun ExerciseTimer(){
 @Preview(showBackground = true)
 @Composable
 fun previewExerciseTimer(){
-    ExerciseTimer()
+    ExerciseTimer(10, 1,3)
 }
