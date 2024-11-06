@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ssafy.workalone.mlkit.java.CameraXLivePreviewActivity
+import com.ssafy.workalone.mlkit.java.CameraXLivePreviewActivityJava
 import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.AppBarView
 import com.ssafy.workalone.presentation.ui.component.calendar.Calendar
@@ -116,6 +117,10 @@ fun HomeView(navController: NavController, userName: String = "아무개") {
                         text = "챌린지 이동하기",
                         onClick = {
                             navController.navigate(Screen.ExerciseList.route)
+//                            val intent = Intent(context, CameraXLivePreviewActivity::class.java)
+//                            intent.putExtra("exerciseType","플랭크")
+//                            Log.d("123","여기여기")
+//                            context.startActivity(intent)
                         },
                     )
                 }

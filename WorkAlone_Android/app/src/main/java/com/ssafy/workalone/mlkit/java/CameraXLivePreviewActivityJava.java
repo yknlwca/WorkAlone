@@ -16,7 +16,6 @@
 
 package com.ssafy.workalone.mlkit.java;
 
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -27,10 +26,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,7 +46,6 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory;
 import com.google.android.gms.common.annotation.KeepName;
 import com.google.mlkit.common.MlKitException;
 import com.google.mlkit.vision.pose.PoseDetectorOptionsBase;
-import com.ssafy.workalone.MainActivity;
 import com.ssafy.workalone.R;
 import com.ssafy.workalone.mlkit.CameraXViewModel;
 import com.ssafy.workalone.mlkit.GraphicOverlay;
@@ -67,7 +62,7 @@ import java.util.List;
  */
 @KeepName
 @RequiresApi(VERSION_CODES.LOLLIPOP)
-public final class CameraXLivePreviewActivity extends AppCompatActivity
+public final class CameraXLivePreviewActivityJava extends AppCompatActivity
         implements OnItemSelectedListener, CompoundButton.OnCheckedChangeListener {
     private static final String TAG = "CameraXLivePreview";
 
@@ -121,7 +116,7 @@ public final class CameraXLivePreviewActivity extends AppCompatActivity
             Log.d(TAG, "graphicOverlay is null");
         }
 
-        Spinner spinner = findViewById(R.id.spinner);
+//        Spinner spinner = findViewById(R.id.spinner);
         List<String> options = new ArrayList<>();
 
         options.add(POSE_DETECTION);
@@ -132,11 +127,11 @@ public final class CameraXLivePreviewActivity extends AppCompatActivity
         // Drop down layout style - list view with radio button
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // attaching data adapter to spinner
-        spinner.setAdapter(dataAdapter);
-        spinner.setOnItemSelectedListener(this);
+//        spinner.setAdapter(dataAdapter);
+//        spinner.setOnItemSelectedListener(this);
 
-        ToggleButton facingSwitch = findViewById(R.id.facing_switch);
-        facingSwitch.setOnCheckedChangeListener(this);
+//        ToggleButton facingSwitch = findViewById(R.id.facing_switch);
+//        facingSwitch.setOnCheckedChangeListener(this);
 
         new ViewModelProvider(this, (ViewModelProvider.Factory) AndroidViewModelFactory.getInstance(getApplication()))
                 .get(CameraXViewModel.class)
@@ -147,19 +142,19 @@ public final class CameraXLivePreviewActivity extends AppCompatActivity
                             cameraProvider = provider;
                             bindAllCameraUseCases();
                         });
-        ImageView settingsButton = findViewById(R.id.settings_button);
-        settingsButton.setOnClickListener(
-                v -> {
+//        ImageView settingsButton = findViewById(R.id.settings_button);
+//        settingsButton.setOnClickListener(
+//                v -> {
 //                    Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
 //                    intent.putExtra(
 //                            SettingsActivity.EXTRA_LAUNCH_SOURCE,
 //                            SettingsActivity.LaunchSource.CAMERAX_LIVE_PREVIEW);
 //                    startActivity(intent);
-                    Intent intent = new Intent(this, MainActivity.class);
-                    // 특정 스크린 경로 전달 (예: "individual-complete")
-                    intent.putExtra("startDestination", "individual-complete");
-                    startActivity(intent);
-                });
+//                    Intent intent = new Intent(this, MainActivity.class);
+//                    // 특정 스크린 경로 전달 (예: "individual-complete")
+//                    intent.putExtra("startDestination", "individual-complete");
+//                    startActivity(intent);
+//                });
     }
 
     @Override
@@ -364,4 +359,3 @@ public final class CameraXLivePreviewActivity extends AppCompatActivity
         cameraProvider.bindToLifecycle(/* lifecycleOwner= */ this, cameraSelector, analysisUseCase);
     }
 }
-

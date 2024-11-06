@@ -226,6 +226,12 @@ dependencies {
 
     // On Device Machine Learnings
     implementation("com.google.android.odml:image:1.0.0-beta1")
+
+    //compooseView dependencies
+    // Compose dependencies
+    implementation ("androidx.activity:activity-compose:$compose_version")
+    implementation ("androidx.compose.ui:ui-tooling:$compose_version")
+
 }
 configurations.all {
     exclude(group = "com.google.guava", module = "listenablefuture")
