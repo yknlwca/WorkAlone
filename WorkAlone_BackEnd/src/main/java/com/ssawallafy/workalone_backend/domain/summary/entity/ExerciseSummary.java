@@ -27,7 +27,7 @@ public class ExerciseSummary {
 	private LocalTime date;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "id")
+	@JoinColumn(name = "exercise_id")
 	private Exercise exercise;
 
 	private int kcal;
