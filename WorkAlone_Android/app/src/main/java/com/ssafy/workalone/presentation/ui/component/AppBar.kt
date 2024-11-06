@@ -13,12 +13,16 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ssafy.workalone.R
@@ -26,6 +30,7 @@ import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray900
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBarView(
     title: String,
@@ -33,10 +38,10 @@ fun AppBarView(
 ) {
     val coroutineScope = rememberCoroutineScope()
     if (!title.contains("HOME")) {
-        TopAppBar(
-            backgroundColor = WalkOneGray50,
-            contentColor = WalkOneGray900,
-            elevation = 4.dp,
+        CenterAlignedTopAppBar(
+            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                containerColor = WalkOneGray50,
+            ),
             title = {
                 Row(
                     modifier = Modifier
@@ -86,4 +91,10 @@ fun AppBarView(
             modifier = Modifier.height(70.dp)
         )
     }
+}
+
+@Preview
+@Composable
+fun previewAppbar(){
+    AppBarView("HOME")
 }

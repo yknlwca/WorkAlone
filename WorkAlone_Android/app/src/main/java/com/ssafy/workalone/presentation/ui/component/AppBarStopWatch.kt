@@ -18,6 +18,9 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -59,21 +62,20 @@ fun StopwatchScreen(
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBarStopWatch(
     isRunning: Boolean,
     time: String,
     onBackNavClicked: () -> Unit = {}
 ) {
-    TopAppBar(
-        backgroundColor = Color.Transparent,
-        contentColor = WalkOneGray900,
-        elevation = 4.dp,
+    CenterAlignedTopAppBar(
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = Color.Transparent,
+        ),
+
         title = {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = 80.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
