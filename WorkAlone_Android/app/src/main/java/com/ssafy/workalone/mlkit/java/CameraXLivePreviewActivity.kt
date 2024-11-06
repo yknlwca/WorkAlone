@@ -140,7 +140,11 @@ class CameraXLivePreviewActivity :
             if(exerciseType != "플랭크")
               RepCounter(viewModel = ExerciseMLKitViewModel())
             else
+<<<<<<< HEAD
+              ExerciseTimer(3,3,3)
+=======
               ExerciseTimer(viewModel = ExerciseMLKitViewModel())
+>>>>>>> abd80f0623e61261023a085e2b823e00a3ca419d
           }
         }
 
@@ -296,7 +300,8 @@ class CameraXLivePreviewActivity :
               PreferenceUtils.shouldShowPoseDetectionInFrameLikelihoodLivePreview(this)
             val visualizeZ = PreferenceUtils.shouldPoseDetectionVisualizeZ(this)
             val rescaleZ = PreferenceUtils.shouldPoseDetectionRescaleZForVisualization(this)
-            val runClassification = PreferenceUtils.shouldPoseDetectionRunClassification(this)
+            val runClassification = true
+              //PreferenceUtils.shouldPoseDetectionRunClassification(this)
             PoseDetectorProcessor(
               this,
               poseDetectorOptions,

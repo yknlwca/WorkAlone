@@ -124,10 +124,10 @@ public class PoseDetectorProcessor
             task -> {
               Pose pose = task.getResult();
 
-              if (!isFullBodyVisible(pose)) {
-                Log.d(TAG, "Full body is not visible. Skipping frame.");
-                return null; // 주요 랜드마크가 감지되지 않으면 null 반환
-              }
+//              if (!isFullBodyVisible(pose)) {
+//                Log.d(TAG, "Full body is not visible. Skipping frame.");
+//                return null; // 주요 랜드마크가 감지되지 않으면 null 반환
+//              }
 
               List<String> classificationResult = new ArrayList<>();
               if (runClassification) {
@@ -144,25 +144,25 @@ public class PoseDetectorProcessor
   protected void onSuccess(
       @NonNull PoseWithClassification poseWithClassification,
       @NonNull GraphicOverlay graphicOverlay) {
-//    graphicOverlay.add(
-//        new PoseGraphic(
-//            graphicOverlay,
-//            poseWithClassification.pose,
-//            showInFrameLikelihood,
-//            visualizeZ,
-//            rescaleZForVisualization,
-//            poseWithClassification.classificationResult));
+    graphicOverlay.add(
+        new PoseGraphic(
+            graphicOverlay,
+            poseWithClassification.pose,
+            showInFrameLikelihood,
+            visualizeZ,
+            rescaleZForVisualization,
+            poseWithClassification.classificationResult));
 
-    if (poseWithClassification != null) { // null 체크 추가
-      graphicOverlay.add(
-              new PoseGraphic(
-                      graphicOverlay,
-                      poseWithClassification.pose,
-                      showInFrameLikelihood,
-                      visualizeZ,
-                      rescaleZForVisualization,
-                      poseWithClassification.classificationResult));
-    }
+//    if (poseWithClassification != null) { // null 체크 추가
+//      graphicOverlay.add(
+//              new PoseGraphic(
+//                      graphicOverlay,
+//                      poseWithClassification.pose,
+//                      showInFrameLikelihood,
+//                      visualizeZ,
+//                      rescaleZForVisualization,
+//                      poseWithClassification.classificationResult));
+//    }
   }
 
   @Override

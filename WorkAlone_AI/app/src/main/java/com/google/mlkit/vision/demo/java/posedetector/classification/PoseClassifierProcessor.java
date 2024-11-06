@@ -188,7 +188,7 @@ public class PoseClassifierProcessor {
         List<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
         if (matches != null) {
           for (String command : matches) {
-            Log.d(TAG, "음성 인식 결과: " + command); // 여기서 실시간으로 인식된 음성을 로그로 출력
+            //Log.d(TAG, "음성 인식 결과: " + command); // 여기서 실시간으로 인식된 음성을 로그로 출력
             // 기존 코드 유지
           }
         }
