@@ -67,6 +67,7 @@ import com.ssafy.workalone.mlkit.preference.PreferenceUtils
 import com.ssafy.workalone.presentation.ui.component.ExerciseTimer
 import com.ssafy.workalone.presentation.ui.component.RepCounter
 import com.ssafy.workalone.presentation.ui.component.StopwatchScreen
+import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 
 
 /** Live preview demo app for ML Kit APIs using CameraX. */
@@ -139,9 +140,9 @@ class CameraXLivePreviewActivity :
               )
             }
             if(exerciseType != "플랭크")
-              RepCounter()
+              RepCounter(viewModel = ExerciseMLKitViewModel())
             else
-              ExerciseTimer()
+              ExerciseTimer(viewModel = ExerciseMLKitViewModel())
           }
         }
 
@@ -306,7 +307,7 @@ class CameraXLivePreviewActivity :
               rescaleZ,
               runClassification,
               /* isStreamMode = */ true,
-              exerciseType
+//              exerciseType
 
             )
       } catch (e: Exception) {

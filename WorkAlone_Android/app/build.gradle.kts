@@ -88,6 +88,7 @@ dependencies {
     //Lottie(콘페티 애니메이션 재생)
     implementation ("com.airbnb.android:lottie-compose:5.2.0")
     implementation(libs.androidx.tools.core)
+    implementation(libs.androidx.camera.core)
 
     val nav_version = "2.7.5"
     val compose_version = "1.6.0-alpha08"
