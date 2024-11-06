@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.ssafy.workalone.R
+import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.CloseButton
 import com.ssafy.workalone.presentation.ui.component.ConfettiAnimation
 import com.ssafy.workalone.presentation.ui.component.CustomButton
@@ -46,13 +46,13 @@ fun IndividualCompleteView(navController: NavController) {
     val weight = 60
     val calorie: Int =
         if (exerciseType == "스쿼트") {
-            (6.0 * weight * (exerciseDuration/3600.0)).roundToInt()
+            (6.0 * weight * (exerciseDuration / 3600.0)).roundToInt()
         } else if (exerciseType == "푸쉬업") {
-            (4.0 * weight * (exerciseDuration/3600.0)).roundToInt()
+            (4.0 * weight * (exerciseDuration / 3600.0)).roundToInt()
         } else if (exerciseType == "윗몸일으키기") {
-            (4.0 * weight * (exerciseDuration/3600.0)).roundToInt()
+            (4.0 * weight * (exerciseDuration / 3600.0)).roundToInt()
         } else if (exerciseType == "플랭크") {
-            (3.0 * weight * (exerciseDuration/3600.0)).roundToInt()
+            (3.0 * weight * (exerciseDuration / 3600.0)).roundToInt()
         } else {
             0
         }
@@ -123,7 +123,12 @@ fun IndividualCompleteView(navController: NavController) {
                 //확인 버튼
                 CustomButton(
                     text = "확인",
-                    onClick = { /* 버튼 클릭 이벤트 */ })
+                    onClick = {
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Home.route) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    })
             }
         }
         ConfettiAnimation()
