@@ -5,6 +5,26 @@ spring:
   application:
     name: WorkAlone_BackEnd
   profiles:
+    active: prod
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: create
+    show-sql: false
+    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        format_sql: false
+
+---
+
+spring:
+  sql:
+    init:
+      mode: always
+  application:
+    name: WorkAlone_BackEnd
+  profiles:
     active: local
   jpa:
     open-in-view: true

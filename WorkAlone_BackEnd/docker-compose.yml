@@ -10,7 +10,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://workaloneDB:3306/workalone?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: swallaby
       SPRING_DATASOURCE_PASSWORD: swallaby1234!
-      SPRING_PROFILES_ACTIVE: local # 어차피 local과 develop 의 compose 파일 구성이 다르니 상관 없을듯
+      SPRING_PROFILES_ACTIVE: local # 어차피 local과 prod 의 compose 파일 구성이 다르니 상관 없을듯
     depends_on:
       workalone_db:
         condition: service_healthy
