@@ -37,7 +37,7 @@ fun RestTime(
     var restTime by remember { mutableStateOf(countNumber) }
     var isTenSecondsLeft by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(showView) {
         while(restTime>0) {
             delay(1000L)
             restTime -= 1

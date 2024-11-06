@@ -26,7 +26,6 @@ import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
-import android.widget.ArrayAdapter
 import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -48,7 +47,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,15 +56,16 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.common.annotation.KeepName
 import com.google.mlkit.common.MlKitException
+import com.ssafy.workalone.R
 import com.ssafy.workalone.mlkit.CameraXViewModel
 import com.ssafy.workalone.mlkit.GraphicOverlay
-import com.ssafy.workalone.R
 import com.ssafy.workalone.mlkit.VisionImageProcessor
 import com.ssafy.workalone.mlkit.java.posedetector.PoseDetectorProcessor
 import com.ssafy.workalone.mlkit.preference.PreferenceUtils
 import com.ssafy.workalone.presentation.ui.component.ExerciseTimer
 import com.ssafy.workalone.presentation.ui.component.RepCounter
 import com.ssafy.workalone.presentation.ui.component.StopwatchScreen
+import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 
 
 /** Live preview demo app for ML Kit APIs using CameraX. */
@@ -139,9 +138,13 @@ class CameraXLivePreviewActivity :
               )
             }
             if(exerciseType != "플랭크")
-              RepCounter()
+              RepCounter(viewModel = ExerciseMLKitViewModel())
             else
+<<<<<<< HEAD
               ExerciseTimer(3,3,3)
+=======
+              ExerciseTimer(viewModel = ExerciseMLKitViewModel())
+>>>>>>> abd80f0623e61261023a085e2b823e00a3ca419d
           }
         }
 
@@ -307,7 +310,7 @@ class CameraXLivePreviewActivity :
               rescaleZ,
               runClassification,
               /* isStreamMode = */ true,
-              exerciseType
+//              exerciseType
 
             )
       } catch (e: Exception) {
