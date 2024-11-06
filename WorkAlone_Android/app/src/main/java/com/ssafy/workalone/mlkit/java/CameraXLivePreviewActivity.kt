@@ -1,3 +1,19 @@
+/*
+ * Copyright 2020 Google LLC. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ssafy.workalone.mlkit.java
 
 import android.Manifest
@@ -10,37 +26,45 @@ import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
+import android.widget.ArrayAdapter
 import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.Camera
+import androidx.camera.core.CameraInfoUnavailableException
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.common.annotation.KeepName
 import com.google.mlkit.common.MlKitException
+import com.ssafy.workalone.mlkit.CameraXViewModel
+import com.ssafy.workalone.mlkit.GraphicOverlay
 import com.ssafy.workalone.R
+import com.ssafy.workalone.mlkit.VisionImageProcessor
 import com.ssafy.workalone.mlkit.java.posedetector.PoseDetectorProcessor
 import com.ssafy.workalone.mlkit.preference.PreferenceUtils
-import com.ssafy.workalone.mlkit.GraphicOverlay
-import com.ssafy.workalone.mlkit.VisionImageProcessor
+import com.ssafy.workalone.presentation.ui.component.ExerciseTimer
 import com.ssafy.workalone.presentation.ui.component.RepCounter
 import com.ssafy.workalone.presentation.ui.component.StopwatchScreen
 
@@ -63,32 +87,12 @@ class CameraXLivePreviewActivity :
   private var lensFacing = CameraSelector.LENS_FACING_FRONT
   private var cameraSelector: CameraSelector? = null
 
-  //audio
-// audio private fun requestAudioPermission() {
-//    if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-//      != PackageManager.PERMISSION_GRANTED) {
-//      ActivityCompat.requestPermissions(
-//        this, arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_RECORD_AUDIO_PERMISSION
-//      )
-//    }
-//  }
-//  override fun onRequestPermissionsResult(
-//    requestCode: Int, permissions: Array<out String>, grantResults: IntArray
-//  ) {
-//    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//    if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
-//      if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//        Log.d(TAG, "Audio permission granted")
-//      } else {
-//        Toast.makeText(this, "Audio permission is required for voice recognition", Toast.LENGTH_SHORT).show()
-//      }
-//    }
-//  }
 
 
 
 
-  @SuppressLint("MissingInflatedId", "UnusedMaterial3ScaffoldPaddingParameter")
+
+  @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
   override fun onCreate(savedInstanceState: Bundle?) {
 
     super.onCreate(savedInstanceState)
@@ -114,29 +118,51 @@ class CameraXLivePreviewActivity :
 
     //ComposeView설정
     val composeView: ComposeView = findViewById(R.id.compose_view)
+    val exerciseType = intent.getStringExtra("exerciseType")
     composeView.setContent {
-        Column(
-          modifier = Modifier.fillMaxSize(),
-          verticalArrangement = Arrangement.SpaceBetween
-        ){
-          Column {
-            StopwatchScreen(isRunning = true)
-            androidx.compose.material.Text(
-              modifier = Modifier.padding(horizontal = 24.dp),
-              text = "스쿼트",
-              fontSize = 20.sp,
-              fontWeight = FontWeight.Bold,
-              color = Color.White
-            )
+      Scaffold(
+        topBar = { StopwatchScreen(true) },
+        containerColor = Color.Transparent,
+        contentColor = Color.Transparent,
+        content = {
+          Column(
+            modifier = Modifier.fillMaxSize().padding(it).background(Color.Transparent),
+            verticalArrangement = Arrangement.SpaceBetween
+          ) {
+            if (exerciseType != null) {
+              androidx.compose.material.Text(
+                modifier = Modifier.padding(horizontal = 24.dp),
+                text = exerciseType,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+              )
+            }
+            if(exerciseType != "플랭크")
+              RepCounter()
+            else
+              ExerciseTimer()
           }
-
-          RepCounter()
         }
 
+      )
     }
+
     val options: MutableList<String> = ArrayList()
     options.add(POSE_DETECTION)
 
+
+
+    ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(application))
+      .get(CameraXViewModel::class.java)
+      .processCameraProvider
+      .observe(
+        this,
+        Observer { provider: ProcessCameraProvider? ->
+          cameraProvider = provider
+          bindAllCameraUseCases()
+        },
+      )
 
   }
 
@@ -172,7 +198,33 @@ class CameraXLivePreviewActivity :
   }
 
   override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
-    //Do nothing
+    if (cameraProvider == null) {
+      return
+    }
+    val newLensFacing =
+      if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
+        CameraSelector.LENS_FACING_BACK
+      } else {
+        CameraSelector.LENS_FACING_FRONT
+      }
+    val newCameraSelector = CameraSelector.Builder().requireLensFacing(newLensFacing).build()
+    try {
+      if (cameraProvider!!.hasCamera(newCameraSelector)) {
+        Log.d(TAG, "Set facing to " + newLensFacing)
+        lensFacing = newLensFacing
+        cameraSelector = newCameraSelector
+        bindAllCameraUseCases()
+        return
+      }
+    } catch (e: CameraInfoUnavailableException) {
+      // Falls through
+    }
+    Toast.makeText(
+      applicationContext,
+      "This device does not have lens with facing: $newLensFacing",
+      Toast.LENGTH_SHORT,
+    )
+      .show()
   }
 
   public override fun onResume() {
@@ -236,6 +288,10 @@ class CameraXLivePreviewActivity :
     }
     imageProcessor =
       try {
+            val exerciseType = intent.getStringExtra("exerciseType")
+        if (exerciseType != null) {
+          Log.d("운동 종류",exerciseType)
+        }
             val poseDetectorOptions = PreferenceUtils.getPoseDetectorOptionsForLivePreview(this)
             val shouldShowInFrameLikelihood =
               PreferenceUtils.shouldShowPoseDetectionInFrameLikelihoodLivePreview(this)
@@ -250,14 +306,16 @@ class CameraXLivePreviewActivity :
               rescaleZ,
               runClassification,
               /* isStreamMode = */ true,
+              exerciseType
+
             )
       } catch (e: Exception) {
         Log.e(TAG, "Can not create image processor: $selectedModel", e)
         Toast.makeText(
-            applicationContext,
-            "Can not create image processor: " + e.localizedMessage,
-            Toast.LENGTH_LONG,
-          )
+          applicationContext,
+          "Can not create image processor: " + e.localizedMessage,
+          Toast.LENGTH_LONG,
+        )
           .show()
         return
       }
@@ -299,8 +357,8 @@ class CameraXLivePreviewActivity :
 
   companion object {
     private const val TAG = "CameraXLivePreview"
-    private const val POSE_DETECTION = "Pose Detection"
-private const val REQUEST_RECORD_AUDIO_PERMISSION = 200
+   private const val POSE_DETECTION = "Pose Detection"
+    private const val REQUEST_RECORD_AUDIO_PERMISSION = 200
 
     private const val STATE_SELECTED_MODEL = "selected_model"
   }
