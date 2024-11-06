@@ -50,6 +50,7 @@ public class PoseDetectorProcessor
   private final boolean isStreamMode;
   private final Context context;
   private final Executor classificationExecutor;
+  private final String ExerciseType;
 
   private PoseClassifierProcessor poseClassifierProcessor;
   /** Internal class to hold Pose and classification results. */
@@ -78,8 +79,10 @@ public class PoseDetectorProcessor
           boolean visualizeZ,
           boolean rescaleZForVisualization,
           boolean runClassification,
-          boolean isStreamMode) {
+          boolean isStreamMode,
+          String ExerciseType) {
     super(context);
+
     this.showInFrameLikelihood = showInFrameLikelihood;
     this.visualizeZ = visualizeZ;
     this.rescaleZForVisualization = rescaleZForVisualization;
@@ -87,7 +90,10 @@ public class PoseDetectorProcessor
     this.runClassification = runClassification;
     this.isStreamMode = isStreamMode;
     this.context = context;
+    this.ExerciseType=ExerciseType;
     classificationExecutor = Executors.newSingleThreadExecutor();
+    Log.d("exer","PoseDetectorProcessor");
+
   }
 
   @Override
@@ -107,7 +113,8 @@ public class PoseDetectorProcessor
                       List<String> classificationResult = new ArrayList<>();
                       if (runClassification) {
                         if (poseClassifierProcessor == null) {
-                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode);
+                        //  Log.d("exer","dectectInImage");
+                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,ExerciseType);
                         }
                         classificationResult = poseClassifierProcessor.getPoseResult(pose);
                       }
@@ -124,15 +131,16 @@ public class PoseDetectorProcessor
                     task -> {
                       Pose pose = task.getResult();
 
-                      if (!isFullBodyVisible(pose)) {
-                        Log.d(TAG, "Full body is not visible. Skipping frame.");
-                        return null; // 주요 랜드마크가 감지되지 않으면 null 반환
-                      }
-
+//                      if (!isFullBodyVisible(pose)) {
+//                        Log.d(TAG, "Full body is not visible. Skipping frame.");
+//                        return null; // 주요 랜드마크가 감지되지 않으면 null 반환
+//                      }
+                      //Log.d("exer","dectectInImage22");
                       List<String> classificationResult = new ArrayList<>();
+                     // Log.d("exer",String.valueOf(runClassification));
                       if (runClassification) {
                         if (poseClassifierProcessor == null) {
-                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode);
+                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,ExerciseType);
                         }
                         classificationResult = poseClassifierProcessor.getPoseResult(pose);
                       }
@@ -183,28 +191,29 @@ public class PoseDetectorProcessor
   // 주요 랜드마크가 모두 감지되었는지 확인하는 메서드 추가
   private static final float LANDMARK_CONFIDENCE_THRESHOLD = 0.5f; // 신뢰도 임계값 설정
 
-  private boolean isFullBodyVisible(Pose pose) {
-    // 전체 신체를 인식하는 데 필요한 주요 랜드마크 (어깨, 손목, 엉덩이, 발목 등)
-    int[] requiredLandmarks = {
-            PoseLandmark.LEFT_SHOULDER,
-            PoseLandmark.RIGHT_SHOULDER,
-            PoseLandmark.LEFT_HIP,
-            PoseLandmark.RIGHT_HIP,
-            PoseLandmark.LEFT_WRIST,
-            PoseLandmark.RIGHT_WRIST,
-            PoseLandmark.LEFT_ANKLE,
-            PoseLandmark.RIGHT_ANKLE
-    };
-
-    for (int landmarkType : requiredLandmarks) {
-      PoseLandmark landmark = pose.getPoseLandmark(landmarkType);
-      if (landmark == null || landmark.getInFrameLikelihood() < LANDMARK_CONFIDENCE_THRESHOLD) {
-        // 주요 랜드마크가 하나라도 감지되지 않거나 신뢰도가 낮으면 전체 신체가 보이지 않음
-        return false;
-      }
-    }
-    return true; // 주요 랜드마크가 모두 감지되고 신뢰도 기준을 충족한 경우
-  }
+//  private boolean isFullBodyVisible(Pose pose) {
+//    // 전체 신체를 인식하는 데 필요한 주요 랜드마크 (어깨, 손목, 엉덩이, 발목 등)
+//    int[] requiredLandmarks = {
+//
+//            PoseLandmark.LEFT_SHOULDER,
+//            PoseLandmark.RIGHT_SHOULDER,
+//            PoseLandmark.LEFT_HIP,
+//            PoseLandmark.RIGHT_HIP,
+//            PoseLandmark.LEFT_WRIST,
+//            PoseLandmark.RIGHT_WRIST,
+//            PoseLandmark.LEFT_ANKLE,
+//            PoseLandmark.RIGHT_ANKLE
+//    };
+//
+//    for (int landmarkType : requiredLandmarks) {
+//      PoseLandmark landmark = pose.getPoseLandmark(landmarkType);
+//      if (landmark == null || landmark.getInFrameLikelihood() < LANDMARK_CONFIDENCE_THRESHOLD) {
+//        // 주요 랜드마크가 하나라도 감지되지 않거나 신뢰도가 낮으면 전체 신체가 보이지 않음
+//        return false;
+//      }
+//    }
+//    return true; // 주요 랜드마크가 모두 감지되고 신뢰도 기준을 충족한 경우
+//  }
 
 
 

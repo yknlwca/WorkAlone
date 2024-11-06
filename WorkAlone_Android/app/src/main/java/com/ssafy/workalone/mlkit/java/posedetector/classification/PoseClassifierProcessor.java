@@ -52,6 +52,8 @@ import androidx.core.content.ContextCompat;
 
 import com.google.common.base.Preconditions;
 import com.google.mlkit.vision.pose.Pose;
+import com.google.mlkit.vision.pose.PoseLandmark;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -65,7 +67,7 @@ import android.speech.tts.TextToSpeech;
  */
 public class PoseClassifierProcessor {
   private static final String TAG = "PoseClassifierProcessor";
-  private static final String POSE_SAMPLES_FILE = "pose/pose_data.csv";
+  private static  String POSE_SAMPLES_FILE = "pose/pose_data.csv";
   public static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
 
   private static final String PUSHUPS_CLASS = "pushups_down";
@@ -99,27 +101,27 @@ public class PoseClassifierProcessor {
   private String lastRepResult;
   private Handler mainHandler = new Handler(Looper.getMainLooper());
 
-  private void requestAudioPermission(Activity activity) {
-    if (ContextCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO)
-            != PackageManager.PERMISSION_GRANTED) {
-      ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_AUDIO_PERMISSION);
-    }
-  }
 
   @WorkerThread
-  public PoseClassifierProcessor(Context context, boolean isStreamMode) {
+  public PoseClassifierProcessor(Context context, boolean isStreamMode,String ExerciseType) {
     Preconditions.checkState(Looper.myLooper() != Looper.getMainLooper());
     this.isStreamMode = isStreamMode;
     this.context = context;
 
 
+
+    setPoseSamplesFile(ExerciseType);
+    Log.d("exer: ",ExerciseType);
+    Log.d("exer:  ",POSE_SAMPLES_FILE);
     initializeTextToSpeech();
+
     if (isStreamMode) {
       emaSmoothing = new EMASmoothing();
       repCounters = new ArrayList<>();
       lastRepResult = "";
     }
     mainHandler.post(this::initializeSpeechRecognition);
+
 
     loadPoseSamples(context);
   }
@@ -129,19 +131,11 @@ public class PoseClassifierProcessor {
       if (status == TextToSpeech.SUCCESS) {
         textToSpeech.setLanguage(Locale.KOREAN);
       } else {
-        Log.e(TAG, "TextToSpeech initialization failed");
+       // Log.e(TAG, "TextToSpeech initialization failed");
       }
     });
   }
 
-  public void requestAudioPermissionIfNeeded (Activity activity) {
-    if (ContextCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO)
-            != PackageManager.PERMISSION_GRANTED) {
-      ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_AUDIO_PERMISSION);
-    } else {
-      Log.d(TAG, "Audio permission already granted.");
-    }
-  }
 
 
   // 음성 인식 부분
@@ -152,14 +146,14 @@ public class PoseClassifierProcessor {
 
       @Override
       public void onReadyForSpeech(Bundle bundle) {
-        Log.d(TAG, "음성 인식 준비됨");
-        System.out.println("음석 인식 준비 됨");
+        //Log.d(TAG, "음성 인식 준비됨");
+        //System.out.println("음석 인식 준비 됨");
       }
 
       @Override
       public void onBeginningOfSpeech() {
-        Log.d(TAG, "음성 인식 시작됨");
-        System.out.println("음성 인식 시작");
+        //Log.d(TAG, "음성 인식 시작됨");
+       // S//ystem.out.println("음성 인식 시작");
 
       }
 
@@ -175,7 +169,7 @@ public class PoseClassifierProcessor {
 
       @Override
       public void onEndOfSpeech() {
-        Log.d(TAG, "음성 인식 종료됨");
+     //   Log.d(TAG, "음성 인식 종료됨");
       }
 
       @Override
@@ -186,7 +180,7 @@ public class PoseClassifierProcessor {
             Log.e(TAG, "네트워크 오류");
             break;
           case SpeechRecognizer.ERROR_AUDIO:
-            Log.e(TAG, "오디오 입력 오류");
+           Log.e(TAG, "오디오 입력 오류");
             break;
           case SpeechRecognizer.ERROR_NO_MATCH:
             Log.e(TAG, "일치하는 결과 없음");
@@ -202,25 +196,20 @@ public class PoseClassifierProcessor {
       @Override
       public void onResults(Bundle results) {
         List<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-        if (matches != null) {
-          for (String command : matches) {
-            Log.d(TAG, "음성 인식 결과: " + command); // 여기서 실시간으로 인식된 음성을 로그로 출력
-            // 기존 코드 유지
-          }
-        }
+
         if (matches != null) {
           for (String command : matches) {
             if (command.equalsIgnoreCase("시작")) {
               isTracking = true;
               isPaused = false;
-              Log.d(TAG, "운동 추적 시작됨");
+              //Log.d(TAG, "운동 추적 시작됨");
             } else if (command.equalsIgnoreCase("정지")) {
               isPaused = true;
-              Log.d(TAG, "운동 추적 일시 중지됨");
+             // Log.d(TAG, "운동 추적 일시 중지됨");
             } else if (command.equalsIgnoreCase("종료")) {
               isTracking = false;
               shutdown();
-              Log.d(TAG, "운동 추적 종료됨");
+             // Log.d(TAG, "운동 추적 종료됨");
             }
           }
         }
@@ -263,7 +252,7 @@ public class PoseClassifierProcessor {
         csvLine = reader.readLine();
       }
     } catch (IOException e) {
-      Log.e(TAG, "Error when loading pose samples.\n" + e);
+     // Log.e(TAG, "Error when loading pose samples.\n" + e);
     }
     poseClassifier = new PoseClassifier(poseSamples);
     if (isStreamMode) {
@@ -284,13 +273,6 @@ public class PoseClassifierProcessor {
 
     ClassificationResult classification = poseClassifier.classify(pose);
 
-//    if (!isTracking || isPaused) {
-//      result.add("추적이 현재 일시 중지 또는 종료 상태입니다.");
-//      result.add("isTracking: "+isTracking);
-//      result.add("isPaused: "+isPaused);
-//
-//      return result;
-//    }
 
     if (!isTracking) {
       result.add("추적이 종료되었습니다.");
@@ -313,6 +295,17 @@ public class PoseClassifierProcessor {
         result.add(lastRepResult);
         return result;
       }
+
+      // 특정 자세가 잘못된 경우 피드백 추가
+//      if (classification.getMaxConfidenceClass().equals(SQUATS_CLASS)) {
+//        if (isKneeTooFarForward(pose)) {
+//          speakResult("무릎을 앞으로 내밀지 마세요");
+//          result.add("무릎을 앞으로 내밀지 마세요");
+//        } else if (isUpperBodyNotUpright(pose)) {
+//          speakResult("상체를 곧게 펴세요");
+//          result.add("상체를 곧게 펴세요");
+//        }
+//      }
 
       for (RepetitionCounter repCounter : repCounters) {
         if (repCounter.getClassName().equals(PLANK_CLASS)) {
@@ -376,4 +369,56 @@ public class PoseClassifierProcessor {
       speechRecognizer.destroy();
     }
   }
+
+
+  // 무릎이 앞으로 너무 나갔는지 판단하는 메서드
+  private boolean isKneeTooFarForward(Pose pose) {
+    PoseLandmark leftKnee = pose.getPoseLandmark(PoseLandmark.LEFT_KNEE);
+    PoseLandmark leftAnkle = pose.getPoseLandmark(PoseLandmark.LEFT_ANKLE);
+    PoseLandmark leftHip = pose.getPoseLandmark(PoseLandmark.LEFT_HIP);
+
+    if (leftKnee != null && leftAnkle != null && leftHip != null) {
+      // 무릎이 발 앞쪽으로 나간 경우: x 좌표로 비교
+      if (leftKnee.getPosition().x > leftAnkle.getPosition().x) {
+        // 무릎이 발보다 앞에 위치하면 잘못된 자세로 판단
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // 상체가 앞으로 기울어졌는지 판단하는 메서드
+  private boolean isUpperBodyNotUpright(Pose pose) {
+    PoseLandmark leftShoulder = pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER);
+    PoseLandmark leftHip = pose.getPoseLandmark(PoseLandmark.LEFT_HIP);
+
+    if (leftShoulder != null && leftHip != null) {
+      // 상체 기울기 계산 (y 좌표 차이를 이용해 세로 기울기 확인)
+      float shoulderToHipYDifference = leftShoulder.getPosition().y - leftHip.getPosition().y;
+      float shoulderToHipXDifference = leftShoulder.getPosition().x - leftHip.getPosition().x;
+
+      // 상체가 수직에 가깝지 않으면 (기울기가 임계값 이상인 경우)
+      if (Math.abs(shoulderToHipXDifference) > 0.3 * Math.abs(shoulderToHipYDifference)) {
+        // 상체가 기울어졌다고 판단
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private void setPoseSamplesFile(String exerciseType) {
+    switch (exerciseType.toLowerCase()) {
+      case "squat":
+        POSE_SAMPLES_FILE = "pose/squat.csv";
+        break;
+      case "pushup":
+        POSE_SAMPLES_FILE = "pose/push_up.csv";
+        break;
+      // 다른 운동에 대해서도 추가 가능
+      default:
+        POSE_SAMPLES_FILE = "pose/default.csv"; // 기본 파일
+        break;
+    }
+  }
+
 }
