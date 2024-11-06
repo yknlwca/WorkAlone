@@ -38,11 +38,13 @@ fun RestTime(
     var isTenSecondsLeft by remember { mutableStateOf(false) }
 
     LaunchedEffect(showView) {
-        while(restTime>0) {
-            delay(1000L)
-            restTime -= 1
-            if(restTime == 10) {
-                isTenSecondsLeft = true
+        if (showView) {
+            while (restTime > 0) {
+                delay(1000L)
+                restTime -= 1
+                if (restTime == 10) {
+                    isTenSecondsLeft = true
+                }
             }
         }
     }
