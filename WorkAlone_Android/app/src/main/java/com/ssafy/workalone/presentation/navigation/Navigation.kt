@@ -3,6 +3,7 @@ package com.ssafy.workalone.presentation.navigation
 import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -11,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.ssafy.workalone.data.local.MemberPreferenceManager
 import com.ssafy.workalone.mlkit.java.CameraXLivePreviewActivity
 import com.ssafy.workalone.presentation.ui.screen.ExerciseDetailView
 import com.ssafy.workalone.presentation.ui.screen.ExerciseListView
@@ -26,6 +28,10 @@ fun Navigation(
     startDestination: String = Screen.Home.route
 ) {
     val activity = LocalContext.current as? Activity
+    val context = LocalContext.current
+    val memberPreference = remember { MemberPreferenceManager(context) }
+
+
     BackHandler(enabled = true) {
         if (!navController.popBackStack()) {
             activity?.finish()
@@ -37,7 +43,7 @@ fun Navigation(
         startDestination = startDestination
     ) {
         composable(Screen.Home.route) {
-            HomeView(navController)
+            HomeView(navController, memberPreference.getMember())
         }
 
         composable(Screen.Login.route) {
