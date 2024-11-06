@@ -1,4 +1,4 @@
-package com.ssafy.workalone.presentation.ui.component.Calendar
+package com.ssafy.workalone.presentation.ui.component.calendar
 
 import android.annotation.SuppressLint
 import android.os.Build

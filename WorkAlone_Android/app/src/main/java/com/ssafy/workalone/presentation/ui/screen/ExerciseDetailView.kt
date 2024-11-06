@@ -1,14 +1,9 @@
 package com.ssafy.workalone.presentation.ui.screen
 
-import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.provider.MediaStore
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +23,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -35,15 +31,16 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.ssafy.workalone.mlkit.java.CameraXLivePreviewActivity
-import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.AppBarView
 import com.ssafy.workalone.presentation.ui.component.CustomButton
+import com.ssafy.workalone.presentation.ui.component.VideoPlayer
 import com.ssafy.workalone.presentation.ui.theme.LocalWorkAloneTypography
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.ui.theme.WorkAloneTheme
 import com.ssafy.workalone.presentation.viewmodels.ExerciseViewModel
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -53,31 +50,27 @@ fun ExerciseDetailView(
     id: Long, exerciseType: String
 ) {
     val context = LocalContext.current
-    val activity = context as? Activity
     val scaffoldState = rememberScaffoldState()
     val exercises = viewModel.getExerciseById(id, exerciseType)
         .collectAsState(initial = listOf())
     var currentIndex by remember { mutableStateOf(0) }
     var currentExercise = exercises.value.getOrNull(currentIndex)
     val scrollState = rememberScrollState()
-    // 카메라 실행 런처
-    val takePictureLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            // 촬영 완료
-            navController.navigate(Screen.IndividualComplete.route)
-            Toast.makeText(context, "촬영되었습니다.", Toast.LENGTH_SHORT).show()
-        }
-    }
+    val coroutineScope = rememberCoroutineScope()
+    val intent = Intent(context, CameraXLivePreviewActivity::class.java)
+
     // 권한 요청 런처
     val requestPermissionLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                // 권한 허용이면 카메라 실행
-                startCamera(activity, takePictureLauncher)
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            val cameraGranted = permissions[android.Manifest.permission.CAMERA] ?: false
+            val audioGranted = permissions[android.Manifest.permission.RECORD_AUDIO] ?: false
+            if (cameraGranted) {
+                context.startActivity(intent)
             } else {
                 Toast.makeText(context, "카메라 권한이 필요합니다", Toast.LENGTH_LONG).show()
+            }
+            if (!audioGranted) {
+                Toast.makeText(context, "음성 기능은 오디오 권한이 필요합니다.", Toast.LENGTH_LONG).show()
             }
         }
 
@@ -119,13 +112,10 @@ fun ExerciseDetailView(
                             modifier = Modifier.padding(bottom = 24.dp)
                         )
 
-//                        // YouTube 영상 -> 나중에 직접 찍은 동영상으로 바꿔야함
-//                        getYoutubeVideoId("https://www.youtube.com/watch?v=50f62PSGY7k&pp=ygUJ7Iqk7L-87Yq4")?.let { it1 ->
-//                            YouTubePlayerScreen(
-//                                videoId = it1
-//                            )
-//                        }
-
+                        VideoPlayer(
+                            videoUrl = "android.resource://com.ssafy.workalone/raw/sample_video",
+                            viewModel = viewModel
+                        )
                     }
                     Column(
                         modifier = Modifier
@@ -152,6 +142,9 @@ fun ExerciseDetailView(
                                 text = "다음 운동 보기",
                                 onClick = {
                                     currentIndex += 1
+                                    coroutineScope.launch {
+                                        scrollState.animateScrollTo(0)
+                                    }
                                 }
                             )
                         } else {
@@ -162,10 +155,18 @@ fun ExerciseDetailView(
                                         context,
                                         android.Manifest.permission.CAMERA
                                     )
-                                    if (cameraPermissionCheck != PackageManager.PERMISSION_GRANTED) {
-                                        requestPermissionLauncher.launch(android.Manifest.permission.CAMERA)
+                                    val audioPermissionCheck = ContextCompat.checkSelfPermission(
+                                        context,
+                                        android.Manifest.permission.RECORD_AUDIO
+                                    )
+                                    if (cameraPermissionCheck != PackageManager.PERMISSION_GRANTED || audioPermissionCheck != PackageManager.PERMISSION_GRANTED) {
+                                        requestPermissionLauncher.launch(
+                                            arrayOf(
+                                                android.Manifest.permission.CAMERA,
+                                                android.Manifest.permission.RECORD_AUDIO
+                                            )
+                                        )
                                     } else {
-                                        val intent = Intent(context, CameraXLivePreviewActivity::class.java)
                                         context.startActivity(intent)
                                     }
                                 },
@@ -177,13 +178,6 @@ fun ExerciseDetailView(
         }
     }
 }
-
-private fun getYoutubeVideoId(url: String?): String? {
-    if (url.isNullOrEmpty()) return null
-    val regex = "v=([^&]+)".toRegex()
-    return regex.find(url)?.groupValues?.get(1)
-}
-
 
 @Composable
 fun SectionItem(title: String, description: String) {
@@ -198,17 +192,5 @@ fun SectionItem(title: String, description: String) {
             style = WorkAloneTheme.typography.Body01,
             modifier = Modifier.padding(start = 8.dp)
         )
-    }
-}
-
-// 카메라 실행 함수
-@SuppressLint("QueryPermissionsNeeded")
-private fun startCamera(activity: Activity?, takePictureLauncher: ActivityResultLauncher<Intent>) {
-    activity?.let {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        takePictureIntent.resolveActivity(it.packageManager)?.also {
-            Log.d("Camera", "Camera Intent OK")
-            takePictureLauncher.launch(takePictureIntent)
-        }
     }
 }

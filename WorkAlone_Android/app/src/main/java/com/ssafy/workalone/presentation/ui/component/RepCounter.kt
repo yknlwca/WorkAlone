@@ -6,9 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,7 +29,7 @@ import com.ssafy.workalone.presentation.ui.theme.WalkOneGray500
 @Composable
 fun RepCounter(){
 
-    var isPaused: Boolean = false
+    var isPaused by remember { mutableStateOf(false) }
     val totalReps: Int = 15
     var currentReps by remember { mutableStateOf(0) }
     val totalSets: Int = 3
@@ -121,7 +119,7 @@ fun RepCounter(){
                     WalkOneBlue500,
                     WalkOneGray50,
                     WalkOneBlue500,
-                    onClick = {}
+                    onClick = { isPaused = !isPaused }
                 )
             }
         } else {
@@ -153,7 +151,7 @@ fun RepCounter(){
                         WalkOneGray50,
                         WalkOneBlue500,
                         WalkOneBlue500,
-                        onClick = {}
+                        onClick = { isPaused = !isPaused }
                     )
                 }
             }

@@ -9,11 +9,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.ssafy.workalone.presentation.navigation.Navigation
+import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.theme.WorkAloneTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val startDestination = intent.getStringExtra("startDestination") ?: Screen.Home.route
         setContent {
             WorkAloneTheme {
                 Surface(
@@ -21,10 +23,9 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background)
                 ) {
-                    Navigation()
+                    Navigation(startDestination = startDestination)
                 }
             }
         }
     }
 }
- 

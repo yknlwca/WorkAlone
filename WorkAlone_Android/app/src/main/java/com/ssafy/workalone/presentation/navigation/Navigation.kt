@@ -15,12 +15,15 @@ import com.ssafy.workalone.mlkit.java.CameraXLivePreviewActivity
 import com.ssafy.workalone.presentation.ui.screen.ExerciseDetailView
 import com.ssafy.workalone.presentation.ui.screen.ExerciseListView
 import com.ssafy.workalone.presentation.ui.screen.HomeView
+import com.ssafy.workalone.presentation.ui.screen.IndividualCompleteView
+import com.ssafy.workalone.presentation.ui.screen.LoginView
 import com.ssafy.workalone.presentation.viewmodels.ExerciseViewModel
 
 @Composable
 fun Navigation(
     viewModel: ExerciseViewModel = viewModel(),
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    startDestination: String = Screen.Home.route
 ) {
     val activity = LocalContext.current as? Activity
     BackHandler(enabled = true) {
@@ -31,11 +34,14 @@ fun Navigation(
 
     NavHost(
         navController = navController,
-//        startDestination = Screen.ExerciseList.route
-        startDestination = Screen.Home.route
+        startDestination = startDestination
     ) {
         composable(Screen.Home.route) {
             HomeView(navController)
+        }
+
+        composable(Screen.Login.route) {
+            LoginView(navController)
         }
 
         composable(Screen.ExerciseList.route) {
@@ -61,11 +67,20 @@ fun Navigation(
             val exerciseType =
                 if (entry.arguments != null) entry.arguments!!.getString("exerciseType") else ""
             if (exerciseType != null) {
-                ExerciseDetailView(navController = navController, viewModel, exerciseId, exerciseType)
+                ExerciseDetailView(
+                    navController = navController,
+                    viewModel,
+                    exerciseId,
+                    exerciseType
+                )
             }
         }
-        composable("cameraScreen") { CameraXLivePreviewActivity() }
 
+        composable(Screen.IndividualComplete.route) {
+            IndividualCompleteView(
+                navController = navController
+            )
+        }
 
 
     }
