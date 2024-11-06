@@ -37,7 +37,6 @@ fun RestTime(
     var restTime by remember { mutableStateOf(countNumber) }
     var isTenSecondsLeft by remember { mutableStateOf(false) }
 
-    val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         while(restTime>0) {
             delay(1000L)
