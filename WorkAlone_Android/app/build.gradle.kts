@@ -90,6 +90,7 @@ dependencies {
     //Lottie(콘페티 애니메이션 재생)
     implementation ("com.airbnb.android:lottie-compose:5.2.0")
     implementation(libs.androidx.tools.core)
+    implementation(libs.androidx.camera.core)
 
     implementation("androidx.navigation:navigation-compose:$nav_version")
     implementation("androidx.compose.ui:ui:$compose_version")

@@ -31,22 +31,18 @@ import androidx.compose.ui.unit.sp
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray500
+import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 // 운동 타이머 컴포넌트
 @Composable
-fun ExerciseTimer(
-    initialGoalTime: Int,
-    initialCurrentSet: Int,
-    initialTotalSets: Int
-
-){
+fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
 
     var isPaused by remember { mutableStateOf(false) }
-    var goalTime by remember { mutableStateOf(initialGoalTime) }
-    val totalSets: Int = initialTotalSets
-    var currentSet by remember { mutableStateOf(initialCurrentSet) }
+    var goalTime by viewModel.totalRep
+    val totalSets by viewModel.totalSet
+    var currentSet by viewModel.nowSet
 
     val configuration = LocalConfiguration.current
 
@@ -57,7 +53,7 @@ fun ExerciseTimer(
                 delay(1000L)
                 // 일시정지가 아닐 때만 감소
                 if (!isPaused) {
-                    goalTime -= 1
+                    viewModel.decreaseTime()
                 }
             } else {
                 // 일시정지 상태에서 짧은 대기
@@ -318,5 +314,5 @@ fun ExerciseTimer(
 @Preview(name = "Landscape", widthDp = 640, heightDp = 360)
 @Composable
 fun previewExerciseTimer(){
-    ExerciseTimer(10, 1,3)
+    ExerciseTimer(viewModel = ExerciseMLKitViewModel())
 }

@@ -15,6 +15,7 @@ import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.ExerciseTimer
 import com.ssafy.workalone.presentation.ui.component.RepCounter
 import com.ssafy.workalone.presentation.ui.theme.WorkAloneTheme
+import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
