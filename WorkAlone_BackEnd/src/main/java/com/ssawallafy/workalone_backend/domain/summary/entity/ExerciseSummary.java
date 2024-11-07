@@ -1,5 +1,6 @@
 package com.ssawallafy.workalone_backend.domain.summary.entity;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 import com.ssawallafy.workalone_backend.domain.exercise.entity.Exercise;
@@ -24,7 +25,7 @@ public class ExerciseSummary {
 	@JoinColumn(name = "member_id")
 	private Member member;
 
-	private LocalTime date;
+	private LocalDate date;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "exercise_id")
