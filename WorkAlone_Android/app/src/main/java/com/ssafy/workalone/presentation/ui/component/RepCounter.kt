@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -52,6 +53,7 @@ fun RepCounter(viewModel: ExerciseMLKitViewModel){
                         bottomEnd = 0.dp
                     ))
                 .fillMaxWidth()
+                .height(230.dp)
                 .padding(25.dp),
 
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -60,7 +62,7 @@ fun RepCounter(viewModel: ExerciseMLKitViewModel){
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${currentReps}",
+                    text = "${viewModel.nowRep.value}",
                     fontSize = 56.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
@@ -74,7 +76,7 @@ fun RepCounter(viewModel: ExerciseMLKitViewModel){
                         .alignByBaseline()
                 )
                 Text(
-                    text = "${totalReps}회",
+                    text = "${viewModel.totalRep.value}회",
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier

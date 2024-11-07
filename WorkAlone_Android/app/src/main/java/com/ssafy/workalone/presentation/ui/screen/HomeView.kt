@@ -54,7 +54,6 @@ import com.ssafy.workalone.presentation.viewmodels.CalendarViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("NewApi")
 @Composable
@@ -142,17 +141,16 @@ fun HomeView(navController: NavController, member: Member) {
                         CustomButton(
                             text = "챌린지 이동하기",
                             onClick = {
-
-                     navController.navigate(Screen.ExerciseList.route)
+//                                navController.navigate(Screen.ExerciseList.route)
                             val intent = Intent(context, CameraXLivePreviewActivity::class.java)
-                            intent.putExtra("exerciseType","푸쉬업")
+                            intent.putExtra("exerciseType","스쿼트")
                             Log.d("123","여기여기")
                             context.startActivity(intent)
-
-
                             },
                         )
                     }
+
+
                 }
             }
         }

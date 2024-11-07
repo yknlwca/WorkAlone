@@ -16,10 +16,14 @@
 
 package com.ssafy.workalone.mlkit.java.posedetector;
 
+import static android.webkit.ConsoleMessage.MessageLevel.LOG;
+
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModel;
+
 import com.google.android.gms.tasks.Task;
 import com.google.android.odml.image.MlImage;
 import com.google.mlkit.vision.common.InputImage;
@@ -37,6 +41,7 @@ import com.google.mlkit.vision.pose.Pose;
 import com.ssafy.workalone.mlkit.GraphicOverlay;
 import com.ssafy.workalone.mlkit.java.VisionProcessorBase;
 import com.ssafy.workalone.mlkit.java.posedetector.classification.PoseClassifierProcessor;
+import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel;
 
 /** A processor to run pose detector. */
 public class PoseDetectorProcessor
@@ -54,6 +59,7 @@ public class PoseDetectorProcessor
   private final Executor classificationExecutor;
   private final String ExerciseType;
   private TextToSpeech textToSpeech;  // TTS instance
+  private final ExerciseMLKitViewModel viewModel;
 
   private static final long TTS_COOLDOWN_MS = 10000; // TTS 호출 간 최소 5초 간격
   private long lastTtsTime = 0; // 마지막 TTS 호출 시간
@@ -85,7 +91,8 @@ public class PoseDetectorProcessor
           boolean rescaleZForVisualization,
           boolean runClassification,
           boolean isStreamMode,
-          String ExerciseType) {
+          String ExerciseType,
+           ExerciseMLKitViewModel viewModel1) {
     super(context);
 
     this.showInFrameLikelihood = showInFrameLikelihood;
@@ -96,6 +103,7 @@ public class PoseDetectorProcessor
     this.isStreamMode = isStreamMode;
     this.context = context;
     this.ExerciseType=ExerciseType;
+    this.viewModel = viewModel1;
     classificationExecutor = Executors.newSingleThreadExecutor();
     Log.d("exer","PoseDetectorProcessor");
 
@@ -117,6 +125,7 @@ public class PoseDetectorProcessor
 
   @Override
   protected Task<PoseWithClassification> detectInImage(InputImage image) {
+
     return detector
             .process(image)
             .continueWith(
@@ -131,7 +140,7 @@ public class PoseDetectorProcessor
                           Log.d("exer","dectectInImage");
                           poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,ExerciseType);
                         }
-                        classificationResult = poseClassifierProcessor.getPoseResult(pose);
+                        classificationResult = poseClassifierProcessor.getPoseResult(pose,viewModel);
                       }
                       return new PoseWithClassification(pose, classificationResult);
                     });
@@ -141,6 +150,7 @@ public class PoseDetectorProcessor
   // 화면 전부 들어오게 하는부분
   @Override
   protected Task<PoseWithClassification> detectInImage(MlImage image) {
+
     return detector
             .process(image)
             .continueWith(
@@ -172,8 +182,10 @@ public class PoseDetectorProcessor
                       if (runClassification) {
                         if (poseClassifierProcessor == null) {
                           poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,"스쿼트");
+                          Log.d("exer",ExerciseType);
+                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,ExerciseType);
                         }
-                        classificationResult = poseClassifierProcessor.getPoseResult(pose);
+                        classificationResult = poseClassifierProcessor.getPoseResult(pose,viewModel);
                       }
                       return new PoseWithClassification(pose, classificationResult);
                     });
