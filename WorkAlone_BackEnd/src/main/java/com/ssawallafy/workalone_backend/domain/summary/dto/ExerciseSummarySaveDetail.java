@@ -13,4 +13,5 @@ public class ExerciseSummarySaveDetail {
 
 	private int kcal;
 
+	private String video_url;
 }
