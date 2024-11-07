@@ -28,8 +28,8 @@ import com.ssafy.workalone.presentation.viewmodels.ExerciseViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ExerciseListView(navController: NavController, viewModel: ExerciseViewModel) {
-    val exerciseList = viewModel.getAllExercises.collectAsState(initial = listOf())
+fun ExerciseListView(navController: NavController, viewModel: ExerciseViewModel = ExerciseViewModel()) {
+    val challengeList = viewModel.getAllChallenge.collectAsState(initial = listOf())
     val errorMessage by viewModel.errorMessage.collectAsState()
 
     Scaffold(
@@ -57,12 +57,11 @@ fun ExerciseListView(navController: NavController, viewModel: ExerciseViewModel)
                     .fillMaxSize()
                     .padding(it)
             ) {
-                items(exerciseList.value) { exercise ->
-                    ExerciseItem(exercise = exercise) {
+                items(challengeList.value) { challenge ->
+                    ExerciseItem(challenge = challenge) {
                         navController.navigate(
                             Screen.ExerciseDetail.createRoute(
-                                exercise.exerciseId,
-                                exercise.exerciseType
+                                challenge.groupId
                             )
                         )
                     }
