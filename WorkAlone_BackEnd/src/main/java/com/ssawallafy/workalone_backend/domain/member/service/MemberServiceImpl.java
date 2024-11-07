@@ -10,6 +10,7 @@ import com.ssawallafy.workalone_backend.domain.member.dto.MemberModifyReq;
 import com.ssawallafy.workalone_backend.domain.member.dto.MemberSaveReq;
 import com.ssawallafy.workalone_backend.domain.member.entity.Member;
 import com.ssawallafy.workalone_backend.domain.member.exception.BusinessLogicException;
+import com.ssawallafy.workalone_backend.domain.member.exception.ErrorCode;
 import com.ssawallafy.workalone_backend.domain.member.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,15 @@ public class MemberServiceImpl implements MemberService {
 			.build();
 
 		return memberRepository.save(member).getId();
+	}
+
+	@Override
+	public Member findMember(String name) {
+
+		Member member = (Member) memberRepository.findByName(name)
+			.orElseThrow(() -> new BusinessLogicException(ErrorCode.NOT_FOUND));
+
+		return member;
 	}
 
 	@Override
