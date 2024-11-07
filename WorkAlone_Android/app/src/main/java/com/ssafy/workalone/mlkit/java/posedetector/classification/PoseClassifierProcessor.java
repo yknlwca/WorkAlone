@@ -315,8 +315,12 @@ public class PoseClassifierProcessor {
 
 
 
+      Log.d("exer","pose sample file:"+POSE_SAMPLES_FILE);
       for (RepetitionCounter repCounter : repCounters) {
-        if (repCounter.getClassName().equals(PLANK_CLASS)) {
+
+        //Log.d("exer",String.valueOf(repCounter.getClassName()));
+
+        if (POSE_SAMPLES_FILE.equals("pose/plank.csv")) {
           if (classification.getMaxConfidenceClass().equals(PLANK_CLASS))
           {
             // 플래그를 true로 설정하여 플랭크 자세 인식
@@ -424,7 +428,7 @@ public class PoseClassifierProcessor {
         POSE_SAMPLES_FILE = "pose/squat.csv";
         break;
       case "푸쉬업":
-        POSE_SAMPLES_FILE = "pose/pushup123.csv";
+        POSE_SAMPLES_FILE = "pose/pushup.csv";
         break;
       case "플랭크":
         POSE_SAMPLES_FILE = "pose/plank.csv";

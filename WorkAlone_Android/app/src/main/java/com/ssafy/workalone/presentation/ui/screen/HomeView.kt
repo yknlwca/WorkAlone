@@ -2,6 +2,8 @@ package com.ssafy.workalone.presentation.ui.screen
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -140,11 +142,14 @@ fun HomeView(navController: NavController, member: Member) {
                         CustomButton(
                             text = "챌린지 이동하기",
                             onClick = {
-                                navController.navigate(Screen.ExerciseList.route)
-//                            val intent = Intent(context, CameraXLivePreviewActivity::class.java)
-//                            intent.putExtra("exerciseType","플랭크")
-//                            Log.d("123","여기여기")
-//                            context.startActivity(intent)
+
+                     navController.navigate(Screen.ExerciseList.route)
+                            val intent = Intent(context, CameraXLivePreviewActivity::class.java)
+                            intent.putExtra("exerciseType","푸쉬업")
+                            Log.d("123","여기여기")
+                            context.startActivity(intent)
+
+
                             },
                         )
                     }
