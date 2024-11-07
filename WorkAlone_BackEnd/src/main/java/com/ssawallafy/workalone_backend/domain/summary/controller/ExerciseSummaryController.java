@@ -38,7 +38,7 @@ public class ExerciseSummaryController {
 	private String bucketName;
 
 	@GetMapping("/url")
-	@Operation(summary = "Presigned url 요청", description = "PDF S3 업로드를 위한 presigned url과 객체 Url을 요청")
+	@Operation(summary = "Presigned url 요청", description = "S3 업로드를 위한 presigned url과 객체 Url을 요청.\n클라이언트는 presignedUrl에 PUT 요청을 보내 업로드 할 수 있습니다.")
 	public ResponseEntity<UrlResponse> generatePresignedUrl() {
 
 		UrlResponse response = exerciseSummaryService.generatePreSignUrl(UUID.randomUUID() + ".mp4", bucketName,
