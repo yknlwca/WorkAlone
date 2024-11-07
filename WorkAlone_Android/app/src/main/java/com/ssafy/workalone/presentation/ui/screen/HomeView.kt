@@ -143,7 +143,7 @@ fun HomeView(navController: NavController, member: Member) {
                             onClick = {
 //                                navController.navigate(Screen.ExerciseList.route)
                             val intent = Intent(context, CameraXLivePreviewActivity::class.java)
-                            intent.putExtra("exerciseType","플랭크")
+                            intent.putExtra("exerciseType","푸쉬업")
                             Log.d("123","여기여기")
                             context.startActivity(intent)
                             },
