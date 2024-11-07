@@ -77,12 +77,14 @@ public class PoseClassifierProcessor {
   private static final String SITUP_CLASS = "situp_down";
   private static final String PLANK_CLASS = "plank";
   private static long plankStartTime = 0;
+  private boolean plankFlag = false;
 
-
+  private static final float MINIMUM_RMS_THRESHOLD = 3.5f; // 감도 기준 설정 (조정 가능)
+  private boolean isEnvironmentLoud = false;
   // 음석인식 부분
   private SpeechRecognizer speechRecognizer;
   private boolean isTracking = true; // "시작" 명령이 들어오면 true
-  private boolean isPaused = false;   //
+  private boolean isPaused = false;   
 
 
 
@@ -158,8 +160,12 @@ public class PoseClassifierProcessor {
       }
 
       @Override
-      public void onRmsChanged(float   v) {
-
+      public void onRmsChanged(float rms) {
+        if (rms < MINIMUM_RMS_THRESHOLD) {
+          isEnvironmentLoud = false;
+        } else {
+          isEnvironmentLoud = true;
+        }
       }
 
       @Override
@@ -174,22 +180,24 @@ public class PoseClassifierProcessor {
 
       @Override
       public void onError(int error) {
-        Log.e(TAG, "음성 인식 오류 발생: " + error);
+        Log.e("exer", "음성 인식 오류 발생: " + error);
         switch (error) {
           case SpeechRecognizer.ERROR_NETWORK:
-            Log.e(TAG, "네트워크 오류");
+            Log.e("exer", "네트워크 오류");
             break;
           case SpeechRecognizer.ERROR_AUDIO:
-           Log.e(TAG, "오디오 입력 오류");
+           Log.e("exer", "오디오 입력 오류");
             break;
           case SpeechRecognizer.ERROR_NO_MATCH:
-            Log.e(TAG, "일치하는 결과 없음");
+            Log.e("exer", "일치하는 결과 없음");
             break;
           case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
-            Log.e(TAG, "음성 입력 시간 초과");
+            Log.e("exer", "음성 입력 시간 초과");
             break;
           // 추가 오류 코드 확인 가능
         }
+        Log.e("exer", "오류 발생 시 startListening() 다시 시작");
+
         startListening(); // 오류 발생 시 다시 듣기 시작
       }
 
@@ -232,6 +240,11 @@ public class PoseClassifierProcessor {
     startListening();
   }
   private void startListening() {
+
+    if (isEnvironmentLoud) {
+      Log.d("exer", "소음이 감지되어 음성 인식을 시작하지 않습니다.");
+      return; // 소음이 있으면 음성 인식 시작 안함
+    }
     Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
     intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
     intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.KOREAN);
@@ -307,23 +320,25 @@ public class PoseClassifierProcessor {
 //        }
 //      }
 
+
       for (RepetitionCounter repCounter : repCounters) {
         if (repCounter.getClassName().equals(PLANK_CLASS)) {
           if (classification.getMaxConfidenceClass().equals(PLANK_CLASS)) {
-            if (plankStartTime == 0) {
-              plankStartTime = System.currentTimeMillis();
-            }
+            // 플래그를 true로 설정하여 플랭크 자세 인식
+            plankFlag = true;
+            lastRepResult = String.format(Locale.KOREAN, "%s : 유지 중", PLANK_CLASS);
+            Log.d("exer","플랭크 자세 유지중 "+plankFlag);
 
-            long elapsedTime = (System.currentTimeMillis() - plankStartTime) / 1000;
-            lastRepResult = String.format(Locale.KOREAN, "%s : %d 초", PLANK_CLASS, elapsedTime, " iaTracking: "+isTracking+"  isPaues: "+isPaused);
-
-            if (elapsedTime % 5 == 0) {
-              speakResult(String.valueOf(elapsedTime)+"초 경과");
-            }
           } else {
-            plankStartTime = 0;
+            // 플랭크 자세를 벗어나면 플래그를 false로 설정
+            plankFlag = false;
+            lastRepResult = String.format(Locale.KOREAN, "%s : 중단됨", PLANK_CLASS);
+            Log.d("exer","플랭크 자세 유지 X"+plankFlag);
+
+            //speakResult("플랭크 자세를 유지해주세요.");
           }
-        } else {
+        }
+        else {
           int repsBefore = repCounter.getNumRepeats();
           int repsAfter = repCounter.addClassificationResult(classification);
           if (repsAfter > repsBefore) {
