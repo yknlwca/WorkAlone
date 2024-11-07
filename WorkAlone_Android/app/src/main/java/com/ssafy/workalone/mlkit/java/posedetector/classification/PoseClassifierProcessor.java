@@ -32,13 +32,8 @@ package com.ssafy.workalone.mlkit.java.posedetector.classification;
  */
 
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.media.AudioManager;
-import android.media.ToneGenerator;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -47,8 +42,6 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
 import androidx.annotation.WorkerThread;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.google.common.base.Preconditions;
 import com.google.mlkit.vision.pose.Pose;
@@ -67,7 +60,7 @@ import android.speech.tts.TextToSpeech;
  */
 public class PoseClassifierProcessor {
   private static final String TAG = "PoseClassifierProcessor";
-  private static  String POSE_SAMPLES_FILE = "pose/pose_data.csv";
+  private static  String POSE_SAMPLES_FILE = "";
   public static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
 
   private static final String PUSHUPS_CLASS = "pushups_down";
@@ -84,7 +77,7 @@ public class PoseClassifierProcessor {
   // 음석인식 부분
   private SpeechRecognizer speechRecognizer;
   private boolean isTracking = true; // "시작" 명령이 들어오면 true
-  private boolean isPaused = false;   
+  private boolean isPaused = false;
 
 
 
@@ -321,19 +314,22 @@ public class PoseClassifierProcessor {
 //      }
 
 
+
       for (RepetitionCounter repCounter : repCounters) {
         if (repCounter.getClassName().equals(PLANK_CLASS)) {
-          if (classification.getMaxConfidenceClass().equals(PLANK_CLASS)) {
+          if (classification.getMaxConfidenceClass().equals(PLANK_CLASS))
+          {
             // 플래그를 true로 설정하여 플랭크 자세 인식
             plankFlag = true;
             lastRepResult = String.format(Locale.KOREAN, "%s : 유지 중", PLANK_CLASS);
             Log.d("exer","플랭크 자세 유지중 "+plankFlag);
 
-          } else {
+          }
+          else {
             // 플랭크 자세를 벗어나면 플래그를 false로 설정
             plankFlag = false;
             lastRepResult = String.format(Locale.KOREAN, "%s : 중단됨", PLANK_CLASS);
-            Log.d("exer","플랭크 자세 유지 X"+plankFlag);
+            Log.d("exer","플랭크 자세 유지 X "+plankFlag);
 
             //speakResult("플랭크 자세를 유지해주세요.");
           }
@@ -345,6 +341,7 @@ public class PoseClassifierProcessor {
 
 
             lastRepResult = String.format(Locale.KOREAN, "%s : %d", repCounter.getClassName(), repsAfter," iaTracking: "+isTracking+"  isPaues: "+isPaused);
+            Log.d("exer",String.valueOf(repsAfter));
             speakResult(String.valueOf(repsAfter));
             break;
           }
@@ -427,7 +424,7 @@ public class PoseClassifierProcessor {
         POSE_SAMPLES_FILE = "pose/squat.csv";
         break;
       case "푸쉬업":
-        POSE_SAMPLES_FILE = "pose/push_up.csv";
+        POSE_SAMPLES_FILE = "pose/pushup123.csv";
         break;
       case "플랭크":
         POSE_SAMPLES_FILE = "pose/plank.csv";
