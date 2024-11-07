@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.ssawallafy.workalone_backend.domain.member.dto.MemberModifyReq;
+import com.ssawallafy.workalone_backend.domain.member.dto.MemberSaveReq;
 import com.ssawallafy.workalone_backend.domain.member.entity.Member;
 import com.ssawallafy.workalone_backend.domain.member.exception.BusinessLogicException;
 import com.ssawallafy.workalone_backend.domain.member.repository.MemberRepository;
@@ -20,6 +21,17 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberServiceImpl implements MemberService {
 
 	private final MemberRepository memberRepository;
+
+	@Override
+	public long saveMember(MemberSaveReq memberSaveReq) {
+
+		Member member = Member.builder()
+			.name(memberSaveReq.getName())
+			.weight(memberSaveReq.getWeight())
+			.build();
+
+		return memberRepository.save(member).getId();
+	}
 
 	@Override
 	public void updateMember(Long memberId, MemberModifyReq memberModifyReq) {
@@ -38,4 +50,6 @@ public class MemberServiceImpl implements MemberService {
 		// 다른 repository에서도 deleteById 실행 (순서 주의)
 		memberRepository.deleteById(memberId);
 	}
+
+
 }
