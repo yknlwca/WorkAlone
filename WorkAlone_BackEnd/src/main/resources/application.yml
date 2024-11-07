@@ -20,6 +20,8 @@ spring:
   sql:
     init:
       mode: always
+  config:
+    import: application-private.yml
   application:
     name: WorkAlone_BackEnd
   profiles:
