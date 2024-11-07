@@ -138,7 +138,7 @@ public class PoseDetectorProcessor
   }
 
 
-  // 화면 전부 들어오게 하는부분 ㅊㅊ
+  // 화면 전부 들어오게 하는부분
   @Override
   protected Task<PoseWithClassification> detectInImage(MlImage image) {
     return detector
@@ -171,7 +171,7 @@ public class PoseDetectorProcessor
                      // Log.d("exer",String.valueOf(runClassification));
                       if (runClassification) {
                         if (poseClassifierProcessor == null) {
-                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,"squat");
+                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,"스쿼트");
                         }
                         classificationResult = poseClassifierProcessor.getPoseResult(pose);
                       }

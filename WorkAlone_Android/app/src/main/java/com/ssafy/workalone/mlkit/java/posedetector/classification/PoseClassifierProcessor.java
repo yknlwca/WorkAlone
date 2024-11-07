@@ -408,15 +408,19 @@ public class PoseClassifierProcessor {
 
   private void setPoseSamplesFile(String exerciseType) {
     switch (exerciseType.toLowerCase()) {
-      case "squat":
+      case "스쿼트":
         POSE_SAMPLES_FILE = "pose/squat.csv";
         break;
-      case "pushup":
+      case "푸쉬업":
         POSE_SAMPLES_FILE = "pose/push_up.csv";
         break;
-      // 다른 운동에 대해서도 추가 가능
+      case "플랭크":
+        POSE_SAMPLES_FILE = "pose/plank.csv";
+        break;
+      case "윗몸일으키기":
+        POSE_SAMPLES_FILE = "pose/situp.csv";
+        break;
       default:
-        POSE_SAMPLES_FILE = "pose/default.csv"; // 기본 파일
         break;
     }
     // 스쿼트
