@@ -48,12 +48,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun ExerciseDetailView(
     navController: NavController,
-    viewModel: ExerciseViewModel,
-    id: Long, exerciseType: String
+    viewModel: ExerciseViewModel = ExerciseViewModel(),
+    id: Long
 ) {
     val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
-    val exercises = viewModel.getExerciseById(id, exerciseType)
+    val exercises = viewModel.getExerciseById(id)
         .collectAsState(initial = listOf())
     var currentIndex by remember { mutableStateOf(0) }
     var currentExercise = exercises.value.getOrNull(currentIndex)
