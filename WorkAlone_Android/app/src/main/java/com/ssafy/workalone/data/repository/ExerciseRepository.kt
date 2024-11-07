@@ -1,5 +1,6 @@
 package com.ssafy.workalone.data.repository
 
+import com.ssafy.workalone.data.model.Challenge
 import com.ssafy.workalone.data.model.Exercise
 import com.ssafy.workalone.data.remote.ExerciseService
 import com.ssafy.workalone.data.remote.RetrofitFactory
@@ -12,8 +13,8 @@ class ExerciseRepository(
         RetrofitFactory.getInstance().create(ExerciseService::class.java)
 ) {
 
-    fun getExercises(): Flow<List<Exercise>> = flow {
-        val response = exerciseService.getExercises()
+    suspend fun getChallenges(): Flow<List<Challenge>> = flow {
+        val response = exerciseService.getChallenges()
         if (response.isSuccessful) {
             response.body()?.let { emit(it) }
         } else {
@@ -21,9 +22,11 @@ class ExerciseRepository(
         }
     }
 
-    fun getExerciseByIdAndType(exerciseId: Long, exerciseType: String): Flow<List<Exercise>> =
+    suspend fun getExerciseByIdAndType(
+        exerciseId: Long,
+    ): Flow<List<Exercise>> =
         flow {
-            val response = exerciseService.getExercise(exerciseId, exerciseType)
+            val response = exerciseService.getExercise(exerciseId)
             if (response.isSuccessful) {
                 response.body()?.let {
                     emit(it)

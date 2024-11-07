@@ -24,7 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.ssafy.workalone.R
-import com.ssafy.workalone.data.model.Exercise
+import com.ssafy.workalone.data.model.Challenge
 import com.ssafy.workalone.presentation.ui.theme.LocalWorkAloneTypography
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
@@ -32,7 +32,7 @@ import com.ssafy.workalone.presentation.ui.theme.WalkOneGray700
 import com.ssafy.workalone.presentation.ui.theme.WorkAloneTheme
 
 @Composable
-fun ExerciseItem(exercise: Exercise, onClick: () -> Unit) {
+fun ExerciseItem(challenge: Challenge, onClick: () -> Unit) {
     WorkAloneTheme {
         val typography = LocalWorkAloneTypography.current
         Card(
@@ -54,16 +54,16 @@ fun ExerciseItem(exercise: Exercise, onClick: () -> Unit) {
                         .clip(RoundedCornerShape(12.dp))
                         .background(WalkOneGray50)
                 ) {
-                    var imageResId = R.drawable.w_logo
-                    if (exercise.exerciseType.equals("SQUAT")) {
-                        imageResId = R.drawable.squat
-                    } else if (exercise.exerciseType.equals("PUSHUP")) {
-                        imageResId = R.drawable.push_up
-                    } else if (exercise.exerciseType.equals("SITUP")) {
-                        imageResId = R.drawable.sit_up
-                    } else if (exercise.exerciseType.equals("PLANK")) {
-                        imageResId = R.drawable.plank
-                    }
+                    val imageResId = R.drawable.w_logo
+//                    if (challenge.exerciseType.equals("SQUAT")) {
+//                        imageResId = R.drawable.squat
+//                    } else if (exercise.exerciseType.equals("PUSHUP")) {
+//                        imageResId = R.drawable.push_up
+//                    } else if (exercise.exerciseType.equals("SITUP")) {
+//                        imageResId = R.drawable.sit_up
+//                    } else if (exercise.exerciseType.equals("PLANK")) {
+//                        imageResId = R.drawable.plank
+//                    }
                     Image(
                         painter = painterResource(id = imageResId),
                         contentDescription = "Exercise Image",
@@ -83,7 +83,7 @@ fun ExerciseItem(exercise: Exercise, onClick: () -> Unit) {
                         .padding(end = 8.dp)
                 ) {
                     Text(
-                        text = exercise.title,
+                        text = challenge.title,
                         style = typography.Heading02,
                         color = WalkOneBlue500,
                         maxLines = 1,
@@ -91,23 +91,25 @@ fun ExerciseItem(exercise: Exercise, onClick: () -> Unit) {
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     Row {
-                        Text(
-                            text = "3" + "세트",
-                            style = typography.Body03,
-                            color = WalkOneGray700,
-                        )
-                        Spacer(modifier = Modifier.padding(4.dp))
-                        Text(
-                            text = "X",
-                            style = typography.Body03,
-                            color = WalkOneGray700,
-                        )
-                        Spacer(modifier = Modifier.padding(4.dp))
-                        Text(
-                            text = "15" + "세트",
-                            style = typography.Body03,
-                            color = WalkOneGray700,
-                        )
+                        if (challenge.exerciseRepeat != null && challenge.exerciseSet != null) {
+                            Text(
+                                text = "${challenge.exerciseRepeat} 개",
+                                style = typography.Body03,
+                                color = WalkOneGray700,
+                            )
+                            Spacer(modifier = Modifier.padding(4.dp))
+                            Text(
+                                text = "X",
+                                style = typography.Body03,
+                                color = WalkOneGray700,
+                            )
+                            Spacer(modifier = Modifier.padding(4.dp))
+                            Text(
+                                text = "${challenge.exerciseSet} 세트",
+                                style = typography.Body03,
+                                color = WalkOneGray700,
+                            )
+                        }
                     }
                 }
             }
