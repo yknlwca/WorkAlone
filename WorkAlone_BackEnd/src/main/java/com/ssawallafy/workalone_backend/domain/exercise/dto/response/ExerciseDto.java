@@ -17,6 +17,7 @@ public class ExerciseDto {
     private Integer exerciseRepeat;
     private Integer restBtwExercise;
     private Kind kind;
+    private String exerciseType;
     private Set setType;
 
     public static ExerciseDto ofIndividual(Exercise exercise, ExerciseGroup exerciseGroup) {
@@ -27,6 +28,7 @@ public class ExerciseDto {
                 .exerciseSet(exercise.getExerciseSet())
                 .exerciseRepeat(exercise.getExerciseRepeat())
                 .setType(exercise.getSetType())
+                .exerciseType(exercise.getExerciseType().getTitle())
                 .kind(Kind.INDIVIDUAL)
                 .build();
     }
@@ -39,6 +41,7 @@ public class ExerciseDto {
                 .exerciseSet(null)
                 .exerciseRepeat(null)
                 .setType(null)
+                .exerciseType(null)
                 .kind(Kind.INTEGRATED)
                 .build();
     }

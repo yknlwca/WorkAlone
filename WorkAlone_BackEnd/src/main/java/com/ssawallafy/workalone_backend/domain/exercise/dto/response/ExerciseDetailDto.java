@@ -11,6 +11,7 @@ import lombok.Getter;
 public class ExerciseDetailDto {
     private Long exerciseId;
 
+    private int seq;
     private int exerciseSet;
     private int exerciseRepeat;
 
@@ -27,6 +28,7 @@ public class ExerciseDetailDto {
     public static ExerciseDetailDto of(Exercise exercise, ExerciseType exerciseType) {
         return ExerciseDetailDto.builder().
                 exerciseId(exercise.getId())
+                .seq(exercise.getSeq())
                 .exerciseSet(exercise.getExerciseSet())
                 .exerciseSet(exercise.getExerciseSet())
                 .exerciseRepeat(exercise.getExerciseRepeat())
