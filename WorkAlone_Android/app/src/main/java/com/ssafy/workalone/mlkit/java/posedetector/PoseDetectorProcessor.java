@@ -17,6 +17,7 @@
 package com.ssafy.workalone.mlkit.java.posedetector;
 
 import android.content.Context;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.Task;
@@ -28,6 +29,7 @@ import com.google.mlkit.vision.pose.PoseDetector;
 import com.google.mlkit.vision.pose.PoseDetectorOptionsBase;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import com.google.mlkit.vision.pose.PoseLandmark;
@@ -51,7 +53,10 @@ public class PoseDetectorProcessor
   private final Context context;
   private final Executor classificationExecutor;
   private final String ExerciseType;
+  private TextToSpeech textToSpeech;  // TTS instance
 
+  private static final long TTS_COOLDOWN_MS = 10000; // TTS 호출 간 최소 5초 간격
+  private long lastTtsTime = 0; // 마지막 TTS 호출 시간
   private PoseClassifierProcessor poseClassifierProcessor;
   /** Internal class to hold Pose and classification results. */
   protected static class PoseWithClassification {
@@ -94,11 +99,19 @@ public class PoseDetectorProcessor
     classificationExecutor = Executors.newSingleThreadExecutor();
     Log.d("exer","PoseDetectorProcessor");
 
+  initializeTextToSpeech();
+
+
   }
 
   @Override
   public void stop() {
     super.stop();
+    if (textToSpeech != null) {
+      textToSpeech.stop();
+      textToSpeech.shutdown();
+    }
+
     detector.close();
   }
 
@@ -110,10 +123,12 @@ public class PoseDetectorProcessor
                     classificationExecutor,
                     task -> {
                       Pose pose = task.getResult();
+
+
                       List<String> classificationResult = new ArrayList<>();
                       if (runClassification) {
                         if (poseClassifierProcessor == null) {
-                        //  Log.d("exer","dectectInImage");
+                          Log.d("exer","dectectInImage");
                           poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,ExerciseType);
                         }
                         classificationResult = poseClassifierProcessor.getPoseResult(pose);
@@ -122,6 +137,8 @@ public class PoseDetectorProcessor
                     });
   }
 
+
+  // 화면 전부 들어오게 하는부분 ㅊㅊ
   @Override
   protected Task<PoseWithClassification> detectInImage(MlImage image) {
     return detector
@@ -131,16 +148,30 @@ public class PoseDetectorProcessor
                     task -> {
                       Pose pose = task.getResult();
 
-//                      if (!isFullBodyVisible(pose)) {
-//                        Log.d(TAG, "Full body is not visible. Skipping frame.");
-//                        return null; // 주요 랜드마크가 감지되지 않으면 null 반환
-//                      }
-                      //Log.d("exer","dectectInImage22");
+
+                      // 이게 false면 화면안에 없는거임
+
+                      boolean isIn = true;
+
+                      if (!isFullBodyVisible(pose)) {
+                        Log.d(TAG, "Full body is not visible. Skipping frame.");
+
+                        isIn= false;
+                        long currentTime = System.currentTimeMillis();
+                        // 마지막 TTS 호출 시간에서 10초가 경과했는지 확인
+                        if (currentTime - lastTtsTime >= TTS_COOLDOWN_MS) {
+                          textToSpeech.speak("화면 안으로 모두 들어와주세요", TextToSpeech.QUEUE_FLUSH, null, null);
+                          lastTtsTime = currentTime; // 마지막 TTS 호출 시간 업데이트
+                        }
+
+                        return null;
+                      }
+                      Log.d("exer","dectectInImage");
                       List<String> classificationResult = new ArrayList<>();
                      // Log.d("exer",String.valueOf(runClassification));
                       if (runClassification) {
                         if (poseClassifierProcessor == null) {
-                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,ExerciseType);
+                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,"squat");
                         }
                         classificationResult = poseClassifierProcessor.getPoseResult(pose);
                       }
@@ -191,29 +222,38 @@ public class PoseDetectorProcessor
   // 주요 랜드마크가 모두 감지되었는지 확인하는 메서드 추가
   private static final float LANDMARK_CONFIDENCE_THRESHOLD = 0.5f; // 신뢰도 임계값 설정
 
-//  private boolean isFullBodyVisible(Pose pose) {
-//    // 전체 신체를 인식하는 데 필요한 주요 랜드마크 (어깨, 손목, 엉덩이, 발목 등)
-//    int[] requiredLandmarks = {
-//
-//            PoseLandmark.LEFT_SHOULDER,
-//            PoseLandmark.RIGHT_SHOULDER,
-//            PoseLandmark.LEFT_HIP,
-//            PoseLandmark.RIGHT_HIP,
-//            PoseLandmark.LEFT_WRIST,
-//            PoseLandmark.RIGHT_WRIST,
-//            PoseLandmark.LEFT_ANKLE,
-//            PoseLandmark.RIGHT_ANKLE
-//    };
-//
-//    for (int landmarkType : requiredLandmarks) {
-//      PoseLandmark landmark = pose.getPoseLandmark(landmarkType);
-//      if (landmark == null || landmark.getInFrameLikelihood() < LANDMARK_CONFIDENCE_THRESHOLD) {
-//        // 주요 랜드마크가 하나라도 감지되지 않거나 신뢰도가 낮으면 전체 신체가 보이지 않음
-//        return false;
-//      }
-//    }
-//    return true; // 주요 랜드마크가 모두 감지되고 신뢰도 기준을 충족한 경우
-//  }
+  private boolean isFullBodyVisible(Pose pose) {
+    // 전체 신체를 인식하는 데 필요한 주요 랜드마크 (어깨, 손목, 엉덩이, 발목 등)
+    int[] requiredLandmarks = {
+
+            PoseLandmark.LEFT_SHOULDER,
+            PoseLandmark.RIGHT_SHOULDER,
+            PoseLandmark.LEFT_HIP,
+            PoseLandmark.RIGHT_HIP,
+            PoseLandmark.LEFT_WRIST,
+            PoseLandmark.RIGHT_WRIST,
+            PoseLandmark.LEFT_ANKLE,
+            PoseLandmark.RIGHT_ANKLE
+    };
+
+    for (int landmarkType : requiredLandmarks) {
+      PoseLandmark landmark = pose.getPoseLandmark(landmarkType);
+      if (landmark == null || landmark.getInFrameLikelihood() < LANDMARK_CONFIDENCE_THRESHOLD) {
+        // 주요 랜드마크가 하나라도 감지되지 않거나 신뢰도가 낮으면 전체 신체가 보이지 않음
+        return false;
+      }
+    }
+    return true; // 주요 랜드마크가 모두 감지되고 신뢰도 기준을 충족한 경우
+  }
+  private void initializeTextToSpeech() {
+    textToSpeech = new TextToSpeech(context, status -> {
+      if (status == TextToSpeech.SUCCESS) {
+        textToSpeech.setLanguage(Locale.KOREAN);
+      } else {
+        // Log.e(TAG, "TextToSpeech initialization failed");
+      }
+    });
+  }
 
 
 
