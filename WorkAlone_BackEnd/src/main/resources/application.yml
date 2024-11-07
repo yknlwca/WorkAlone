@@ -1,7 +1,6 @@
 spring:
-  sql:
-    init:
-      mode: always
+  config:
+    import: application-private.yml
   application:
     name: WorkAlone_BackEnd
   profiles:
@@ -9,9 +8,8 @@ spring:
   jpa:
     open-in-view: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: false
-    defer-datasource-initialization: true
     properties:
       hibernate:
         format_sql: false
