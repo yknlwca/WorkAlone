@@ -1,10 +1,10 @@
 package com.ssafy.workalone.presentation.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.ssafy.workalone.data.model.Challenge
 import com.ssafy.workalone.data.model.Exercise
 import com.ssafy.workalone.data.repository.ExerciseRepository
-import com.ssafy.workalone.global.exception.CustomException
+import com.ssafy.workalone.global.exception.handleException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,43 +22,14 @@ class ExerciseViewModel(private val exerciseRepository: ExerciseRepository = Exe
     val errorMessage: StateFlow<String?>
         get() = _errorMessage
 
-    val getAllExercises: Flow<List<Exercise>> = flow {
-        emitAll(exerciseRepository.getExercises())
-    }.flowOn(Dispatchers.IO).catch { e -> handleException(e) }
+    val getAllChallenge: Flow<List<Challenge>> = flow {
+        emitAll(exerciseRepository.getChallenges())
+    }.flowOn(Dispatchers.IO).catch { e -> handleException(e, _errorMessage) }
 
-    fun getExerciseById(exerciseId: Long, exerciseType: String): Flow<List<Exercise>> = flow {
-        emitAll(exerciseRepository.getExerciseByIdAndType(exerciseId, exerciseType))
+    fun getExerciseById(exerciseId: Long): Flow<List<Exercise>> = flow {
+        emitAll(exerciseRepository.getExerciseByIdAndType(exerciseId))
     }.flowOn(Dispatchers.IO).catch { e ->
-        handleException(e)
-    }
-
-
-    private fun handleException(exception: Throwable) {
-        when (exception) {
-            is CustomException.NetworkException -> {
-                // 네트워크 처리 문제
-                Log.d("Network ViewModel", "Network error : ${exception.message}")
-                _errorMessage.value = exception.message
-            }
-
-            is CustomException.ServerException -> {
-                // 서버 에러 처리
-                Log.d("Server ViewModel", "Server error : ${exception.message}")
-                _errorMessage.value = exception.message
-            }
-
-            is CustomException.ClientException -> {
-                // 안드로이드 에러 처리
-                Log.d("Client ViewModel", "Client error : ${exception.message}")
-                _errorMessage.value = exception.message
-            }
-
-            is CustomException.UnknownException -> {
-                // 알 수 없는 에러 찾아 보기
-                Log.d("Unknown ViewModel", "Unknown error : ${exception.message}")
-                _errorMessage.value = exception.message
-            }
-        }
+        handleException(e, _errorMessage)
     }
 
     // 에러 메시지 초기화 함수

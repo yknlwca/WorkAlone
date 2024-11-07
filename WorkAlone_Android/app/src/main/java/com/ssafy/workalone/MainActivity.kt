@@ -12,11 +12,7 @@ import com.ssafy.workalone.data.local.MemberPreferenceManager
 import com.ssafy.workalone.data.model.Member
 import com.ssafy.workalone.presentation.navigation.Navigation
 import com.ssafy.workalone.presentation.navigation.Screen
-import com.ssafy.workalone.presentation.ui.component.ExerciseTimer
-import com.ssafy.workalone.presentation.ui.component.RepCounter
-import com.ssafy.workalone.presentation.ui.component.RestTime
 import com.ssafy.workalone.presentation.ui.theme.WorkAloneTheme
-import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +30,7 @@ class MainActivity : ComponentActivity() {
                         .background(MaterialTheme.colorScheme.background)
                 ) {
                     Navigation(startDestination = startDestination)
-    //                    RestTime(true, 30)
+//                    ExerciseListView(rememberNavController())
                 }
             }
         }
