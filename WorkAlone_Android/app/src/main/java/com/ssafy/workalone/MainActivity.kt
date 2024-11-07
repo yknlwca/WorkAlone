@@ -33,8 +33,8 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background)
                 ) {
-//                    Navigation(startDestination = startDestination)
-                    RestTime(true, 30)
+                    Navigation(startDestination = startDestination)
+    //                    RestTime(true, 30)
                 }
             }
         }
