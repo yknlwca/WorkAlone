@@ -81,7 +81,7 @@ public class PoseClassifierProcessor {
 
   // 음석인식 부분
   private SpeechRecognizer speechRecognizer;
-  private boolean isTracking = false; // "시작" 명령이 들어오면 true
+  private boolean isTracking = true; // "시작" 명령이 들어오면 true
   private boolean isPaused = false;   //
 
 
@@ -122,7 +122,7 @@ public class PoseClassifierProcessor {
     }
     mainHandler.post(this::initializeSpeechRecognition);
 
-
+    Log.d("exer","poseClassifierProcessor");
     loadPoseSamples(context);
   }
 
@@ -158,7 +158,7 @@ public class PoseClassifierProcessor {
       }
 
       @Override
-      public void onRmsChanged(float v) {
+      public void onRmsChanged(float   v) {
 
       }
 
@@ -419,6 +419,8 @@ public class PoseClassifierProcessor {
         POSE_SAMPLES_FILE = "pose/default.csv"; // 기본 파일
         break;
     }
+    // 스쿼트
+    //
   }
 
 }

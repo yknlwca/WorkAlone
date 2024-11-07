@@ -38,12 +38,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ssafy.workalone.mlkit.java.CameraXLivePreviewActivity
-<<<<<<< HEAD
 
-=======
-import com.ssafy.workalone.mlkit.java.CameraXLivePreviewActivityJava
 import com.ssafy.workalone.data.model.Member
->>>>>>> abd80f0623e61261023a085e2b823e00a3ca419d
+
 import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.AppBarView
 import com.ssafy.workalone.presentation.ui.component.BottomSheetContent
@@ -153,27 +150,7 @@ fun HomeView(navController: NavController, member: Member) {
                         )
                     }
 
-<<<<<<< HEAD
 
-                Spacer(modifier = Modifier.height(24.dp))
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CustomButton(
-                        text = "챌린지 이동하기",
-                        onClick = {
-                           // navController.navigate(Screen.ExerciseList.route)
-                            val intent = Intent(context, CameraXLivePreviewActivity::class.java)
-                            intent.putExtra("exerciseType","squat")
-                            Log.d("123","여기여기")
-                            context.startActivity(intent)
-                        },
-                    )
-=======
->>>>>>> abd80f0623e61261023a085e2b823e00a3ca419d
                 }
             }
         }
