@@ -1,11 +1,13 @@
 package com.ssawallafy.workalone_backend.domain.summary.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import lombok.Getter;
 
 @Getter
-public class ExerciseSummaryReadReq {
+public class ExerciseSummarySaveReq {
 
-	private LocalDate date;
+	private List<ExerciseSummarySaveDetail> summaryList;
+
 }
