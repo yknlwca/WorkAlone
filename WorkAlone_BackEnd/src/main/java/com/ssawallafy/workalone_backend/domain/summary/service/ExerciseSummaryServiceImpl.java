@@ -2,14 +2,20 @@ package com.ssawallafy.workalone_backend.domain.summary.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.amazonaws.HttpMethod;
+import com.amazonaws.services.s3.AmazonS3;
 import com.ssawallafy.workalone_backend.domain.exercise.entity.Exercise;
 import com.ssawallafy.workalone_backend.domain.exercise.repository.ExerciseRepository;
 import com.ssawallafy.workalone_backend.domain.member.entity.Member;
@@ -20,6 +26,7 @@ import com.ssawallafy.workalone_backend.domain.summary.dto.ExerciseSummaryDetail
 import com.ssawallafy.workalone_backend.domain.summary.dto.ExerciseSummaryReadRes;
 import com.ssawallafy.workalone_backend.domain.summary.dto.ExerciseSummarySaveDetail;
 import com.ssawallafy.workalone_backend.domain.summary.dto.ExerciseSummarySaveReq;
+import com.ssawallafy.workalone_backend.domain.summary.dto.UrlResponse;
 import com.ssawallafy.workalone_backend.domain.summary.entity.ExerciseSummary;
 import com.ssawallafy.workalone_backend.domain.summary.repository.ExerciseSummaryRepository;
 
@@ -32,6 +39,28 @@ public class ExerciseSummaryServiceImpl implements ExerciseSummaryService {
 	private final ExerciseSummaryRepository exerciseSummaryRepository;
 	private final MemberRepository memberRepository;
 	private final ExerciseRepository exerciseRepository;
+
+	@Autowired
+	private AmazonS3 amazonS3;
+
+	@Value("${spring.cloud.aws.s3.bucket}")
+	private String bucketName;
+
+	public UrlResponse generatePreSignUrl(String filePath,
+		String bucketName,
+		HttpMethod httpMethod) {
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		calendar.add(Calendar.MINUTE, 10); //validfy of 10 minutes
+
+		UrlResponse res = new UrlResponse();
+		String fullPath = "video/" + filePath;
+		res.setPresignedUrl(
+			amazonS3.generatePresignedUrl(bucketName, fullPath, calendar.getTime(), httpMethod).toString());
+		res.setObjectUrl("https://" + bucketName + ".s3.ap-northeast-2.amazonaws.com/" + fullPath);
+		return res;
+	}
 
 	@Override
 	public void saveSummary(long memberId, ExerciseSummarySaveReq exerciseSummarySaveReq) {
