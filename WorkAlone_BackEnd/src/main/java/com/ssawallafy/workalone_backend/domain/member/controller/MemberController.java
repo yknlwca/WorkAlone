@@ -5,15 +5,18 @@ import static org.springframework.http.HttpStatus.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssawallafy.workalone_backend.domain.member.dto.MemberModifyReq;
 import com.ssawallafy.workalone_backend.domain.member.dto.MemberSaveReq;
 import com.ssawallafy.workalone_backend.domain.member.dto.MemberSaveRes;
+import com.ssawallafy.workalone_backend.domain.member.entity.Member;
 import com.ssawallafy.workalone_backend.domain.member.service.MemberService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,6 +40,15 @@ public class MemberController {
 		MemberSaveRes res = MemberSaveRes.builder()
 			.member_id(memberId)
 			.build();
+
+		return new ResponseEntity<>(res, HttpStatus.OK);
+	}
+
+	@GetMapping("/read")
+	@Operation(summary = "회원정보 조회", description = "이름을 통해 회원정보 조회")
+	public ResponseEntity<Member> readMember(@RequestParam String name){
+
+		Member res = memberService.findMember(name);
 
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
