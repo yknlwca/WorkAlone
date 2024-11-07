@@ -46,6 +46,7 @@ import androidx.annotation.WorkerThread;
 import com.google.common.base.Preconditions;
 import com.google.mlkit.vision.pose.Pose;
 import com.google.mlkit.vision.pose.PoseLandmark;
+import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -272,7 +273,7 @@ public class PoseClassifierProcessor {
   // 운동 reps,시간 보여주는곳
 
   @WorkerThread
-  public List<String> getPoseResult(Pose pose) {
+  public List<String> getPoseResult(Pose pose, ExerciseMLKitViewModel viewModel) {
     Preconditions.checkState(Looper.myLooper() != Looper.getMainLooper());
     List<String> result = new ArrayList<>();
 
@@ -327,7 +328,9 @@ public class PoseClassifierProcessor {
             plankFlag = true;
             lastRepResult = String.format(Locale.KOREAN, "%s : 유지 중", PLANK_CLASS);
             Log.d("exer","플랭크 자세 유지중 "+plankFlag);
-
+            if(!viewModel.getPlankPause().getValue()){
+              viewModel.startPlank();
+            }
           }
           else {
             // 플랭크 자세를 벗어나면 플래그를 false로 설정
@@ -341,13 +344,24 @@ public class PoseClassifierProcessor {
         else {
           int repsBefore = repCounter.getNumRepeats();
           int repsAfter = repCounter.addClassificationResult(classification);
+          //현재 횟수 저장
+//          viewModel.setNowReps(repsAfter);
           if (repsAfter > repsBefore) {
 
 
             lastRepResult = String.format(Locale.KOREAN, "%s : %d", repCounter.getClassName(), repsAfter," iaTracking: "+isTracking+"  isPaues: "+isPaused);
+            viewModel.addRep("스쿼트, 푸쉬업, 윗몸일으키기",0);
             Log.d("exer",String.valueOf(repsAfter));
             speakResult(String.valueOf(repsAfter));
             break;
+          }
+          //횟수 다채우면 다음세트
+          if(viewModel.getNowRep().getValue() == viewModel.getTotalRep().getValue()){
+            viewModel.addSet();
+            //세트 다 채우면 다음 운동 or 운동 완료
+            if(viewModel.getNowSet().getValue() == viewModel.getTotalSet().getValue()+1){
+//              viewModel.exerciseFinish();
+            }
           }
         }
       }

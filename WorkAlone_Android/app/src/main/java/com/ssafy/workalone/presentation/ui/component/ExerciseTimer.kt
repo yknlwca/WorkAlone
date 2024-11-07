@@ -39,7 +39,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
 
-    var isPaused by remember { mutableStateOf(false) }
+    var isPaused by viewModel.plankPause
     var goalTime by viewModel.totalRep
     val totalSets by viewModel.totalSet
     var currentSet by viewModel.nowSet
@@ -147,7 +147,7 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                         WalkOneBlue500,
                         WalkOneGray50,
                         WalkOneBlue500,
-                        onClick = { isPaused = !isPaused }
+                        onClick = { viewModel.stopPlank()}
                     )
                 }
             } else {
@@ -179,7 +179,7 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                             WalkOneGray50,
                             WalkOneBlue500,
                             WalkOneBlue500,
-                            onClick = { isPaused = !isPaused }
+                            onClick = { viewModel.startPlank() }
                         )
                     }
                 }
@@ -269,7 +269,7 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                         WalkOneBlue500,
                         WalkOneGray50,
                         WalkOneBlue500,
-                        onClick = { isPaused = !isPaused }
+                        onClick = { viewModel.stopPlank() }
                     )
                 }
             } else {
@@ -301,7 +301,7 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                             WalkOneGray50,
                             WalkOneBlue500,
                             WalkOneBlue500,
-                            onClick = { isPaused = !isPaused }
+                            onClick = { viewModel.startPlank() }
                         )
                     }
                 }

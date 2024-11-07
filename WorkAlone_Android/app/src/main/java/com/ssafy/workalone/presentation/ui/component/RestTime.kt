@@ -24,70 +24,74 @@ import androidx.compose.ui.unit.sp
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray700
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray900
+import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
 fun RestTime(
-    showView: Boolean,
-    countNumber: Int,
+    viewModel: ExerciseMLKitViewModel
 ) {
-    val restText: String = "훌륭해요!\n잠시 휴식하세요."
-    val preSetText: String = "잠시 후, 다음 세트를 진행합니다."
-    var restTime by remember { mutableStateOf(countNumber) }
+    LaunchedEffect(viewModel.stage.value) {
+        viewModel.stageDescribe(viewModel.stage.value)
+    }
     var isTenSecondsLeft by remember { mutableStateOf(false) }
 
-    LaunchedEffect(showView) {
-        if (showView) {
-            while (restTime > 0) {
-                delay(1000L)
-                restTime -= 1
-                if (restTime == 10) {
-                    isTenSecondsLeft = true
-                }
+    LaunchedEffect(Unit) {
+        while(viewModel.restTime.value>0) {
+            delay(1000L)
+            viewModel.countDownRestTime()
+            if(viewModel.restTime.value <= 10 && viewModel.stage.value != "ready") {
+                viewModel.changeStage()
+                isTenSecondsLeft = true
+            }
+
+        }
+    }
+
+        if(!viewModel.isExercising.value!!){
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(WalkOneGray900.copy(alpha = 0.9f))
+                    .padding(20.dp)
+            ) {
+                if(viewModel.stage.value == "rest")
+                    ConfettiAnimation(8000L)
+
+                Text(
+                    text =
+                    if (isTenSecondsLeft) {
+                        viewModel.preSetText.value
+                    } else {
+                        viewModel.restText.value
+                    }
+                    ,
+                    color = WalkOneGray50,
+                    style = TextStyle(
+                        fontSize = 40.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier.align(Alignment.TopStart).padding(top = 50.dp)
+                )
+
+                Text(
+                    text = "${viewModel.restTime.value}",
+                    color = WalkOneGray50,
+                    style = TextStyle(
+                        fontSize = 120.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
         }
-    }
 
-    if(showView) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(WalkOneGray900.copy(alpha = 0.9f))
-                .padding(20.dp)
-        ) {
-            ConfettiAnimation(8000L)
 
-            Text(
-                text =
-                    if (isTenSecondsLeft) {
-                        preSetText
-                    } else {
-                        restText
-                    },
-                color = WalkOneGray50,
-                style = TextStyle(
-                    fontSize = 40.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                modifier = Modifier.align(Alignment.TopStart)
-            )
-
-            Text(
-                text = "${restTime}",
-                color = WalkOneGray50,
-                style = TextStyle(
-                    fontSize = 120.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-    }
 }
 
-@Preview
-@Composable
-fun previewRestTimeModal() {
-    RestTime(true, 60)
-}
+//@Preview
+//@Composable
+//fun previewRestTimeModal() {
+//    RestTime(true, 60)
+//}
