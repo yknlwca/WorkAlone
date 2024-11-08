@@ -23,8 +23,7 @@ data class Exercise(
     val movement: String,
     @SerializedName("breath")
     val breath: String,
-    @SerializedName("exerciseType")
-    val exerciseType: String,
-    val picture: Int,
-    val content: String
+
+    val picture: Int?,
+    val content: String?
 )

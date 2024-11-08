@@ -12,13 +12,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ssafy.workalone.data.local.MemberPreferenceManager
-import com.ssafy.workalone.presentation.ui.screen.ExerciseDetailView
+import com.ssafy.workalone.presentation.ui.screen.ExerciseView
 import com.ssafy.workalone.presentation.ui.screen.ExerciseListView
 import com.ssafy.workalone.presentation.ui.screen.HomeView
 import com.ssafy.workalone.presentation.ui.screen.IndividualCompleteView
 import com.ssafy.workalone.presentation.ui.screen.LoginView
-import com.ssafy.workalone.presentation.viewmodels.ExerciseRecordViewModel
-import com.ssafy.workalone.presentation.viewmodels.ExerciseViewModel
 
 @Composable
 fun Navigation(
@@ -63,7 +61,7 @@ fun Navigation(
         ) { entry ->
             val exerciseId =
                 if (entry.arguments != null) entry.arguments!!.getLong("groupId") else 0L
-            ExerciseDetailView(
+            ExerciseView(
                 navController = navController,
                 id = exerciseId,
             )

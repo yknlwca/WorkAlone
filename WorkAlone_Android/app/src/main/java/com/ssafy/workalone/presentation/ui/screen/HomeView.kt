@@ -2,8 +2,6 @@ package com.ssafy.workalone.presentation.ui.screen
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Intent
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -37,10 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.ssafy.workalone.mlkit.java.CameraXLivePreviewActivity
-
 import com.ssafy.workalone.data.model.Member
-
 import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.AppBarView
 import com.ssafy.workalone.presentation.ui.component.BottomSheetContent
@@ -69,7 +64,18 @@ fun HomeView(navController: NavController, member: Member) {
             initialValue = ModalBottomSheetValue.Hidden,
             skipHalfExpanded = false
         )
+//        var showWeightDialog by remember { mutableStateOf(true) }
+//        var userWeight by remember { mutableStateOf(70) } // 기본 몸무게
 
+//        if (showWeightDialog) {
+//            WeightPickerDialog(
+//                initialWeight = userWeight,
+//                onConfirm = { selectedWeight ->
+//                    userWeight = selectedWeight
+//                },
+//                onDismiss = { showWeightDialog = false }
+//            )
+//        }
         BackHandler {
             if (System.currentTimeMillis() - backPressedTime < 2000) {
                 (context as? Activity)?.finish()
@@ -87,11 +93,7 @@ fun HomeView(navController: NavController, member: Member) {
             sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
             sheetBackgroundColor = WalkOneGray50,
             sheetContent = {
-                BottomSheetContent(
-                    onLogout = {
-                        navController.navigate(Screen.Login.route)
-                    }
-                )
+                BottomSheetContent(navController)
             }
         ) {
             Scaffold(
