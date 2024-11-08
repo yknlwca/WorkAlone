@@ -19,6 +19,8 @@ interface ExerciseService {
         @Query("exercise-type") exerciseType: String
     ): Response<List<Exercise>>
 
-    @POST("/exercises")
-    suspend fun getExerciseRecords(): Response<List<ExerciseRecord>>
+    @GET("/summary")
+    suspend fun getExerciseRecords(
+        @Query("date") date: String,
+    ):Response<ExerciseRecord>
 }

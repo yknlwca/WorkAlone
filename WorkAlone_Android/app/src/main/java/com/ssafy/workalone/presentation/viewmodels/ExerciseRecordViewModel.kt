@@ -2,6 +2,7 @@ package com.ssafy.workalone.presentation.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.ssafy.workalone.data.model.ExerciseRecord
 import com.ssafy.workalone.data.repository.ExerciseRecordRepository
 import com.ssafy.workalone.global.exception.CustomException
@@ -14,10 +15,12 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
-class ExerciseRecordViewModel(private val exerciseRecordRepository: ExerciseRecordRepository): ViewModel() {
+class ExerciseRecordViewModel(
+    private val exerciseRecordRepository: ExerciseRecordRepository = ExerciseRecordRepository()
+): ViewModel() {
 
-    val getExerciseRecords: Flow<List<ExerciseRecord>> = flow {
-        emitAll(exerciseRecordRepository.getExersiceRecords())
+    fun getExerciseRecords(date: String): Flow<ExerciseRecord> = flow {
+        emitAll(exerciseRecordRepository.getExersiceRecords(date))
     }.flowOn(Dispatchers.IO).catch { e -> handleException(e) }
 
     private fun handleException(exception: Throwable) {

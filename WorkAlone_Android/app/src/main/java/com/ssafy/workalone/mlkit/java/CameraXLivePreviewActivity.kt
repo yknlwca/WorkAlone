@@ -140,11 +140,7 @@ class CameraXLivePreviewActivity :
             if(exerciseType != "플랭크")
               RepCounter(viewModel = ExerciseMLKitViewModel())
             else
-<<<<<<< HEAD
-              ExerciseTimer(3,3,3)
-=======
               ExerciseTimer(viewModel = ExerciseMLKitViewModel())
->>>>>>> abd80f0623e61261023a085e2b823e00a3ca419d
           }
         }
 
@@ -310,7 +306,7 @@ class CameraXLivePreviewActivity :
               rescaleZ,
               runClassification,
               /* isStreamMode = */ true,
-//              exerciseType
+              exerciseType
 
             )
       } catch (e: Exception) {

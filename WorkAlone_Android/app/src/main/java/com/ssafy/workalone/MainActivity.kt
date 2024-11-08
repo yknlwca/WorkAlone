@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.rememberNavController
 import com.ssafy.workalone.data.local.MemberPreferenceManager
 import com.ssafy.workalone.data.model.Member
 import com.ssafy.workalone.presentation.navigation.Navigation
@@ -15,8 +16,10 @@ import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.ExerciseTimer
 import com.ssafy.workalone.presentation.ui.component.RepCounter
 import com.ssafy.workalone.presentation.ui.component.RestTime
+import com.ssafy.workalone.presentation.ui.screen.IndividualCompleteView
 import com.ssafy.workalone.presentation.ui.theme.WorkAloneTheme
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
+import com.ssafy.workalone.presentation.viewmodels.ExerciseRecordViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,8 +36,7 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background)
                 ) {
-//                    Navigation(startDestination = startDestination)
-                    RestTime(true, 30)
+                    Navigation(startDestination = startDestination)
                 }
             }
         }
