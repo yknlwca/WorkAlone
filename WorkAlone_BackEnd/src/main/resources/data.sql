@@ -41,6 +41,11 @@ VALUES
     -- 단일 운동: group_id = 3 (Core Workout)
     (7, 3, 4, 1, 2, 15, 90, 'COUNT', false);
 
+-- ExerciseMapping 테이블에 더미 데이터 추가
+INSERT INTO exercise_mapping (group_id, member_id)
+VALUES (1, 1), (2, 1), (3, 1);
+
+
 INSERT INTO exercise_summary (id, member_id, date, exercise_id, kcal, time)
 VALUES
     (1, 1, '2024-11-01', 1, 150, '00:15:00'),
