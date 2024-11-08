@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssawallafy.workalone_backend.domain.member.dto.MemberModifyReq;
 import com.ssawallafy.workalone_backend.domain.member.dto.MemberSaveReq;
 import com.ssawallafy.workalone_backend.domain.member.dto.MemberSaveRes;
+import com.ssawallafy.workalone_backend.domain.member.dto.MemberUpdateReq;
 import com.ssawallafy.workalone_backend.domain.member.entity.Member;
 import com.ssawallafy.workalone_backend.domain.member.service.MemberService;
 
@@ -33,13 +35,9 @@ public class MemberController {
 
 	@PostMapping("/save")
 	@Operation(summary = "회원정보 저장", description = "회원의 이름, 몸무게를 저장")
-	public ResponseEntity<MemberSaveRes> saveMember(@RequestBody MemberSaveReq memberSaveReq) {
+	public ResponseEntity<Member> saveMember(@RequestBody MemberSaveReq memberSaveReq) {
 
-		long memberId = memberService.saveMember(memberSaveReq);
-
-		MemberSaveRes res = MemberSaveRes.builder()
-			.member_id(memberId)
-			.build();
+		Member res = memberService.saveMember(memberSaveReq);
 
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
@@ -53,15 +51,25 @@ public class MemberController {
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
-	@PutMapping("/update")
-	@Operation(summary = "회원정보 수정", description = "회원의 닉네임, 키, 몸무게를 수정")
-	public ResponseEntity<?> modifyMember(@RequestBody MemberModifyReq memberModifyReq) {
+	@PatchMapping("/update")
+	@Operation(summary = "회원정보 수정", description = "회원의 녹화여부를 수정")
+	public ResponseEntity<Member> updateMember(@RequestBody MemberUpdateReq memberUpdateReq) {
 
-		Long memberId = 1L;
-		memberService.updateMember(memberId, memberModifyReq);
+		Member res = memberService.modifyMember(memberUpdateReq);
 
-		return new ResponseEntity<>(null, HttpStatus.OK);
+		return new ResponseEntity<>(res, HttpStatus.OK);
+
 	}
+
+	// @PutMapping("/update")
+	// @Operation(summary = "회원정보 수정", description = "회원의 닉네임, 키, 몸무게를 수정")
+	// public ResponseEntity<?> modifyMember(@RequestBody MemberModifyReq memberModifyReq) {
+	//
+	// 	Long memberId = 1L;
+	// 	memberService.updateMember(memberId, memberModifyReq);
+	//
+	// 	return new ResponseEntity<>(null, HttpStatus.OK);
+	// }
 
 	@DeleteMapping
 	@Operation(summary = "회원 탈퇴", description = "회원을 DB에서 삭제합니다.")

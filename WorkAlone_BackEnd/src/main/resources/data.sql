@@ -16,8 +16,8 @@ VALUES (1,'스쿼트', '허벅지와 코어 근력 강화',
         '1. 복근에 힘을 주면서 상체를 들어 올려 무릎 쪽으로 향합니다.\n2. 천천히 내려가면서 원래 자세로 돌아옵니다.',
         '일어날 때 숨을 내쉬고, 내려갈 때 숨을 들이마십니다.');
 
-INSERT INTO member (name, nickname, email, phone_number, gender, is_trainer, height, weight)
-VALUES ('John Doe', 'johnd', 'johndoe@example.com', '123-456-7890', true, false, 180, 75);
+INSERT INTO member (name, nickname, email, phone_number, gender, is_trainer, height, weight, is_recording)
+VALUES ('John Doe', 'johnd', 'johndoe@example.com', '123-456-7890', true, false, 180, 75, false);
 
 
 -- ExerciseGroup 테이블의 더미 데이터 (member_id가 1인 경우)
