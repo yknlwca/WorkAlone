@@ -29,13 +29,15 @@ public class Member {
 
 	private String phone_number;
 
-	private boolean gender;
+	private Boolean gender;
 
-	private boolean is_trainer;
+	private Boolean is_trainer;
 
 	private int height;
 
 	private int weight;
+
+	private Boolean is_recording;
 
 	public void updateNickname(String newNickname) {
 		this.nickname = newNickname;
@@ -43,4 +45,5 @@ public class Member {
 	public void updateHeight(int newHeight) { this.height = newHeight; }
 	public void updateWeight(int newWeight) { this.weight = newWeight; }
 
+	public void updateIsRecording(boolean newIsRecording) { this.is_recording = newIsRecording; }
 }
