@@ -19,8 +19,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.ssafy.workalone.data.local.ExerciseInfoPreferenceManager
 import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.AppBarView
 import com.ssafy.workalone.presentation.ui.component.ExerciseItem
@@ -31,6 +33,7 @@ import com.ssafy.workalone.presentation.viewmodels.ExerciseViewModel
 fun ExerciseListView(navController: NavController, viewModel: ExerciseViewModel = ExerciseViewModel()) {
     val challengeList = viewModel.getAllChallenge.collectAsState(initial = listOf())
     val errorMessage by viewModel.errorMessage.collectAsState()
+    val preferenceManager = ExerciseInfoPreferenceManager(LocalContext.current)
 
     Scaffold(
         topBar = {
@@ -59,6 +62,9 @@ fun ExerciseListView(navController: NavController, viewModel: ExerciseViewModel 
             ) {
                 items(challengeList.value) { challenge ->
                     ExerciseItem(challenge = challenge) {
+                        if(challenge.restBtwExercise != null) {
+                            preferenceManager.setRestBtwExercise(challenge.restBtwExercise)
+                        }
                         navController.navigate(
                             Screen.ExerciseDetail.createRoute(
                                 challenge.groupId

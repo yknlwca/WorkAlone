@@ -17,4 +17,6 @@ data class Challenge(
     val kind: String,
     @SerializedName("setType")
     val setType: String,
+    @SerializedName("exerciseType")
+    val exerciseType: String?
 )

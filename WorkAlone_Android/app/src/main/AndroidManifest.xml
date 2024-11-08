@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.ssafy.workalone"
     android:installLocation="auto">
-    <uses-sdk
-        tools:overrideLibrary="
+
+    <uses-sdk tools:overrideLibrary="
           androidx.camera.camera2, androidx.camera.core,
           androidx.camera.view, androidx.camera.lifecycle,
           com.google.mlkit.vision.segmentation.subject" />
@@ -14,21 +14,21 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
-    
-    <!--http 허용 설정 => usesClearTextTraffic, 배포되면 바꾸셈 -->
+
     <application
         android:name=".WorkAloneApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/w_logo"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:label="@string/app_name"
         android:roundIcon="@drawable/w_logo"
         android:supportsRtl="true"
@@ -46,22 +46,30 @@
                 <action android:name="android.speech.RecognizerIntent.ACTION_RECOGNIZE_SPEECH" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Redirect URI: "kakao${NATIVE_APP_KEY}://oauth" -->
+                <data
+                    android:host="oauth"
+                    android:scheme="@string/kakao_oauth_host" />
             </intent-filter>
         </activity>
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version"/>
+            android:value="@integer/google_play_services_version" />
 
         <!-- Optional: Add it to automatically download ML model to device after
           your app is installed.-->
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
-            android:value="barcode,face,ocr,ocr_chinese,ocr_devanagari,ocr_japanese,ocr_korean,ica,custom_ica,subject_segment"/>
+            android:value="barcode,face,ocr,ocr_chinese,ocr_devanagari,ocr_japanese,ocr_korean,ica,custom_ica,subject_segment" />
         <activity
             android:name=".mlkit.java.CameraXLivePreviewActivity"
             android:exported="false"
-            android:theme="@style/AppTheme">
-        </activity>
+            android:theme="@style/AppTheme"></activity>
 
     </application>
     <queries>
