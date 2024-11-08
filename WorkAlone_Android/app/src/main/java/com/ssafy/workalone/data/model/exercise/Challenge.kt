@@ -1,4 +1,4 @@
-package com.ssafy.workalone.data.model
+package com.ssafy.workalone.data.model.exercise
 
 import com.google.gson.annotations.SerializedName
 

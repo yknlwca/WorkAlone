@@ -9,8 +9,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.kakao.sdk.common.KakaoSdk
-import com.ssafy.workalone.data.local.MemberPreferenceManager
-import com.ssafy.workalone.data.model.Member
 import com.ssafy.workalone.presentation.navigation.Navigation
 import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.theme.WorkAloneTheme
@@ -19,9 +17,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         KakaoSdk.init(this, BuildConfig.KAKAO_NATIVE_APP_KEY)
-        // 멤버 더미 데이터
-        val memberPreference = MemberPreferenceManager(this)
-        memberPreference.setMember(Member())
 
         val startDestination = intent.getStringExtra("startDestination") ?: Screen.Home.route
         setContent {
@@ -32,7 +27,7 @@ class MainActivity : ComponentActivity() {
                         .background(MaterialTheme.colorScheme.background)
                 ) {
                     Navigation(startDestination = startDestination)
-//                    ExerciseListView(rememberNavController())
+//                    AWSS3UploadScreen()
                 }
             }
         }

@@ -4,7 +4,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.ssafy.workalone.data.model.Exercise
 
 class ExerciseMLKitViewModel(): ViewModel() {
 //    private val _exercises = mutableStateOf<List<Exercise>>(listOf())

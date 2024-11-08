@@ -24,7 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.ssafy.workalone.R
-import com.ssafy.workalone.data.model.Challenge
+import com.ssafy.workalone.data.model.exercise.Challenge
 import com.ssafy.workalone.presentation.ui.theme.LocalWorkAloneTypography
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50

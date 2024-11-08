@@ -31,7 +31,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
-import com.ssafy.workalone.presentation.viewmodels.ExerciseViewModel
+import com.ssafy.workalone.presentation.viewmodels.Exercise.ExerciseViewModel
 
 
 @OptIn(UnstableApi::class)

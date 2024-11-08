@@ -2,7 +2,6 @@ package com.ssafy.workalone.presentation.ui.screen
 
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -42,7 +41,7 @@ import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.ui.theme.WorkAloneTheme
-import com.ssafy.workalone.presentation.viewmodels.ExerciseViewModel
+import com.ssafy.workalone.presentation.viewmodels.Exercise.ExerciseViewModel
 import kotlinx.coroutines.launch
 
 

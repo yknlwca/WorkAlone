@@ -1,8 +1,8 @@
-package com.ssafy.workalone.presentation.viewmodels
+package com.ssafy.workalone.presentation.viewmodels.Exercise
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.ssafy.workalone.data.model.ExerciseRecord
+import com.ssafy.workalone.data.model.exercise.ExerciseRecord
 import com.ssafy.workalone.data.repository.ExerciseRecordRepository
 import com.ssafy.workalone.global.exception.CustomException
 import com.ssafy.workalone.global.exception.handleException

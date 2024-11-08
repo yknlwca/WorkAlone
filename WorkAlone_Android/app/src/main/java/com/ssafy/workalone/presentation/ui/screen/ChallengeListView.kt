@@ -26,7 +26,7 @@ import com.ssafy.workalone.data.local.ExerciseInfoPreferenceManager
 import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.AppBarView
 import com.ssafy.workalone.presentation.ui.component.ExerciseItem
-import com.ssafy.workalone.presentation.viewmodels.ExerciseViewModel
+import com.ssafy.workalone.presentation.viewmodels.Exercise.ExerciseViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
