@@ -1,8 +1,19 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
 }
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
+}
+val nativeAppKey = localProperties.getProperty("KAKAO_NATIVE_APP_KEY") ?: ""
+val oauthHost = localProperties.getProperty("KAKAO_OAUTH_HOST") ?: ""
 
 android {
     buildFeatures {
@@ -15,7 +26,7 @@ android {
 
     defaultConfig {
         applicationId = "com.ssafy.workalone"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -26,14 +37,17 @@ android {
             useSupportLibrary = true
         }
         setProperty("archivesBaseName", "vision-quickstart")
+        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", nativeAppKey)
+        resValue("string", "kakao_oauth_host", oauthHost)
     }
+
 
     buildTypes {
         release {
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro","proguard.cfg"
+                "proguard-rules.pro", "proguard.cfg"
             )
         }
         debug {
@@ -62,18 +76,21 @@ android {
         }
     }
 }
-//repositories {
-//    // Depending on AndroidX Snapshot Builds to get the latest CameraX libs.
-//    maven {
-//        url = uri("https://androidx.dev/snapshots/builds/6787662/artifacts/repository/")
-//    }
-//}
+
 
 dependencies {
     val nav_version = "2.7.5"
     val compose_version = "1.6.0-alpha08"
     // define a BOM and its version
     implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
+
+    implementation("com.kakao.sdk:v2-all:2.20.6") // 전체 모듈 설치, 2.11.0 버전부터 지원
+    implementation("com.kakao.sdk:v2-user:2.20.6") // 카카오 로그인 API 모듈
+    implementation("com.kakao.sdk:v2-share:2.20.6") // 카카오톡 공유 API 모듈
+    implementation("com.kakao.sdk:v2-talk:2.20.6") // 카카오톡 채널, 카카오톡 소셜, 카카오톡 메시지 API 모듈
+    implementation("com.kakao.sdk:v2-friend:2.20.6") // 피커 API 모듈
+    implementation("com.kakao.sdk:v2-navi:2.20.6") // 카카오내비 API 모듈
+    implementation("com.kakao.sdk:v2-cert:2.20.6") // 카카오톡 인증 서비스 API 모듈
 
     // define any required OkHttp artifacts without version
     implementation("com.squareup.okhttp3:okhttp")
@@ -85,10 +102,10 @@ dependencies {
     implementation(libs.gson)
     // 달력 compose
     implementation("io.github.boguszpawlowski.composecalendar:composecalendar:1.3.0")
-    implementation ("io.github.boguszpawlowski.composecalendar:kotlinx-datetime:1.3.0")
+    implementation("io.github.boguszpawlowski.composecalendar:kotlinx-datetime:1.3.0")
 
     //Lottie(콘페티 애니메이션 재생)
-    implementation ("com.airbnb.android:lottie-compose:5.2.0")
+    implementation("com.airbnb.android:lottie-compose:5.2.0")
     implementation(libs.androidx.tools.core)
     implementation(libs.androidx.camera.core)
 
@@ -123,93 +140,93 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     //mlkit dependencies
-    implementation ("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0")
-    implementation ("androidx.multidex:multidex:2.0.1")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0")
+    implementation("androidx.multidex:multidex:2.0.1")
 
     // Barcode model
-    implementation ("com.google.mlkit:barcode-scanning:17.3.0")
+    implementation("com.google.mlkit:barcode-scanning:17.3.0")
     // Or comment the dependency above and uncomment the dependency below to
     // use unbundled model that depends on Google Play Services
     // implementation 'com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1'
 
     // Object detection feature with bundled default classifier
-    implementation ("com.google.mlkit:object-detection:17.0.2")
+    implementation("com.google.mlkit:object-detection:17.0.2")
 
     // Object detection feature with custom classifier support
-    implementation ("com.google.mlkit:object-detection-custom:17.0.2")
+    implementation("com.google.mlkit:object-detection-custom:17.0.2")
 
     // Face features
-    implementation ("com.google.mlkit:face-detection:16.1.7")
+    implementation("com.google.mlkit:face-detection:16.1.7")
     // Or comment the dependency above and uncomment the dependency below to
     // use unbundled model that depends on Google Play Services
     // implementation 'com.google.android.gms:play-services-mlkit-face-detection:17.1.0'
 
     // Text features
-    implementation ("com.google.mlkit:text-recognition:16.0.1")
+    implementation("com.google.mlkit:text-recognition:16.0.1")
     // Or comment the dependency above and uncomment the dependency below to
     // use unbundled model that depends on Google Play Services
     // implementation 'com.google.android.gms:play-services-mlkit-text-recognition:19.0.1'
-    implementation ("com.google.mlkit:text-recognition-chinese:16.0.1")
+    implementation("com.google.mlkit:text-recognition-chinese:16.0.1")
     // Or comment the dependency above and uncomment the dependency below to
     // use unbundled model that depends on Google Play Services
     // implementation 'com.google.android.gms:play-services-mlkit-text-recognition-chinese:16.0.1'
-    implementation ("com.google.mlkit:text-recognition-devanagari:16.0.1")
+    implementation("com.google.mlkit:text-recognition-devanagari:16.0.1")
     // Or comment the dependency above and uncomment the dependency below to
     // use unbundled model that depends on Google Play Services
     // implementation 'com.google.android.gms:play-services-mlkit-text-recognition-devanagari:16.0.1'
-    implementation ("com.google.mlkit:text-recognition-japanese:16.0.1")
+    implementation("com.google.mlkit:text-recognition-japanese:16.0.1")
     // Or comment the dependency above and uncomment the dependency below to
     // use unbundled model that depends on Google Play Services
     // implementation 'com.google.android.gms:play-services-mlkit-text-recognition-japanese:16.0.1'
-    implementation ("com.google.mlkit:text-recognition-korean:16.0.1")
+    implementation("com.google.mlkit:text-recognition-korean:16.0.1")
     // Or comment the dependency above and uncomment the dependency below to
     // use unbundled model that depends on Google Play Services
     // implementation 'com.google.android.gms:play-services-mlkit-text-recognition-korean:16.0.1'
 
     // Image labeling
-    implementation ("com.google.mlkit:image-labeling:17.0.9")
+    implementation("com.google.mlkit:image-labeling:17.0.9")
     // Or comment the dependency above and uncomment the dependency below to
     // use unbundled model that depends on Google Play Services
     // implementation 'com.google.android.gms:play-services-mlkit-image-labeling:16.0.8'
 
     // Image labeling custom
-    implementation ("com.google.mlkit:image-labeling-custom:17.0.3")
+    implementation("com.google.mlkit:image-labeling-custom:17.0.3")
     // Or comment the dependency above and uncomment the dependency below to
     // use unbundled model that depends on Google Play Services
     // implementation 'com.google.android.gms:play-services-mlkit-image-labeling-custom:16.0.0-beta5'
 
     // Pose detection with default models
-    implementation ("com.google.mlkit:pose-detection:18.0.0-beta5")
+    implementation("com.google.mlkit:pose-detection:18.0.0-beta5")
     // Pose detection with accurate models
-    implementation ("com.google.mlkit:pose-detection-accurate:18.0.0-beta5")
+    implementation("com.google.mlkit:pose-detection-accurate:18.0.0-beta5")
 
     // Selfie segmentation
-    implementation ("com.google.mlkit:segmentation-selfie:16.0.0-beta6")
+    implementation("com.google.mlkit:segmentation-selfie:16.0.0-beta6")
 
-    implementation ("com.google.mlkit:camera:16.0.0-beta3")
+    implementation("com.google.mlkit:camera:16.0.0-beta3")
 
     // Face Mesh Detection
-    implementation ("com.google.mlkit:face-mesh-detection:16.0.0-beta3")
+    implementation("com.google.mlkit:face-mesh-detection:16.0.0-beta3")
 
     // Subject Segmentation
-    implementation ("com.google.android.gms:play-services-mlkit-subject-segmentation:16.0.0-beta1")
+    implementation("com.google.android.gms:play-services-mlkit-subject-segmentation:16.0.0-beta1")
 
     // -------------------------------------------------------
 
-    implementation ("com.google.code.gson:gson:2.8.6")
-    implementation ("com.google.guava:guava:27.1-android")
+    implementation("com.google.code.gson:gson:2.8.6")
+    implementation("com.google.guava:guava:27.1-android")
 
     // For how to setup gradle dependencies in Android X, see:
     // https://developer.android.com/training/testing/set-up-project#gradle-dependencies
     // Core library
-    androidTestImplementation ("androidx.test:core:1.4.0")
+    androidTestImplementation("androidx.test:core:1.4.0")
 
     // AndroidJUnitRunner and JUnit Rules
-    androidTestImplementation ("androidx.test:runner:1.4.0")
-    androidTestImplementation ("androidx.test:rules:1.4.0")
+    androidTestImplementation("androidx.test:runner:1.4.0")
+    androidTestImplementation("androidx.test:rules:1.4.0")
 
     // Assertions
-    androidTestImplementation ("androidx.test.ext:junit:1.1.3")
+    androidTestImplementation("androidx.test.ext:junit:1.1.3")
 
     // ViewModel and LiveData
 //    implementation ("androidx.lifecycle:lifecycle-livedata:2.3.1")
@@ -220,17 +237,17 @@ dependencies {
 //    implementation ("androidx.constraintlayout:constraintlayout:2.0.4")
 
     // CameraX
-    implementation ("androidx.camera:camera-camera2:1.4.0")
-    implementation ("androidx.camera:camera-lifecycle:1.0.0-SNAPSHOT")
-    implementation ("androidx.camera:camera-view:1.4.0")
+    implementation("androidx.camera:camera-camera2:1.4.0")
+    implementation("androidx.camera:camera-lifecycle:1.0.0-SNAPSHOT")
+    implementation("androidx.camera:camera-view:1.4.0")
 
     // On Device Machine Learnings
     implementation("com.google.android.odml:image:1.0.0-beta1")
 
     //compooseView dependencies
     // Compose dependencies
-    implementation ("androidx.activity:activity-compose:$compose_version")
-    implementation ("androidx.compose.ui:ui-tooling:$compose_version")
+    implementation("androidx.activity:activity-compose:$compose_version")
+    implementation("androidx.compose.ui:ui-tooling:$compose_version")
 
 }
 configurations.all {

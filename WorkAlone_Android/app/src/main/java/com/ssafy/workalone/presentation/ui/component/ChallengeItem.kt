@@ -54,16 +54,16 @@ fun ExerciseItem(challenge: Challenge, onClick: () -> Unit) {
                         .clip(RoundedCornerShape(12.dp))
                         .background(WalkOneGray50)
                 ) {
-                    val imageResId = R.drawable.w_logo
-//                    if (challenge.exerciseType.equals("SQUAT")) {
-//                        imageResId = R.drawable.squat
-//                    } else if (exercise.exerciseType.equals("PUSHUP")) {
-//                        imageResId = R.drawable.push_up
-//                    } else if (exercise.exerciseType.equals("SITUP")) {
-//                        imageResId = R.drawable.sit_up
-//                    } else if (exercise.exerciseType.equals("PLANK")) {
-//                        imageResId = R.drawable.plank
-//                    }
+                    var imageResId = R.drawable.w_logo
+                    if (challenge.exerciseType.equals("스쿼드")) {
+                        imageResId = R.drawable.squat
+                    } else if (challenge.exerciseType.equals("푸쉬업")) {
+                        imageResId = R.drawable.push_up
+                    } else if (challenge.exerciseType.equals("윗몸 일으키기")) {
+                        imageResId = R.drawable.sit_up
+                    } else if (challenge.exerciseType.equals("플랭크")) {
+                        imageResId = R.drawable.plank
+                    }
                     Image(
                         painter = painterResource(id = imageResId),
                         contentDescription = "Exercise Image",

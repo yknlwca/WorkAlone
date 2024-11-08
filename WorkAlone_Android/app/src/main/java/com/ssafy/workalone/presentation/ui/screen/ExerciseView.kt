@@ -2,6 +2,7 @@ package com.ssafy.workalone.presentation.ui.screen
 
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -31,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import com.ssafy.workalone.data.local.ExerciseInfoPreferenceManager
 import com.ssafy.workalone.mlkit.java.CameraXLivePreviewActivity
 import com.ssafy.workalone.presentation.ui.component.AppBarView
 import com.ssafy.workalone.presentation.ui.component.CustomButton
@@ -46,7 +48,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ExerciseDetailView(
+fun ExerciseView(
     navController: NavController,
     viewModel: ExerciseViewModel = ExerciseViewModel(),
     id: Long
@@ -59,7 +61,17 @@ fun ExerciseDetailView(
     var currentExercise = exercises.value.getOrNull(currentIndex)
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
+    val preferenceManager = ExerciseInfoPreferenceManager(context)
     val intent = Intent(context, CameraXLivePreviewActivity::class.java)
+
+    val cameraPermissionCheck = ContextCompat.checkSelfPermission(
+        context,
+        android.Manifest.permission.CAMERA
+    )
+    val audioPermissionCheck = ContextCompat.checkSelfPermission(
+        context,
+        android.Manifest.permission.RECORD_AUDIO
+    )
 
     // 권한 요청 런처
     val requestPermissionLauncher =
@@ -153,14 +165,14 @@ fun ExerciseDetailView(
                             CustomButton(
                                 text = "운동 시작하기",
                                 onClick = {
-                                    val cameraPermissionCheck = ContextCompat.checkSelfPermission(
-                                        context,
-                                        android.Manifest.permission.CAMERA
+                                    preferenceManager.setExerciseCount(
+                                        title = exerciseData.title,
+                                        restBtwSet = exerciseData.restBtwSet,
+                                        exerciseSet = exerciseData.exerciseSet,
+                                        exerciseRepeat = exerciseData.exerciseRepeat,
+                                        type = exerciseData.setType
                                     )
-                                    val audioPermissionCheck = ContextCompat.checkSelfPermission(
-                                        context,
-                                        android.Manifest.permission.RECORD_AUDIO
-                                    )
+
                                     if (cameraPermissionCheck != PackageManager.PERMISSION_GRANTED || audioPermissionCheck != PackageManager.PERMISSION_GRANTED) {
                                         requestPermissionLauncher.launch(
                                             arrayOf(
