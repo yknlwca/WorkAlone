@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.ssafy.workalone.data.model.ExerciseRecord
 import com.ssafy.workalone.data.repository.ExerciseRecordRepository
 import com.ssafy.workalone.global.exception.CustomException
+import com.ssafy.workalone.global.exception.handleException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch

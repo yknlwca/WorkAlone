@@ -143,10 +143,11 @@ fun HomeView(navController: NavController, member: Member) {
                         CustomButton(
                             text = "챌린지 이동하기",
                             onClick = {
-                                navController.navigate(Screen.ExerciseList.route)
-//                            val intent = Intent(context, CameraXLivePreviewActivity::class.java)
-//                            intent.putExtra("exerciseType","플랭크")
-//                            context.startActivity(intent)
+                  //              navController.navigate(Screen.ExerciseList.route)
+                            val intent = Intent(context, CameraXLivePreviewActivity::class.java)
+                            intent.putExtra("exerciseType","스쿼트")
+                            Log.d("123","여기여기")
+                            context.startActivity(intent)
                             },
                         )
                     }

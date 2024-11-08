@@ -52,8 +52,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Queue;
+
 import android.speech.tts.TextToSpeech;
 
 /**
@@ -70,11 +73,11 @@ public class PoseClassifierProcessor {
   private static final String PULLUPS_CLASS = "pullups_down";
   private static final String SITUP_CLASS = "situp_down";
   private static final String PLANK_CLASS = "plank";
-  private static long plankStartTime = 0;
   private boolean plankFlag = false;
-
   private static final float MINIMUM_RMS_THRESHOLD = 3.5f; // 감도 기준 설정 (조정 가능)
   private boolean isEnvironmentLoud = false;
+
+
   // 음석인식 부분
   private SpeechRecognizer speechRecognizer;
   private boolean isTracking = true; // "시작" 명령이 들어오면 true
@@ -141,13 +144,15 @@ public class PoseClassifierProcessor {
     speechRecognizer.setRecognitionListener(new RecognitionListener() {
 
       @Override
-      public void onReadyForSpeech(Bundle bundle) {
+      public void onReadyForSpeech(Bundle bundle)
+      {
         //Log.d(TAG, "음성 인식 준비됨");
         //System.out.println("음석 인식 준비 됨");
       }
 
       @Override
-      public void onBeginningOfSpeech() {
+      public void onBeginningOfSpeech()
+      {
         //Log.d(TAG, "음성 인식 시작됨");
        // S//ystem.out.println("음성 인식 시작");
 
@@ -204,10 +209,10 @@ public class PoseClassifierProcessor {
             if (command.equalsIgnoreCase("시작")) {
               isTracking = true;
               isPaused = false;
-              //Log.d(TAG, "운동 추적 시작됨");
+              Log.d("exer", "운동 추적 시작됨");
             } else if (command.equalsIgnoreCase("정지")) {
               isPaused = true;
-             // Log.d(TAG, "운동 추적 일시 중지됨");
+             Log.d("exer", "운동 추적 일시 중지됨");
             } else if (command.equalsIgnoreCase("종료")) {
               isTracking = false;
               shutdown();
@@ -316,7 +321,7 @@ public class PoseClassifierProcessor {
 
 
 
-      Log.d("exer","pose sample file:"+POSE_SAMPLES_FILE);
+    //  Log.d("exer","pose sample file:"+POSE_SAMPLES_FILE);
       for (RepetitionCounter repCounter : repCounters) {
 
         //Log.d("exer",String.valueOf(repCounter.getClassName()));
