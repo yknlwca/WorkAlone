@@ -72,7 +72,7 @@ public class PoseClassifierProcessor {
   private static long plankStartTime = 0;
   private boolean plankFlag = false;
 
-  private static final float MINIMUM_RMS_THRESHOLD = 3.5f; // 감도 기준 설정 (조정 가능)
+  private static final float MINIMUM_RMS_THRESHOLD = 5.0f; // 감도 기준 설정 (조정 가능)
   private boolean isEnvironmentLoud = false;
   // 음석인식 부분
   private SpeechRecognizer speechRecognizer;
@@ -154,11 +154,11 @@ public class PoseClassifierProcessor {
 
       @Override
       public void onRmsChanged(float rms) {
-        if (rms < MINIMUM_RMS_THRESHOLD) {
-          isEnvironmentLoud = false;
-        } else {
-          isEnvironmentLoud = true;
-        }
+//        if (rms < MINIMUM_RMS_THRESHOLD) {
+//          isEnvironmentLoud = false;
+//        } else {
+//          isEnvironmentLoud = true;
+//        }
       }
 
       @Override
@@ -203,10 +203,10 @@ public class PoseClassifierProcessor {
             if (command.equalsIgnoreCase("시작")) {
               isTracking = true;
               isPaused = false;
-              //Log.d(TAG, "운동 추적 시작됨");
+              Log.d("exer", "운동 추적 시작됨");
             } else if (command.equalsIgnoreCase("정지")) {
               isPaused = true;
-             // Log.d(TAG, "운동 추적 일시 중지됨");
+             Log.d("exer", "운동 추적 일시 중지됨");
             } else if (command.equalsIgnoreCase("종료")) {
               isTracking = false;
               shutdown();
@@ -234,10 +234,10 @@ public class PoseClassifierProcessor {
   }
   private void startListening() {
 
-    if (isEnvironmentLoud) {
-      Log.d("exer", "소음이 감지되어 음성 인식을 시작하지 않습니다.");
-      return; // 소음이 있으면 음성 인식 시작 안함
-    }
+//    if (isEnvironmentLoud) {
+//      Log.d("exer", "소음이 감지되어 음성 인식을 시작하지 않습니다.");
+//      return; // 소음이 있으면 음성 인식 시작 안함
+//    }
     Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
     intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
     intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.KOREAN);
@@ -315,7 +315,7 @@ public class PoseClassifierProcessor {
 
 
 
-      Log.d("exer","pose sample file:"+POSE_SAMPLES_FILE);
+    //  Log.d("exer","pose sample file:"+POSE_SAMPLES_FILE);
       for (RepetitionCounter repCounter : repCounters) {
 
         //Log.d("exer",String.valueOf(repCounter.getClassName()));

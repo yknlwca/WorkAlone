@@ -54,10 +54,16 @@ public class PoseDetectorProcessor
   private final Executor classificationExecutor;
   private final String ExerciseType;
   private TextToSpeech textToSpeech;  // TTS instance
+  private static final long TTS_COOLDOWN_MS = 10000; // 메시지 호출 간 최소 간격 (10초)
+  private long lastTtsTimeOutOfFrame = 0; // "화면 안으로 들어와 주세요" 메시지의 마지막 호출 시간
+  private long lastTtsTimeInFrame = 0; // "안으로 들어왔습니다" 메시지의 마지막 호출 시간
 
-  private static final long TTS_COOLDOWN_MS = 10000; // TTS 호출 간 최소 5초 간격
   private long lastTtsTime = 0; // 마지막 TTS 호출 시간
   private PoseClassifierProcessor poseClassifierProcessor;
+
+  private boolean wasOutOfFrame = false;
+
+
   /** Internal class to hold Pose and classification results. */
   protected static class PoseWithClassification {
     private final Pose pose;
@@ -151,27 +157,54 @@ public class PoseDetectorProcessor
 
                       // 이게 false면 화면안에 없는거임
 
-                      boolean isIn = true;
+//                      boolean isIn = true;
+//
+//                      if (!isFullBodyVisible(pose)) {
+//                        Log.d(TAG, "Full body is not visible. Skipping frame.");
+//
+//                        isIn= false;
+//                        long currentTime = System.currentTimeMillis();
+//                        // 마지막 TTS 호출 시간에서 10초가 경과했는지 확인
+//                        if (currentTime - lastTtsTime >= TTS_COOLDOWN_MS) {
+//                          textToSpeech.speak("화면 안으로 모두 들어와주세요", TextToSpeech.QUEUE_FLUSH, null, null);
+//                          lastTtsTime = currentTime; // 마지막 TTS 호출 시간 업데이트
+//                        }
+//
+//                        return null;
+//                      }
+                      boolean isInFrame = isFullBodyVisible(pose);
 
-                      if (!isFullBodyVisible(pose)) {
-                        Log.d(TAG, "Full body is not visible. Skipping frame.");
+                      long currentTime = System.currentTimeMillis();
 
-                        isIn= false;
-                        long currentTime = System.currentTimeMillis();
-                        // 마지막 TTS 호출 시간에서 10초가 경과했는지 확인
-                        if (currentTime - lastTtsTime >= TTS_COOLDOWN_MS) {
+                      // 화면 안에 들어온 경우
+                      if (isInFrame) {
+                        if (wasOutOfFrame) { // 이전에 화면 밖에 있다가 들어온 경우
+                          // "안으로 들어왔습니다" 메시지를 Cooldown 시간에 맞춰 출력
+                          if (currentTime - lastTtsTimeInFrame >= TTS_COOLDOWN_MS) {
+                            textToSpeech.speak("안으로 들어왔습니다", TextToSpeech.QUEUE_FLUSH, null, null);
+                            lastTtsTimeInFrame = currentTime; // 마지막 호출 시간 갱신
+                          }
+                          wasOutOfFrame = false; // 사용자가 화면 안에 들어온 상태로 표시
+                        }
+                      } else { // 화면 밖에 있는 경우
+                        if (!wasOutOfFrame) { // 이전에 화면 안에 있다가 나간 경우
+                          wasOutOfFrame = true; // 사용자가 화면 밖으로 나간 상태로 표시
+                        }
+                        // "화면 안으로 들어와 주세요" 메시지를 Cooldown 시간에 맞춰 출력
+                        if (currentTime - lastTtsTimeOutOfFrame >= TTS_COOLDOWN_MS) {
                           textToSpeech.speak("화면 안으로 모두 들어와주세요", TextToSpeech.QUEUE_FLUSH, null, null);
-                          lastTtsTime = currentTime; // 마지막 TTS 호출 시간 업데이트
+                          lastTtsTimeOutOfFrame = currentTime; // 마지막 호출 시간 갱신
                         }
 
+                        // 사용자가 화면에 없는 경우 추가 작업을 수행하지 않음
                         return null;
                       }
-                      Log.d("exer","dectectInImage");
+                     // Log.d("exer","dectectInImage");
                       List<String> classificationResult = new ArrayList<>();
                      // Log.d("exer",String.valueOf(runClassification));
                       if (runClassification) {
                         if (poseClassifierProcessor == null) {
-                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,"스쿼트");
+                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,"윗몸일으키기");
                         }
                         classificationResult = poseClassifierProcessor.getPoseResult(pose);
                       }
@@ -226,14 +259,14 @@ public class PoseDetectorProcessor
     // 전체 신체를 인식하는 데 필요한 주요 랜드마크 (어깨, 손목, 엉덩이, 발목 등)
     int[] requiredLandmarks = {
 
-            PoseLandmark.LEFT_SHOULDER,
-            PoseLandmark.RIGHT_SHOULDER,
-            PoseLandmark.LEFT_HIP,
-            PoseLandmark.RIGHT_HIP,
-            PoseLandmark.LEFT_WRIST,
-            PoseLandmark.RIGHT_WRIST,
-            PoseLandmark.LEFT_ANKLE,
-            PoseLandmark.RIGHT_ANKLE
+            PoseLandmark.LEFT_SHOULDER
+//            PoseLandmark.RIGHT_SHOULDER,
+//            PoseLandmark.LEFT_HIP,
+//            PoseLandmark.RIGHT_HIP,
+//            PoseLandmark.LEFT_WRIST,
+//            PoseLandmark.RIGHT_WRIST,
+//            PoseLandmark.LEFT_ANKLE,
+//            PoseLandmark.RIGHT_ANKLE
     };
 
     for (int landmarkType : requiredLandmarks) {
@@ -243,6 +276,7 @@ public class PoseDetectorProcessor
         return false;
       }
     }
+
     return true; // 주요 랜드마크가 모두 감지되고 신뢰도 기준을 충족한 경우
   }
   private void initializeTextToSpeech() {
