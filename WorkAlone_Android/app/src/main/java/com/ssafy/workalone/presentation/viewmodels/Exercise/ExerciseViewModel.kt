@@ -1,8 +1,8 @@
-package com.ssafy.workalone.presentation.viewmodels
+package com.ssafy.workalone.presentation.viewmodels.Exercise
 
 import androidx.lifecycle.ViewModel
-import com.ssafy.workalone.data.model.Challenge
-import com.ssafy.workalone.data.model.Exercise
+import com.ssafy.workalone.data.model.exercise.Challenge
+import com.ssafy.workalone.data.model.exercise.Exercise
 import com.ssafy.workalone.data.repository.ExerciseRepository
 import com.ssafy.workalone.global.exception.handleException
 import kotlinx.coroutines.Dispatchers
@@ -16,9 +16,7 @@ import kotlinx.coroutines.flow.flowOn
 
 class ExerciseViewModel(private val exerciseRepository: ExerciseRepository = ExerciseRepository()) :
     ViewModel() {
-    // 내부에서만 변경 가능한 MutableLiveData
     private val _errorMessage = MutableStateFlow<String?>(null)
-    // 외부에서 읽기 전용 LiveData
     val errorMessage: StateFlow<String?>
         get() = _errorMessage
 

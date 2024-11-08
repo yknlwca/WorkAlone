@@ -12,8 +12,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ssafy.workalone.data.local.MemberPreferenceManager
-import com.ssafy.workalone.presentation.ui.screen.ExerciseView
 import com.ssafy.workalone.presentation.ui.screen.ExerciseListView
+import com.ssafy.workalone.presentation.ui.screen.ExerciseView
 import com.ssafy.workalone.presentation.ui.screen.HomeView
 import com.ssafy.workalone.presentation.ui.screen.IndividualCompleteView
 import com.ssafy.workalone.presentation.ui.screen.LoginView
@@ -25,8 +25,7 @@ fun Navigation(
 ) {
     val activity = LocalContext.current as? Activity
     val context = LocalContext.current
-    val memberPreference = remember { MemberPreferenceManager(context) }
-
+    val memberManager = remember { MemberPreferenceManager(context) }
 
     BackHandler(enabled = true) {
         if (!navController.popBackStack()) {
@@ -39,7 +38,7 @@ fun Navigation(
         startDestination = startDestination
     ) {
         composable(Screen.Home.route) {
-            HomeView(navController, memberPreference.getMember())
+            HomeView(navController, memberManager.getName())
         }
 
         composable(Screen.Login.route) {
