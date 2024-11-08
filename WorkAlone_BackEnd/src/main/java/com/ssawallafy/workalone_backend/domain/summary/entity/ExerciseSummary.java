@@ -41,4 +41,6 @@ public class ExerciseSummary {
 
 	private LocalTime time;
 
+	private String video_url;
+
 }

@@ -46,13 +46,17 @@ import androidx.annotation.WorkerThread;
 import com.google.common.base.Preconditions;
 import com.google.mlkit.vision.pose.Pose;
 import com.google.mlkit.vision.pose.PoseLandmark;
+import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Queue;
+
 import android.speech.tts.TextToSpeech;
 
 /**
@@ -69,11 +73,11 @@ public class PoseClassifierProcessor {
   private static final String PULLUPS_CLASS = "pullups_down";
   private static final String SITUP_CLASS = "situp_down";
   private static final String PLANK_CLASS = "plank";
-  private static long plankStartTime = 0;
   private boolean plankFlag = false;
-
-  private static final float MINIMUM_RMS_THRESHOLD = 5.0f; // 감도 기준 설정 (조정 가능)
+  private static final float MINIMUM_RMS_THRESHOLD = 3.5f; // 감도 기준 설정 (조정 가능)
   private boolean isEnvironmentLoud = false;
+
+
   // 음석인식 부분
   private SpeechRecognizer speechRecognizer;
   private boolean isTracking = true; // "시작" 명령이 들어오면 true
@@ -140,13 +144,15 @@ public class PoseClassifierProcessor {
     speechRecognizer.setRecognitionListener(new RecognitionListener() {
 
       @Override
-      public void onReadyForSpeech(Bundle bundle) {
+      public void onReadyForSpeech(Bundle bundle)
+      {
         //Log.d(TAG, "음성 인식 준비됨");
         //System.out.println("음석 인식 준비 됨");
       }
 
       @Override
-      public void onBeginningOfSpeech() {
+      public void onBeginningOfSpeech()
+      {
         //Log.d(TAG, "음성 인식 시작됨");
        // S//ystem.out.println("음성 인식 시작");
 
@@ -154,11 +160,11 @@ public class PoseClassifierProcessor {
 
       @Override
       public void onRmsChanged(float rms) {
-//        if (rms < MINIMUM_RMS_THRESHOLD) {
-//          isEnvironmentLoud = false;
-//        } else {
-//          isEnvironmentLoud = true;
-//        }
+        if (rms < MINIMUM_RMS_THRESHOLD) {
+          isEnvironmentLoud = false;
+        } else {
+          isEnvironmentLoud = true;
+        }
       }
 
       @Override
@@ -234,10 +240,10 @@ public class PoseClassifierProcessor {
   }
   private void startListening() {
 
-//    if (isEnvironmentLoud) {
-//      Log.d("exer", "소음이 감지되어 음성 인식을 시작하지 않습니다.");
-//      return; // 소음이 있으면 음성 인식 시작 안함
-//    }
+    if (isEnvironmentLoud) {
+      Log.d("exer", "소음이 감지되어 음성 인식을 시작하지 않습니다.");
+      return; // 소음이 있으면 음성 인식 시작 안함
+    }
     Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
     intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
     intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.KOREAN);
@@ -272,7 +278,7 @@ public class PoseClassifierProcessor {
   // 운동 reps,시간 보여주는곳
 
   @WorkerThread
-  public List<String> getPoseResult(Pose pose) {
+  public List<String> getPoseResult(Pose pose, ExerciseMLKitViewModel viewModel) {
     Preconditions.checkState(Looper.myLooper() != Looper.getMainLooper());
     List<String> result = new ArrayList<>();
 
@@ -327,7 +333,9 @@ public class PoseClassifierProcessor {
             plankFlag = true;
             lastRepResult = String.format(Locale.KOREAN, "%s : 유지 중", PLANK_CLASS);
             Log.d("exer","플랭크 자세 유지중 "+plankFlag);
-
+            if(!viewModel.getPlankPause().getValue()){
+              viewModel.startPlank();
+            }
           }
           else {
             // 플랭크 자세를 벗어나면 플래그를 false로 설정
@@ -341,13 +349,24 @@ public class PoseClassifierProcessor {
         else {
           int repsBefore = repCounter.getNumRepeats();
           int repsAfter = repCounter.addClassificationResult(classification);
+          //현재 횟수 저장
+//          viewModel.setNowReps(repsAfter);
           if (repsAfter > repsBefore) {
 
 
             lastRepResult = String.format(Locale.KOREAN, "%s : %d", repCounter.getClassName(), repsAfter," iaTracking: "+isTracking+"  isPaues: "+isPaused);
+            viewModel.addRep("스쿼트, 푸쉬업, 윗몸일으키기",0);
             Log.d("exer",String.valueOf(repsAfter));
             speakResult(String.valueOf(repsAfter));
             break;
+          }
+          //횟수 다채우면 다음세트
+          if(viewModel.getNowRep().getValue() == viewModel.getTotalRep().getValue()){
+            viewModel.addSet();
+            //세트 다 채우면 다음 운동 or 운동 완료
+            if(viewModel.getNowSet().getValue() == viewModel.getTotalSet().getValue()+1){
+//              viewModel.exerciseFinish();
+            }
           }
         }
       }

@@ -21,4 +21,6 @@ public class ExerciseSummaryDetail {
 
 	private int kcal;
 
+	private String videoUrl;
+
 }

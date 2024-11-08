@@ -7,8 +7,11 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.ssawallafy.workalone_backend.domain.member.dto.MemberModifyReq;
+import com.ssawallafy.workalone_backend.domain.member.dto.MemberSaveReq;
+import com.ssawallafy.workalone_backend.domain.member.dto.MemberUpdateReq;
 import com.ssawallafy.workalone_backend.domain.member.entity.Member;
 import com.ssawallafy.workalone_backend.domain.member.exception.BusinessLogicException;
+import com.ssawallafy.workalone_backend.domain.member.exception.ErrorCode;
 import com.ssawallafy.workalone_backend.domain.member.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -22,20 +25,55 @@ public class MemberServiceImpl implements MemberService {
 	private final MemberRepository memberRepository;
 
 	@Override
-	public void updateMember(Long memberId, MemberModifyReq memberModifyReq) {
-		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new BusinessLogicException(NOT_FOUND));
+	public Member saveMember(MemberSaveReq memberSaveReq) {
 
-		Optional.ofNullable(memberModifyReq.getNickname()).ifPresent(member::updateNickname);
-		Optional.ofNullable(memberModifyReq.getHeight()).ifPresent(member::updateHeight);
-		Optional.ofNullable(memberModifyReq.getWeight()).ifPresent(member::updateWeight);
+		Member member = Member.builder()
+			.name(memberSaveReq.getName())
+			.weight(memberSaveReq.getWeight())
+			.build();
 
-		memberRepository.save(member);
+		return memberRepository.save(member);
 	}
+
+	@Override
+	public Member findMember(String name) {
+
+		Member member = (Member) memberRepository.findByName(name)
+			.orElseThrow(() -> new BusinessLogicException(ErrorCode.NOT_FOUND));
+
+		return member;
+	}
+
+	@Override
+	public Member modifyMember(MemberUpdateReq memberUpdateReq) {
+
+		Member member = memberRepository.findById(memberUpdateReq.getMemberId())
+				.orElseThrow(() -> new BusinessLogicException(NOT_FOUND));
+
+		Optional.ofNullable(memberUpdateReq.getIsRecording()).ifPresent(member::updateIsRecording);
+
+		return memberRepository.save(member);
+	}
+
+	// @Override
+	// public void updateMember(Long memberId, MemberModifyReq memberModifyReq) {
+	// 	Member member = memberRepository.findById(memberId)
+	// 		.orElseThrow(() -> new BusinessLogicException(NOT_FOUND));
+	//
+	// 	Optional.ofNullable(memberModifyReq.getNickname()).ifPresent(member::updateNickname);
+	// 	Optional.ofNullable(memberModifyReq.getHeight()).ifPresent(member::updateHeight);
+	// 	Optional.ofNullable(memberModifyReq.getWeight()).ifPresent(member::updateWeight);
+	//
+	// 	memberRepository.save(member);
+	// }
+
+
 
 	@Override
 	public void removeMember(Long memberId) {
 		// 다른 repository에서도 deleteById 실행 (순서 주의)
 		memberRepository.deleteById(memberId);
 	}
+
+
 }

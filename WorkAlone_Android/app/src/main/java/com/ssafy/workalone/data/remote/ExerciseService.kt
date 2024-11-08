@@ -7,6 +7,7 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ExerciseService {
     @GET("/exercises")
@@ -18,6 +19,8 @@ interface ExerciseService {
         @Path("exerciseId") exerciseId: Long,
     ): Response<List<Exercise>>
 
-    @POST("/exercises")
-    suspend fun getExerciseRecords(): Response<List<ExerciseRecord>>
+    @GET("/summary")
+    suspend fun getExerciseRecords(
+        @Query("date") date: String,
+    ):Response<ExerciseRecord>
 }

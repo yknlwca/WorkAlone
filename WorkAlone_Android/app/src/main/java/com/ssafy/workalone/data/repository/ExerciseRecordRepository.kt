@@ -13,8 +13,8 @@ class ExerciseRecordRepository(
     private val exerciseService: ExerciseService =
         RetrofitFactory.getInstance().create(ExerciseService::class.java)
 ) {
-    fun getExersiceRecords(): Flow<List<ExerciseRecord>> = flow {
-        val response = exerciseService.getExerciseRecords()
+    fun getExersiceRecords(date: String): Flow<ExerciseRecord> = flow {
+        val response = exerciseService.getExerciseRecords(date)
         if (response.isSuccessful) {
             response.body()?.let { emit(it) }
         } else {

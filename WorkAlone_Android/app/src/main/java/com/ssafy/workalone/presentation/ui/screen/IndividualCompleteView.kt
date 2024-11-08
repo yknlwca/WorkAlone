@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -34,6 +36,7 @@ import com.ssafy.workalone.presentation.ui.component.IndividualExerciseRecord
 import com.ssafy.workalone.presentation.ui.component.RestTime
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
+import com.ssafy.workalone.presentation.viewmodels.ExerciseRecordViewModel
 import kotlin.math.roundToInt
 
 //운동 완료 화면(개별형)
