@@ -1,19 +1,3 @@
-/*
- * Copyright 2020 Google LLC. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.ssafy.workalone.mlkit.java
 
 import android.Manifest
@@ -28,6 +12,7 @@ import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.CompoundButton
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.Camera
@@ -40,10 +25,12 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
@@ -54,6 +41,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.common.annotation.KeepName
 import com.google.mlkit.common.MlKitException
 import com.ssafy.workalone.R
@@ -64,6 +52,7 @@ import com.ssafy.workalone.mlkit.java.posedetector.PoseDetectorProcessor
 import com.ssafy.workalone.mlkit.preference.PreferenceUtils
 import com.ssafy.workalone.presentation.ui.component.ExerciseTimer
 import com.ssafy.workalone.presentation.ui.component.RepCounter
+import com.ssafy.workalone.presentation.ui.component.RestTime
 import com.ssafy.workalone.presentation.ui.component.StopwatchScreen
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 
@@ -85,8 +74,7 @@ class CameraXLivePreviewActivity :
   private var selectedModel = POSE_DETECTION
   private var lensFacing = CameraSelector.LENS_FACING_FRONT
   private var cameraSelector: CameraSelector? = null
-
-
+  private val exerciseViewModel: ExerciseMLKitViewModel by viewModels()
 
 
 
@@ -95,7 +83,19 @@ class CameraXLivePreviewActivity :
   override fun onCreate(savedInstanceState: Bundle?) {
 
     super.onCreate(savedInstanceState)
-    Log.d(TAG, "onCreate")
+
+    //쉬는시간 상태 관찰
+    exerciseViewModel.isExercising.observe(this,Observer{isExercising ->
+      if(!isExercising){
+        //카메라 분석 멈춤
+        unbindAnalysisUseCase()
+      }else{
+        //카메라 분석 시작
+        bindAllCameraUseCases()
+      }
+    })
+
+
 
     if (savedInstanceState != null) {
       selectedModel = savedInstanceState.getString(STATE_SELECTED_MODEL, POSE_DETECTION)
@@ -119,32 +119,7 @@ class CameraXLivePreviewActivity :
     val composeView: ComposeView = findViewById(R.id.compose_view)
     val exerciseType = intent.getStringExtra("exerciseType")
     composeView.setContent {
-      Scaffold(
-        topBar = { StopwatchScreen(true) },
-        containerColor = Color.Transparent,
-        contentColor = Color.Transparent,
-        content = {
-          Column(
-            modifier = Modifier.fillMaxSize().padding(it).background(Color.Transparent),
-            verticalArrangement = Arrangement.SpaceBetween
-          ) {
-            if (exerciseType != null) {
-              androidx.compose.material.Text(
-                modifier = Modifier.padding(horizontal = 24.dp),
-                text = exerciseType,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-              )
-            }
-            if(exerciseType != "플랭크")
-              RepCounter(viewModel = ExerciseMLKitViewModel())
-            else
-              ExerciseTimer(viewModel = ExerciseMLKitViewModel())
-          }
-        }
-
-      )
+        ExerciseView(exerciseType,exerciseViewModel)
     }
 
     val options: MutableList<String> = ArrayList()
@@ -162,7 +137,6 @@ class CameraXLivePreviewActivity :
           bindAllCameraUseCases()
         },
       )
-
   }
 
   private fun requestAudioPermission(activity: Activity) {
@@ -174,6 +148,14 @@ class CameraXLivePreviewActivity :
         arrayOf(Manifest.permission.RECORD_AUDIO),
         REQUEST_RECORD_AUDIO_PERMISSION
       )
+    }
+  }
+
+  // 카메라 분석 기능을 멈추는 기능
+  private fun unbindAnalysisUseCase() {
+    if (analysisUseCase != null) {
+      cameraProvider?.unbind(analysisUseCase)
+      analysisUseCase = null
     }
   }
 
@@ -243,6 +225,10 @@ class CameraXLivePreviewActivity :
   }
 
   private fun bindAllCameraUseCases() {
+    if (cameraProvider == null || exerciseViewModel.isExercising.value != true) {
+      return // 쉬는 시간일 경우, 분석을 실행하지 않음
+    }
+
     if (cameraProvider != null) {
       // As required by CameraX API, unbinds all use cases before trying to re-bind any of them.
       cameraProvider!!.unbindAll()
@@ -276,6 +262,9 @@ class CameraXLivePreviewActivity :
   // audio
 
   private fun bindAnalysisUseCase() {
+    if(exerciseViewModel.isExercising.value != true)
+      return
+
     if (cameraProvider == null) {
       return
     }
@@ -306,7 +295,8 @@ class CameraXLivePreviewActivity :
               rescaleZ,
               runClassification,
               /* isStreamMode = */ true,
-              exerciseType
+              exerciseType,
+              exerciseViewModel
 
             )
       } catch (e: Exception) {
@@ -362,4 +352,47 @@ class CameraXLivePreviewActivity :
 
     private const val STATE_SELECTED_MODEL = "selected_model"
   }
+}
+@Composable
+fun ExerciseView(exerciseType: String?, viewModel: ExerciseMLKitViewModel) {
+  Scaffold(
+    topBar = { StopwatchScreen(true) },
+    containerColor = Color.Transparent,
+    contentColor = Color.Transparent,
+    content = {
+      Box(
+        modifier = Modifier
+          .fillMaxSize()
+          .background(Color.Transparent)
+      ) {
+        // 쉬는 시간이 아닐 때 보여줄 Column 구성 요소들
+        Column(
+          modifier = Modifier
+            .fillMaxSize()
+            .padding(it)
+            .background(Color.Transparent),
+          verticalArrangement = Arrangement.SpaceBetween
+        ) {
+          if (exerciseType != null) {
+            androidx.compose.material.Text(
+              modifier = Modifier.padding(horizontal = 24.dp),
+              text = exerciseType,
+              fontSize = 20.sp,
+              fontWeight = FontWeight.Bold,
+              color = Color.White
+            )
+            if (exerciseType != "플랭크")
+              RepCounter(viewModel)
+            else
+              ExerciseTimer(viewModel)
+          }
+        }
+
+        // 쉬는 시간일 때 RestTime이 최상단에 위치하도록 설정
+        if (viewModel.isExercising.value != true) {
+          RestTime(viewModel)
+        }
+      }
+    }
+  )
 }

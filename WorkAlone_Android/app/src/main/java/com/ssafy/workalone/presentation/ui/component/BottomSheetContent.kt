@@ -134,6 +134,8 @@ fun BottomSheetContent(
         ) {
             Text(
                 text = "로그아웃",
+                style = WorkAloneTheme.typography.Body01,
+                color = WalkOneGray700
             )
         }
     }

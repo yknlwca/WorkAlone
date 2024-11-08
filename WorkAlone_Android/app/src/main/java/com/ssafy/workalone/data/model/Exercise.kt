@@ -7,8 +7,10 @@ data class Exercise(
     val exerciseId: Long,
     @SerializedName("exerciseSet")
     val exerciseSet: Int,
-    @SerializedName("setDetail")
-    val setDetail: Int,
+    @SerializedName("exerciseRepeat")
+    val exerciseRepeat: Int,
+    @SerializedName("restBtwSet")
+    val restBtwSet: Int,
     @SerializedName("setType")
     val setType: String,
     @SerializedName("title")

@@ -38,7 +38,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ssafy.workalone.mlkit.java.CameraXLivePreviewActivity
+
 import com.ssafy.workalone.data.model.Member
+
 import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.AppBarView
 import com.ssafy.workalone.presentation.ui.component.BottomSheetContent
