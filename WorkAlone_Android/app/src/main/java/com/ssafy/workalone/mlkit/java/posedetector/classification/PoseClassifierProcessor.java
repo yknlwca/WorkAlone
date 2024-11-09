@@ -99,13 +99,14 @@ public class PoseClassifierProcessor {
   private PoseClassifier poseClassifier;
   private String lastRepResult;
   private Handler mainHandler = new Handler(Looper.getMainLooper());
-
+  private ExerciseMLKitViewModel viewModel;
 
   @WorkerThread
-  public PoseClassifierProcessor(Context context, boolean isStreamMode,String ExerciseType) {
+  public PoseClassifierProcessor(Context context, boolean isStreamMode,String ExerciseType, ExerciseMLKitViewModel viewModel) {
     Preconditions.checkState(Looper.myLooper() != Looper.getMainLooper());
     this.isStreamMode = isStreamMode;
     this.context = context;
+    this.viewModel = viewModel;
 
 
 
@@ -209,12 +210,17 @@ public class PoseClassifierProcessor {
             if (command.equalsIgnoreCase("시작")) {
               isTracking = true;
               isPaused = false;
+              viewModel.startExercise();
+              //Log.d(TAG, "운동 추적 시작됨");
               Log.d("exer", "운동 추적 시작됨");
             } else if (command.equalsIgnoreCase("정지")) {
               isPaused = true;
+              viewModel.stopExercise();
+             // Log.d(TAG, "운동 추적 일시 중지됨");
              Log.d("exer", "운동 추적 일시 중지됨");
             } else if (command.equalsIgnoreCase("종료")) {
               isTracking = false;
+              viewModel.clickExit();
               shutdown();
              // Log.d(TAG, "운동 추적 종료됨");
             }
@@ -333,17 +339,20 @@ public class PoseClassifierProcessor {
             plankFlag = true;
             lastRepResult = String.format(Locale.KOREAN, "%s : 유지 중", PLANK_CLASS);
             Log.d("exer","플랭크 자세 유지중 "+plankFlag);
-            if(!viewModel.getPlankPause().getValue()){
-              viewModel.startPlank();
-            }
           }
           else {
             // 플랭크 자세를 벗어나면 플래그를 false로 설정
             plankFlag = false;
+
             lastRepResult = String.format(Locale.KOREAN, "%s : 중단됨", PLANK_CLASS);
             Log.d("exer","플랭크 자세 유지 X "+plankFlag);
 
             //speakResult("플랭크 자세를 유지해주세요.");
+          }
+          if(plankFlag){
+            viewModel.startExercise();
+          }else{
+            viewModel.stopExercise();
           }
         }
         else {

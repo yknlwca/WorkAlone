@@ -14,10 +14,11 @@ class ExerciseMLKitViewModel(): ViewModel() {
     private val _totalRep: MutableState<Int> = mutableStateOf(1)
     private val _restTime: MutableState<Int> = mutableStateOf(3)
     private val _stage: MutableState<String> = mutableStateOf("ready")
-    private val _isExercising: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { value = false }
+    private val _isResting: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { value = true }
+    private val _isExercising: MutableState<Boolean> = mutableStateOf(true)
     private val _preSetText: MutableState<String> = mutableStateOf("")
     private val _restText: MutableState<String> = mutableStateOf("")
-    private val _plankPause: MutableState<Boolean> = mutableStateOf(false)
+    private val _isExit: MutableState<Boolean> = mutableStateOf(false)
     //운동시작전: ready, 쉬는시간 : rest, 다음세트 : nextSet, 다음운동 : nextExercise
 
 
@@ -29,10 +30,11 @@ class ExerciseMLKitViewModel(): ViewModel() {
     val totalRep: MutableState<Int> = _totalRep
     val restTime: MutableState<Int> = _restTime
     val stage: MutableState<String> = _stage
-    val isExercising: MutableLiveData<Boolean> = _isExercising
+    val isResting: MutableLiveData<Boolean> = _isResting
+    val isExercising: MutableState<Boolean> = _isExercising
     val restText: MutableState<String> = _restText
     val preSetText: MutableState<String> = _preSetText
-    val plankPause: MutableState<Boolean> = _plankPause
+    val isExit: MutableState<Boolean> = _isExit
 
 
 
@@ -56,7 +58,7 @@ class ExerciseMLKitViewModel(): ViewModel() {
     fun addSet(){
         _nowSet.value += 1
         _nowRep.value = 0
-        _isExercising.postValue(false)
+        startResting()
         _stage.value="rest"
     }
 //    fun exerciseFinish(){
@@ -81,11 +83,11 @@ class ExerciseMLKitViewModel(): ViewModel() {
         }
     }
     fun countDownRestTime(){
-        if(_isExercising.value != true){
+        if(_isResting.value == true){
             _restTime.value --
             if(_restTime.value==0){
                 _restTime.value = 20
-                _isExercising.postValue(true)
+                stopResting()
 
             }
         }
@@ -119,16 +121,25 @@ class ExerciseMLKitViewModel(): ViewModel() {
     fun decreaseTime() {
         _totalRep.value--
     }
-    fun startPlank(){
-        _plankPause.value = false
-    }
-    fun stopPlank(){
-        _plankPause.value = true
-    }
     fun startResting() {
-        _isExercising.postValue(false)
+        _isResting.postValue(true)
+//        _isExercising.value = false
     }
     fun stopResting() {
-        _isExercising.postValue(true)
+        _isResting.postValue(false)
+//        _isExercising.value = true
+    }
+    fun stopExercise(){
+        _isExercising.value = false
+    }
+    fun startExercise(){
+        _isExercising.value = true
+    }
+    fun clickExit(){
+        _isExit.value = true
+        _isExercising.value = false;
+    }
+    fun cancelExit(){
+        _isExit.value = false
     }
 }

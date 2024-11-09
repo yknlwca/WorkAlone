@@ -28,18 +28,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.MutableLiveData
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray500
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.reflect.KProperty
 
 // 운동 타이머 컴포넌트
 @Composable
 fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
 
-    var isPaused by viewModel.plankPause
+    var isExercise = viewModel.isExercising.value
     var goalTime by viewModel.totalRep
     val totalSets by viewModel.totalSet
     var currentSet by viewModel.nowSet
@@ -48,11 +50,11 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
 
     LaunchedEffect(Unit) {
         while (goalTime > 0) {
-            if (!isPaused) {
+            if (isExercise) {
                 // 1초 대기
                 delay(1000L)
                 // 일시정지가 아닐 때만 감소
-                if (!isPaused) {
+                if (isExercise == true) {
                     viewModel.decreaseTime()
                 }
             } else {
@@ -82,28 +84,13 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${String.format("%02d", goalTime/60)}",
-                    fontSize = 56.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .alignByBaseline()
-                )
-                Text(
-                    text = ":",
-                    fontSize = 56.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .alignByBaseline()
-                )
-                Text(
-                    text = "${String.format("%02d", goalTime%60)}",
+                    text = "${String.format("%02d", goalTime/60)} : ${String.format("%02d", goalTime%60)}",
                     fontSize = 56.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .alignByBaseline()
                 )
             }
-
             Row(
                 modifier = Modifier
                     .padding(bottom = 30.dp),
@@ -111,32 +98,16 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${currentSet}세트",
+                    text = "${currentSet}세트 | ${totalSets}세트",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = WalkOneBlue500,
                     modifier = Modifier
                         .alignByBaseline()
                 )
-                Text(
-                    text = "|",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = WalkOneGray500,
-                    modifier = Modifier
-                        .alignByBaseline()
-                )
-                Text(
-                    text = "${totalSets}세트",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = WalkOneGray500,
-                    modifier = Modifier
-                        .alignByBaseline()
-                )
             }
 
-            if(!isPaused){
+            if(isExercise){
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -147,7 +118,7 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                         WalkOneBlue500,
                         WalkOneGray50,
                         WalkOneBlue500,
-                        onClick = { viewModel.stopPlank()}
+                        onClick = { viewModel.stopExercise()}
                     )
                 }
             } else {
@@ -164,7 +135,7 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                             WalkOneBlue500,
                             WalkOneGray50,
                             WalkOneBlue500,
-                            onClick = {}
+                            onClick = {viewModel.clickExit()}
                         )
                     }
 
@@ -179,7 +150,7 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                             WalkOneGray50,
                             WalkOneBlue500,
                             WalkOneBlue500,
-                            onClick = { viewModel.startPlank() }
+                            onClick = { viewModel.startExercise() }
                         )
                     }
                 }
@@ -205,21 +176,7 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${String.format("%02d", goalTime/60)}",
-                    fontSize = 56.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .alignByBaseline()
-                )
-                Text(
-                    text = ":",
-                    fontSize = 56.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .alignByBaseline()
-                )
-                Text(
-                    text = "${String.format("%02d", goalTime%60)}",
+                    text = "${String.format("%02d", goalTime/60)} : ${String.format("%02d", goalTime%60)}",
                     fontSize = 56.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
@@ -234,32 +191,16 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${currentSet}세트",
+                    text = "${currentSet}세트 | ${totalSets}세트",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = WalkOneBlue500,
                     modifier = Modifier
                         .alignByBaseline()
                 )
-                Text(
-                    text = "|",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = WalkOneGray500,
-                    modifier = Modifier
-                        .alignByBaseline()
-                )
-                Text(
-                    text = "${totalSets}세트",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = WalkOneGray500,
-                    modifier = Modifier
-                        .alignByBaseline()
-                )
             }
 
-            if(!isPaused){
+            if(isExercise){
                 Row(
                     modifier = Modifier
                         .weight(1f)
@@ -269,7 +210,7 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                         WalkOneBlue500,
                         WalkOneGray50,
                         WalkOneBlue500,
-                        onClick = { viewModel.stopPlank() }
+                        onClick = { viewModel.stopExercise() }
                     )
                 }
             } else {
@@ -286,7 +227,7 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                             WalkOneBlue500,
                             WalkOneGray50,
                             WalkOneBlue500,
-                            onClick = {}
+                            onClick = {viewModel.clickExit()}
                         )
                     }
 
@@ -301,7 +242,7 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                             WalkOneGray50,
                             WalkOneBlue500,
                             WalkOneBlue500,
-                            onClick = { viewModel.startPlank() }
+                            onClick = { viewModel.startExercise() }
                         )
                     }
                 }
@@ -309,7 +250,6 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
         }
     }
 }
-
 @Preview(name = "Portrait", widthDp = 360, heightDp = 640)
 @Preview(name = "Landscape", widthDp = 640, heightDp = 360)
 @Composable

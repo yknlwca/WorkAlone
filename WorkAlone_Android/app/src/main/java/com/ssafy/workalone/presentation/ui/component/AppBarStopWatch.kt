@@ -37,12 +37,13 @@ import androidx.compose.ui.unit.sp
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray600
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray900
+import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 
 @SuppressLint("DefaultLocale")
 @Composable
 fun StopwatchScreen(
     isRunning: Boolean,
-    onBackNavClicked: () -> Unit = {}
+    viewModel: ExerciseMLKitViewModel
 ) {
     var timeInSeconds by remember { mutableStateOf(0) }
     val time = String.format("%02d:%02d", timeInSeconds / 60, timeInSeconds % 60)
@@ -57,7 +58,7 @@ fun StopwatchScreen(
     AppBarStopWatch(
         isRunning = isRunning,
         time = time,
-        onBackNavClicked = onBackNavClicked
+        onBackNavClicked = {viewModel.clickExit()}
     )
 
 }
@@ -101,8 +102,3 @@ fun AppBarStopWatch(
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun previewW() {
-    StopwatchScreen(false)
-}
