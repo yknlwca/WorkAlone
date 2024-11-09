@@ -1,9 +1,6 @@
 package com.ssafy.workalone.mlkit.java
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.pm.PackageManager
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.util.Log
@@ -23,25 +20,10 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.common.annotation.KeepName
 import com.google.mlkit.common.MlKitException
 import com.ssafy.workalone.R
@@ -50,14 +32,10 @@ import com.ssafy.workalone.mlkit.GraphicOverlay
 import com.ssafy.workalone.mlkit.VisionImageProcessor
 import com.ssafy.workalone.mlkit.java.posedetector.PoseDetectorProcessor
 import com.ssafy.workalone.mlkit.preference.PreferenceUtils
-import com.ssafy.workalone.presentation.ui.component.ExerciseTimer
-import com.ssafy.workalone.presentation.ui.component.RepCounter
-import com.ssafy.workalone.presentation.ui.component.RestTime
-import com.ssafy.workalone.presentation.ui.component.StopwatchScreen
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
+import com.ssafy.workalone.presentation.ui.screen.ExerciseMLkitView
 
 
-/** Live preview demo app for ML Kit APIs using CameraX. */
 @KeepName
 @RequiresApi(VERSION_CODES.LOLLIPOP)
 class CameraXLivePreviewActivity :
@@ -85,14 +63,10 @@ class CameraXLivePreviewActivity :
     super.onCreate(savedInstanceState)
 
     //쉬는시간 상태 관찰
-    exerciseViewModel.isExercising.observe(this,Observer{isExercising ->
-      if(!isExercising){
-        //카메라 분석 멈춤
-        unbindAnalysisUseCase()
-      }else{
+    exerciseViewModel.isResting.observe(this,Observer{isResting ->
+        if(!isResting)
         //카메라 분석 시작
         bindAllCameraUseCases()
-      }
     })
 
 
@@ -104,7 +78,6 @@ class CameraXLivePreviewActivity :
     setContentView(R.layout.activity_vision_camerax_live_preview)
 
 
-    requestAudioPermission(this);
 
     previewView = findViewById(R.id.preview_view)
     if (previewView == null) {
@@ -119,7 +92,7 @@ class CameraXLivePreviewActivity :
     val composeView: ComposeView = findViewById(R.id.compose_view)
     val exerciseType = intent.getStringExtra("exerciseType")
     composeView.setContent {
-        ExerciseView(exerciseType,exerciseViewModel)
+      ExerciseMLkitView(exerciseType,exerciseViewModel)
     }
 
     val options: MutableList<String> = ArrayList()
@@ -138,28 +111,6 @@ class CameraXLivePreviewActivity :
         },
       )
   }
-
-  private fun requestAudioPermission(activity: Activity) {
-    if (ContextCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO)
-      != PackageManager.PERMISSION_GRANTED
-    ) {
-      ActivityCompat.requestPermissions(
-        activity,
-        arrayOf(Manifest.permission.RECORD_AUDIO),
-        REQUEST_RECORD_AUDIO_PERMISSION
-      )
-    }
-  }
-
-  // 카메라 분석 기능을 멈추는 기능
-  private fun unbindAnalysisUseCase() {
-    if (analysisUseCase != null) {
-      cameraProvider?.unbind(analysisUseCase)
-      analysisUseCase = null
-    }
-  }
-
-
   override fun onSaveInstanceState(bundle: Bundle) {
     super.onSaveInstanceState(bundle)
     bundle.putString(STATE_SELECTED_MODEL, selectedModel)
@@ -225,9 +176,9 @@ class CameraXLivePreviewActivity :
   }
 
   private fun bindAllCameraUseCases() {
-    if (cameraProvider == null || exerciseViewModel.isExercising.value != true) {
-      return // 쉬는 시간일 경우, 분석을 실행하지 않음
-    }
+//    if (cameraProvider == null || (exerciseViewModel.isResting.value == true&& exerciseViewModel.restTime.value<3)) {
+//      return // 쉬는 시간일 경우, 분석을 실행하지 않음
+//    }
 
     if (cameraProvider != null) {
       // As required by CameraX API, unbinds all use cases before trying to re-bind any of them.
@@ -259,11 +210,9 @@ class CameraXLivePreviewActivity :
   }
 
 
-  // audio
-
   private fun bindAnalysisUseCase() {
-    if(exerciseViewModel.isExercising.value != true)
-      return
+//    if(exerciseViewModel.isResting.value == true && exerciseViewModel.restTime.value<3)
+//      return
 
     if (cameraProvider == null) {
       return
@@ -309,7 +258,7 @@ class CameraXLivePreviewActivity :
           .show()
         return
       }
-
+    //새로운 분석 설정 및 바인딩
     val builder = ImageAnalysis.Builder()
     val targetResolution = PreferenceUtils.getCameraXTargetResolution(this, lensFacing)
     if (targetResolution != null) {
@@ -324,26 +273,36 @@ class CameraXLivePreviewActivity :
       // thus we can just runs the analyzer itself on main thread.
       ContextCompat.getMainExecutor(this),
       ImageAnalysis.Analyzer { imageProxy: ImageProxy ->
-        if (needUpdateGraphicOverlayImageSourceInfo) {
-          val isImageFlipped = lensFacing == CameraSelector.LENS_FACING_FRONT
-          val rotationDegrees = imageProxy.imageInfo.rotationDegrees
-          if (rotationDegrees == 0 || rotationDegrees == 180) {
-            graphicOverlay!!.setImageSourceInfo(imageProxy.width, imageProxy.height, isImageFlipped)
-          } else {
-            graphicOverlay!!.setImageSourceInfo(imageProxy.height, imageProxy.width, isImageFlipped)
+        //쉬는시간일 때 이미지 처리 패스
+        if(exerciseViewModel.isResting.value == true){
+          imageProxy.close()
+          return@Analyzer
+        }
+        //이미지 분석 실행
+        if(exerciseViewModel.isResting.value==false||exerciseViewModel.restTime.value<3){
+          if (needUpdateGraphicOverlayImageSourceInfo) {
+            val isImageFlipped = lensFacing == CameraSelector.LENS_FACING_FRONT
+            val rotationDegrees = imageProxy.imageInfo.rotationDegrees
+            if (rotationDegrees == 0 || rotationDegrees == 180) {
+              graphicOverlay!!.setImageSourceInfo(imageProxy.width, imageProxy.height, isImageFlipped)
+            } else {
+              graphicOverlay!!.setImageSourceInfo(imageProxy.height, imageProxy.width, isImageFlipped)
+            }
+            needUpdateGraphicOverlayImageSourceInfo = false
           }
-          needUpdateGraphicOverlayImageSourceInfo = false
+          try {
+            imageProcessor!!.processImageProxy(imageProxy, graphicOverlay)
+          } catch (e: MlKitException) {
+            Log.e(TAG, "Failed to process image. Error: " + e.localizedMessage)
+            Toast.makeText(applicationContext, e.localizedMessage, Toast.LENGTH_SHORT).show()
+          }
         }
-        try {
-          imageProcessor!!.processImageProxy(imageProxy, graphicOverlay)
-        } catch (e: MlKitException) {
-          Log.e(TAG, "Failed to process image. Error: " + e.localizedMessage)
-          Toast.makeText(applicationContext, e.localizedMessage, Toast.LENGTH_SHORT).show()
-        }
+
       },
     )
     cameraProvider!!.bindToLifecycle(this, cameraSelector!!, analysisUseCase)
   }
+
 
   companion object {
     private const val TAG = "CameraXLivePreview"
@@ -353,46 +312,4 @@ class CameraXLivePreviewActivity :
     private const val STATE_SELECTED_MODEL = "selected_model"
   }
 }
-@Composable
-fun ExerciseView(exerciseType: String?, viewModel: ExerciseMLKitViewModel) {
-  Scaffold(
-    topBar = { StopwatchScreen(true) },
-    containerColor = Color.Transparent,
-    contentColor = Color.Transparent,
-    content = {
-      Box(
-        modifier = Modifier
-          .fillMaxSize()
-          .background(Color.Transparent)
-      ) {
-        // 쉬는 시간이 아닐 때 보여줄 Column 구성 요소들
-        Column(
-          modifier = Modifier
-            .fillMaxSize()
-            .padding(it)
-            .background(Color.Transparent),
-          verticalArrangement = Arrangement.SpaceBetween
-        ) {
-          if (exerciseType != null) {
-            androidx.compose.material.Text(
-              modifier = Modifier.padding(horizontal = 24.dp),
-              text = exerciseType,
-              fontSize = 20.sp,
-              fontWeight = FontWeight.Bold,
-              color = Color.White
-            )
-            if (exerciseType != "플랭크")
-              RepCounter(viewModel)
-            else
-              ExerciseTimer(viewModel)
-          }
-        }
 
-        // 쉬는 시간일 때 RestTime이 최상단에 위치하도록 설정
-        if (viewModel.isExercising.value != true) {
-          RestTime(viewModel)
-        }
-      }
-    }
-  )
-}

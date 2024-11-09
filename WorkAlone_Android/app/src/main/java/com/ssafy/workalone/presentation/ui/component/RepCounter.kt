@@ -15,8 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,13 +25,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
-import com.ssafy.workalone.presentation.ui.theme.WalkOneGray500
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 
 @Composable
 fun RepCounter(viewModel: ExerciseMLKitViewModel){
 
-    var isPaused by remember { mutableStateOf(false) }
+    var isExercise = viewModel.isExercising.value
     var totalReps by viewModel.totalRep
     var currentReps by viewModel.nowRep
     var totalSets by viewModel.totalSet
@@ -69,14 +66,7 @@ fun RepCounter(viewModel: ExerciseMLKitViewModel){
                         .alignByBaseline()
                 )
                 Text(
-                    text = "/",
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .alignByBaseline()
-                )
-                Text(
-                    text = "${viewModel.totalRep.value}회",
+                    text = "/${viewModel.totalRep.value}회",
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
@@ -91,32 +81,16 @@ fun RepCounter(viewModel: ExerciseMLKitViewModel){
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${currentSet}세트",
+                    text = "${currentSet}세트 | ${totalSets}세트",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = WalkOneBlue500,
                     modifier = Modifier
                         .alignByBaseline()
                 )
-                Text(
-                    text = "|",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = WalkOneGray500,
-                    modifier = Modifier
-                        .alignByBaseline()
-                )
-                Text(
-                    text = "${totalSets}세트",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = WalkOneGray500,
-                    modifier = Modifier
-                        .alignByBaseline()
-                )
             }
 
-            if(!isPaused){
+            if(isExercise){
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -127,7 +101,7 @@ fun RepCounter(viewModel: ExerciseMLKitViewModel){
                         WalkOneBlue500,
                         WalkOneGray50,
                         WalkOneBlue500,
-                        onClick = { isPaused = !isPaused }
+                        onClick = { viewModel.stopExercise() }
                     )
                 }
             } else {
@@ -144,7 +118,7 @@ fun RepCounter(viewModel: ExerciseMLKitViewModel){
                             WalkOneBlue500,
                             WalkOneGray50,
                             WalkOneBlue500,
-                            onClick = {}
+                            onClick = {viewModel.clickExit()}
                         )
                     }
 
@@ -159,7 +133,7 @@ fun RepCounter(viewModel: ExerciseMLKitViewModel){
                             WalkOneGray50,
                             WalkOneBlue500,
                             WalkOneBlue500,
-                            onClick = { isPaused = !isPaused }
+                            onClick = { viewModel.startExercise()}
                         )
                     }
                 }
@@ -192,14 +166,7 @@ fun RepCounter(viewModel: ExerciseMLKitViewModel){
                         .alignByBaseline()
                 )
                 Text(
-                    text = "/",
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .alignByBaseline()
-                )
-                Text(
-                    text = "${totalReps}회",
+                    text = "/ ${totalReps}회",
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
@@ -214,32 +181,16 @@ fun RepCounter(viewModel: ExerciseMLKitViewModel){
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${currentSet}세트",
+                    text = "${currentSet}세트 | ${totalSets}세트",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = WalkOneBlue500,
                     modifier = Modifier
                         .alignByBaseline()
                 )
-                Text(
-                    text = "|",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = WalkOneGray500,
-                    modifier = Modifier
-                        .alignByBaseline()
-                )
-                Text(
-                    text = "${totalSets}세트",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = WalkOneGray500,
-                    modifier = Modifier
-                        .alignByBaseline()
-                )
             }
 
-            if(!isPaused){
+            if(isExercise){
                 Row(
                     modifier = Modifier
                         .weight(1f)
@@ -250,7 +201,7 @@ fun RepCounter(viewModel: ExerciseMLKitViewModel){
                         WalkOneBlue500,
                         WalkOneGray50,
                         WalkOneBlue500,
-                        onClick = { isPaused = !isPaused }
+                        onClick = { viewModel.stopExercise() }
                     )
                 }
             } else {
@@ -267,7 +218,7 @@ fun RepCounter(viewModel: ExerciseMLKitViewModel){
                             WalkOneBlue500,
                             WalkOneGray50,
                             WalkOneBlue500,
-                            onClick = {}
+                            onClick = {viewModel.clickExit()}
                         )
                     }
 
@@ -282,7 +233,7 @@ fun RepCounter(viewModel: ExerciseMLKitViewModel){
                             WalkOneGray50,
                             WalkOneBlue500,
                             WalkOneBlue500,
-                            onClick = { isPaused = !isPaused }
+                            onClick = { viewModel.startExercise() }
                         )
                     }
                 }

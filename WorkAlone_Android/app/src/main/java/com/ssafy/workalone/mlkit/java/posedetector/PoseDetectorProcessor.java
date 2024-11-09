@@ -131,6 +131,7 @@ public class PoseDetectorProcessor
 
   @Override
   protected Task<PoseWithClassification> detectInImage(InputImage image) {
+
     return detector
             .process(image)
             .continueWith(
@@ -143,7 +144,7 @@ public class PoseDetectorProcessor
                       if (runClassification) {
                         if (poseClassifierProcessor == null) {
                           Log.d("exer","dectectInImage");
-                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,ExerciseType);
+                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,ExerciseType,viewModel);
                         }
                         classificationResult = poseClassifierProcessor.getPoseResult(pose,viewModel);
                       }
@@ -210,7 +211,8 @@ public class PoseDetectorProcessor
                      // Log.d("exer",String.valueOf(runClassification));
                       if (runClassification) {
                         if (poseClassifierProcessor == null) {
-                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,"스쿼트");
+                          Log.d("exer",ExerciseType);
+                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,ExerciseType, viewModel);
                         }
                         classificationResult = poseClassifierProcessor.getPoseResult(pose,viewModel);
                       }
