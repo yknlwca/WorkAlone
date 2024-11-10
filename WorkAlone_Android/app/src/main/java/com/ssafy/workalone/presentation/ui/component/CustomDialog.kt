@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ssafy.workalone.presentation.ui.component.bottombar.CustomButton
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray900
 
 @Composable

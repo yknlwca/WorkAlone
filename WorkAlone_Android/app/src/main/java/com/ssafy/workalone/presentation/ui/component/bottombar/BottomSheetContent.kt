@@ -1,7 +1,6 @@
-package com.ssafy.workalone.presentation.ui.component
+package com.ssafy.workalone.presentation.ui.component.bottombar
 
 import android.content.pm.PackageManager
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,9 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import com.kakao.sdk.user.UserApiClient
 import com.ssafy.workalone.data.local.SettingsPreferenceManager
-import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray700
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray900
 import com.ssafy.workalone.presentation.ui.theme.WorkAloneTheme
@@ -132,16 +129,7 @@ fun BottomSheetContent(navController: NavController) {
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
                 .clickable {
-                    kakaoLogout(
-                        onLogoutSuccess = {
-                            navController.navigate(Screen.Login.route) {
-                                popUpTo(Screen.Home.route) { inclusive = true }
-                            }
-                        },
-                        onLogoutFailure = { error ->
-                            Log.e("KakaoLogout", "로그아웃 실패: ${error.message}")
-                        }
-                    )
+
                 },
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -154,14 +142,3 @@ fun BottomSheetContent(navController: NavController) {
     }
 }
 
-fun kakaoLogout(onLogoutSuccess: () -> Unit, onLogoutFailure: (Throwable) -> Unit) {
-    UserApiClient.instance.logout { error ->
-        if (error != null) {
-            Log.e("KakaoLogout", "로그아웃 실패", error)
-            onLogoutFailure(error)
-        } else {
-            Log.i("KakaoLogout", "로그아웃 성공")
-            onLogoutSuccess()
-        }
-    }
-}

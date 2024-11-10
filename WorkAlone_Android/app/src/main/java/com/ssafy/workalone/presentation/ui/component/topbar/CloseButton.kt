@@ -1,4 +1,4 @@
-package com.ssafy.workalone.presentation.ui.component
+package com.ssafy.workalone.presentation.ui.component.topbar
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size

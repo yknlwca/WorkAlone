@@ -12,11 +12,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ssafy.workalone.data.local.MemberPreferenceManager
-import com.ssafy.workalone.presentation.ui.screen.ExerciseListView
-import com.ssafy.workalone.presentation.ui.screen.ExerciseView
-import com.ssafy.workalone.presentation.ui.screen.HomeView
-import com.ssafy.workalone.presentation.ui.screen.IndividualCompleteView
-import com.ssafy.workalone.presentation.ui.screen.LoginView
+import com.ssafy.workalone.presentation.ui.screen.exercise.ChallengeListView
+import com.ssafy.workalone.presentation.ui.screen.exercise.ExerciseView
+import com.ssafy.workalone.presentation.ui.screen.home.HomeView
+import com.ssafy.workalone.presentation.ui.screen.complete.IndividualCompleteView
+import com.ssafy.workalone.presentation.ui.screen.home.LoginView
 
 @Composable
 fun Navigation(
@@ -46,7 +46,7 @@ fun Navigation(
         }
 
         composable(Screen.ExerciseList.route) {
-            ExerciseListView(navController)
+            ChallengeListView(navController)
         }
 
         composable(

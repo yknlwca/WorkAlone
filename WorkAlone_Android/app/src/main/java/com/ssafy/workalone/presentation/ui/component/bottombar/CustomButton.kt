@@ -1,4 +1,4 @@
-package com.ssafy.workalone.presentation.ui.component
+package com.ssafy.workalone.presentation.ui.component.bottombar
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.fillMaxWidth

@@ -1,4 +1,4 @@
-package com.ssafy.workalone.presentation.ui.component
+package com.ssafy.workalone.presentation.ui.component.exercise
 
 import android.app.Activity
 import android.content.Context
@@ -31,7 +31,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
-import com.ssafy.workalone.presentation.viewmodels.Exercise.ExerciseViewModel
+import com.ssafy.workalone.presentation.viewmodels.exercise.ExerciseViewModel
 
 
 @OptIn(UnstableApi::class)
