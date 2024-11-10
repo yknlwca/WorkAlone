@@ -1,4 +1,4 @@
-package com.ssafy.workalone.presentation.ui.screen
+package com.ssafy.workalone.presentation.ui.screen.complete
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,11 +29,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.ssafy.workalone.R
-import com.ssafy.workalone.presentation.ui.component.CloseButton
-import com.ssafy.workalone.presentation.ui.component.ConfettiAnimation
-import com.ssafy.workalone.presentation.ui.component.CustomButton
+import com.ssafy.workalone.presentation.ui.component.topbar.CloseButton
+import com.ssafy.workalone.presentation.ui.component.complete.ConfettiAnimation
+import com.ssafy.workalone.presentation.ui.component.bottombar.CustomButton
 import com.ssafy.workalone.presentation.ui.component.ExerciseRecordDetail
-import com.ssafy.workalone.presentation.ui.component.IntegratedExerciseRecord
+import com.ssafy.workalone.presentation.ui.component.complete.IntegratedExerciseRecord
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import kotlin.math.roundToInt

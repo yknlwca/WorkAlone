@@ -22,7 +22,7 @@ class ExerciseRepository(
         }
     }
 
-    suspend fun getExerciseByIdAndType(
+    suspend fun getExerciseById(
         exerciseId: Long,
     ): Flow<List<Exercise>> =
         flow {

@@ -1,4 +1,4 @@
-package com.ssafy.workalone.presentation.ui.screen
+package com.ssafy.workalone.presentation.ui.screen.exercise
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,13 +24,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ssafy.workalone.data.local.ExerciseInfoPreferenceManager
 import com.ssafy.workalone.presentation.navigation.Screen
-import com.ssafy.workalone.presentation.ui.component.AppBarView
-import com.ssafy.workalone.presentation.ui.component.ExerciseItem
-import com.ssafy.workalone.presentation.viewmodels.Exercise.ExerciseViewModel
+import com.ssafy.workalone.presentation.ui.component.exercise.ExerciseItem
+import com.ssafy.workalone.presentation.ui.component.topbar.AppBarView
+import com.ssafy.workalone.presentation.viewmodels.exercise.ExerciseViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ExerciseListView(navController: NavController, viewModel: ExerciseViewModel = ExerciseViewModel()) {
+fun ChallengeListView(navController: NavController, viewModel: ExerciseViewModel = ExerciseViewModel(context = LocalContext.current)) {
     val challengeList = viewModel.getAllChallenge.collectAsState(initial = listOf())
     val errorMessage by viewModel.errorMessage.collectAsState()
     val preferenceManager = ExerciseInfoPreferenceManager(LocalContext.current)

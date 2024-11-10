@@ -1,4 +1,4 @@
-package com.ssafy.workalone.presentation.ui.component
+package com.ssafy.workalone.presentation.ui.component.complete
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

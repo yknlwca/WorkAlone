@@ -1,4 +1,4 @@
-package com.ssafy.workalone.presentation.ui.component
+package com.ssafy.workalone.presentation.ui.component.exercise
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

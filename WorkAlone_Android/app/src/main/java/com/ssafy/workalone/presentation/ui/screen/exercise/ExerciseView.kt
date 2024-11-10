@@ -1,13 +1,13 @@
-package com.ssafy.workalone.presentation.ui.screen
+package com.ssafy.workalone.presentation.ui.screen.exercise
 
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,7 +27,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -35,15 +34,15 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.ssafy.workalone.data.local.ExerciseInfoPreferenceManager
 import com.ssafy.workalone.mlkit.java.CameraXLivePreviewActivity
-import com.ssafy.workalone.presentation.ui.component.AppBarView
-import com.ssafy.workalone.presentation.ui.component.CustomButton
-import com.ssafy.workalone.presentation.ui.component.VideoPlayer
+import com.ssafy.workalone.presentation.ui.component.bottombar.CustomButton
+import com.ssafy.workalone.presentation.ui.component.exercise.VideoPlayer
+import com.ssafy.workalone.presentation.ui.component.topbar.AppBarView
 import com.ssafy.workalone.presentation.ui.theme.LocalWorkAloneTypography
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.ui.theme.WorkAloneTheme
-import com.ssafy.workalone.presentation.viewmodels.Exercise.ExerciseViewModel
+import com.ssafy.workalone.presentation.viewmodels.exercise.ExerciseViewModel
 import kotlinx.coroutines.launch
 
 
@@ -51,13 +50,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun ExerciseView(
     navController: NavController,
-    viewModel: ExerciseViewModel = ExerciseViewModel(),
+    viewModel: ExerciseViewModel = ExerciseViewModel(context = LocalContext.current),
     id: Long
 ) {
     val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
-    val exercises = viewModel.getExerciseById(id)
-        .collectAsState(initial = listOf())
+    val exercises = viewModel.getExerciseById(id).collectAsState(initial = listOf())
     var currentIndex by remember { mutableStateOf(0) }
     var currentExercise = exercises.value.getOrNull(currentIndex)
     val scrollState = rememberScrollState()
@@ -112,7 +110,7 @@ fun ExerciseView(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(WalkOneGray50)
-                            .padding(24.dp),
+                            .padding(30.dp),
                     ) {
                         // 제목 및 부제목
                         Text(
@@ -132,72 +130,58 @@ fun ExerciseView(
                             viewModel = viewModel
                         )
                     }
-                    Box{
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(WalkOneGray50)
-                                .padding(24.dp)
-                                .verticalScroll(scrollState),
-                            verticalArrangement = Arrangement.SpaceBetween,
-                        ) {
-                            // 운동 방법
-                            Text(
-                                text = "운동 방법",
-                                style = WorkAloneTheme.typography.Heading03,
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
-                            SectionItem(title = "기본 자세", description = exerciseData.basicPose)
-                            Spacer(modifier = Modifier.height(16.dp))
-                            SectionItem(title = "동작 수행", description = exerciseData.movement)
-                            Spacer(modifier = Modifier.height(16.dp))
-                            SectionItem(title = "호흡", description = exerciseData.breath)
-                            Spacer(modifier = Modifier.height(64.dp))
-
-
-                        }
-                        Box(
-                            modifier = Modifier.align(Alignment.BottomCenter).padding(24.dp)
-                        ){
-                            if (currentIndex < exercises.value.size - 1) {
-                                CustomButton(
-                                    text = "다음 운동 보기",
-                                    onClick = {
-                                        currentIndex += 1
-                                        coroutineScope.launch {
-                                            scrollState.animateScrollTo(0)
-                                        }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(WalkOneGray50)
+                            .padding(30.dp)
+                            .verticalScroll(scrollState),
+                        verticalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        // 운동 방법
+                        Text(
+                            text = "운동 방법",
+                            style = WorkAloneTheme.typography.Heading03,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                        SectionItem(title = "기본 자세", description = exerciseData.basicPose)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        SectionItem(title = "동작 수행", description = exerciseData.movement)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        SectionItem(title = "호흡", description = exerciseData.breath)
+                        Spacer(modifier = Modifier.height(32.dp))
+                        if (currentIndex < exercises.value.size - 1) {
+                            CustomButton(
+                                text = "다음 운동 보기",
+                                onClick = {
+                                    currentIndex += 1
+                                    coroutineScope.launch {
+                                        scrollState.animateScrollTo(0)
                                     }
-                                )
-                            } else {
-                                CustomButton(
-                                    text = "운동 시작하기",
-                                    onClick = {
-                                        preferenceManager.setExerciseCount(
-                                            title = exerciseData.title,
-                                            restBtwSet = exerciseData.restBtwSet,
-                                            exerciseSet = exerciseData.exerciseSet,
-                                            exerciseRepeat = exerciseData.exerciseRepeat,
-                                            type = exerciseData.setType
-                                        )
-
-                                        if (cameraPermissionCheck != PackageManager.PERMISSION_GRANTED || audioPermissionCheck != PackageManager.PERMISSION_GRANTED) {
-                                            requestPermissionLauncher.launch(
-                                                arrayOf(
-                                                    android.Manifest.permission.CAMERA,
-                                                    android.Manifest.permission.RECORD_AUDIO
-                                                )
+                                }
+                            )
+                        } else {
+                            CustomButton(
+                                text = "운동 시작하기",
+                                onClick = {
+                                    viewModel.saveExercisesPreferences(exercises.value)
+                                    Log.d("exercise test",
+                                        preferenceManager.getExerciseList().toString()
+                                    )
+                                    if (cameraPermissionCheck != PackageManager.PERMISSION_GRANTED || audioPermissionCheck != PackageManager.PERMISSION_GRANTED) {
+                                        requestPermissionLauncher.launch(
+                                            arrayOf(
+                                                android.Manifest.permission.CAMERA,
+                                                android.Manifest.permission.RECORD_AUDIO
                                             )
-                                        } else {
-                                            context.startActivity(intent)
-                                        }
-                                    },
-                                )
-                            }
+                                        )
+                                    } else {
+                                        context.startActivity(intent)
+                                    }
+                                },
+                            )
                         }
-
                     }
-
                 }
             }
         }

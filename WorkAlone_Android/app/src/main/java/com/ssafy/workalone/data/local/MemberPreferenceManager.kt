@@ -9,27 +9,29 @@ class MemberPreferenceManager(context: Context) {
         context.getSharedPreferences("member_preference", Context.MODE_PRIVATE)
     private val gson = Gson();
 
-    fun setName(name: String) {
-        preferences.edit().putString("name", name).apply()
-    }
 
     fun getName(): String {
         return preferences.getString("name", "") ?: ""
     }
 
-    fun setId(id: Long) {
-        preferences.edit().putLong("id", id).apply()
-    }
-
     fun getId(): Long {
-        return preferences.getLong("id", 0L) ?: 0L
-    }
-
-    fun setWeight(weight: Int) {
-        preferences.edit().putInt("weight", weight).apply()
+        return preferences.getLong("memberId", 0L) ?: 0L
     }
 
     fun getWeight(): Int {
         return preferences.getInt("weight", 0)
+    }
+
+    fun setMemberInfo(id: Long, name: String, weight: Int) {
+        preferences.edit().putLong("memberId", id).putString("name", name).putInt("weight", weight)
+            .apply()
+    }
+
+    fun setLogin(isLogin: Boolean) {
+        preferences.edit().putBoolean("Login", isLogin).apply()
+    }
+
+    fun getLogin(): Boolean {
+        return preferences.getBoolean("Login", false)
     }
 }

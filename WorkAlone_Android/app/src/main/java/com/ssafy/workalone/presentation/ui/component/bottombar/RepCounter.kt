@@ -1,4 +1,4 @@
-package com.ssafy.workalone.presentation.ui.component
+package com.ssafy.workalone.presentation.ui.component.bottombar
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,11 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,41 +23,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.MutableLiveData
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
-import com.ssafy.workalone.presentation.ui.theme.WalkOneGray500
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlin.reflect.KProperty
 
-// 운동 타이머 컴포넌트
 @Composable
-fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
+fun RepCounter(viewModel: ExerciseMLKitViewModel){
 
     var isExercise = viewModel.isExercising.value
-    var goalTime by viewModel.totalRep
-    val totalSets by viewModel.totalSet
+    var totalReps by viewModel.totalRep
+    var currentReps by viewModel.nowRep
+    var totalSets by viewModel.totalSet
     var currentSet by viewModel.nowSet
 
     val configuration = LocalConfiguration.current
-
-    LaunchedEffect(Unit) {
-        while (goalTime > 0) {
-            if (isExercise) {
-                // 1초 대기
-                delay(1000L)
-                // 일시정지가 아닐 때만 감소
-                if (isExercise == true) {
-                    viewModel.decreaseTime()
-                }
-            } else {
-                // 일시정지 상태에서 짧은 대기
-                delay(100L)
-            }
-        }
-    }
 
     if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
         Column(
@@ -76,6 +50,7 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                         bottomEnd = 0.dp
                     ))
                 .fillMaxWidth()
+                .height(230.dp)
                 .padding(25.dp),
 
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -84,13 +59,21 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${String.format("%02d", goalTime/60)} : ${String.format("%02d", goalTime%60)}",
+                    text = "${viewModel.nowRep.value}",
                     fontSize = 56.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .alignByBaseline()
                 )
+                Text(
+                    text = "/${viewModel.totalRep.value}회",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .alignByBaseline()
+                )
             }
+
             Row(
                 modifier = Modifier
                     .padding(bottom = 30.dp),
@@ -118,7 +101,7 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                         WalkOneBlue500,
                         WalkOneGray50,
                         WalkOneBlue500,
-                        onClick = { viewModel.stopExercise()}
+                        onClick = { viewModel.stopExercise() }
                     )
                 }
             } else {
@@ -150,7 +133,7 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                             WalkOneGray50,
                             WalkOneBlue500,
                             WalkOneBlue500,
-                            onClick = { viewModel.startExercise() }
+                            onClick = { viewModel.startExercise()}
                         )
                     }
                 }
@@ -176,8 +159,15 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${String.format("%02d", goalTime/60)} : ${String.format("%02d", goalTime%60)}",
+                    text = "${currentReps}",
                     fontSize = 56.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .alignByBaseline()
+                )
+                Text(
+                    text = "/ ${totalReps}회",
+                    fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .alignByBaseline()
@@ -204,6 +194,7 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                 Row(
                     modifier = Modifier
                         .weight(1f)
+
                 ){
                     CustomButton(
                         "일시정지",
@@ -250,9 +241,10 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
         }
     }
 }
+
 @Preview(name = "Portrait", widthDp = 360, heightDp = 640)
 @Preview(name = "Landscape", widthDp = 640, heightDp = 360)
 @Composable
-fun previewExerciseTimer(){
-    ExerciseTimer(viewModel = ExerciseMLKitViewModel())
+fun previewRepCounter(){
+    RepCounter(viewModel = ExerciseMLKitViewModel())
 }

@@ -23,10 +23,10 @@ import androidx.compose.ui.unit.sp
 import com.ssafy.workalone.MainActivity
 import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.CustomDialog
-import com.ssafy.workalone.presentation.ui.component.ExerciseTimer
-import com.ssafy.workalone.presentation.ui.component.RepCounter
+import com.ssafy.workalone.presentation.ui.component.bottombar.ExerciseTimer
+import com.ssafy.workalone.presentation.ui.component.bottombar.RepCounter
 import com.ssafy.workalone.presentation.ui.component.RestTime
-import com.ssafy.workalone.presentation.ui.component.StopwatchScreen
+import com.ssafy.workalone.presentation.ui.component.topbar.StopwatchScreen
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 
 @Composable

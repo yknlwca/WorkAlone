@@ -1,11 +1,10 @@
-package com.ssafy.workalone.presentation.viewmodels.Exercise
+package com.ssafy.workalone.presentation.viewmodels.exercise
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.ssafy.workalone.data.model.exercise.ExerciseRecord
 import com.ssafy.workalone.data.repository.ExerciseRecordRepository
 import com.ssafy.workalone.global.exception.CustomException
-import com.ssafy.workalone.global.exception.handleException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch

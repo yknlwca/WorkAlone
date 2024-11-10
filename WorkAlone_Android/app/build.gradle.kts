@@ -1,19 +1,8 @@
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
 }
-
-val localProperties = Properties()
-val localPropertiesFile = rootProject.file("local.properties")
-
-if (localPropertiesFile.exists()) {
-    localProperties.load(localPropertiesFile.inputStream())
-}
-val nativeAppKey = localProperties.getProperty("KAKAO_NATIVE_APP_KEY") ?: ""
-val oauthHost = localProperties.getProperty("KAKAO_OAUTH_HOST") ?: ""
 
 android {
     buildFeatures {
@@ -25,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.ssafy.workalone"
-        minSdk = 23
+        minSdk = 21
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -36,8 +25,6 @@ android {
             useSupportLibrary = true
         }
         setProperty("archivesBaseName", "vision-quickstart")
-        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", nativeAppKey)
-        resValue("string", "kakao_oauth_host", oauthHost)
     }
 
 
@@ -85,7 +72,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
 
 
-    implementation("com.kakao.sdk:v2-user:2.20.6") // 카카오 로그인 API 모듈
 
     // define any required OkHttp artifacts without version
     implementation("com.squareup.okhttp3:okhttp")
