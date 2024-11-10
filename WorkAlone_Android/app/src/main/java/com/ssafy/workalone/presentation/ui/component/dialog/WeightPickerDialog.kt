@@ -23,12 +23,11 @@ import androidx.compose.ui.viewinterop.AndroidView
 fun WeightPickerDialog(
     initialWeight: Int = 70,
     onConfirm: (Int) -> Unit,
-    onDismiss: () -> Unit
 ) {
     var selectedWeight by remember { mutableStateOf(initialWeight) }
 
     AlertDialog(
-        onDismissRequest = { onDismiss() },
+        onDismissRequest = {  },
         title = { Text("몸무게 선택") },
         text = {
             Column(

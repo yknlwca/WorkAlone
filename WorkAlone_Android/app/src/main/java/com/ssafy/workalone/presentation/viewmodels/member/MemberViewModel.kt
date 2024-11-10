@@ -6,7 +6,9 @@ import com.ssafy.workalone.data.local.MemberPreferenceManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class MemberViewModel(context: Context) : ViewModel() {
+class MemberViewModel(
+    context: Context
+) : ViewModel() {
     private val memberPreferenceManager = MemberPreferenceManager(context)
     private val _name = MutableStateFlow(memberPreferenceManager.getName() ?: "")
     val name: StateFlow<String> = _name
@@ -17,9 +19,11 @@ class MemberViewModel(context: Context) : ViewModel() {
     private val _login = MutableStateFlow(memberPreferenceManager.getLogin())
     val login: StateFlow<Boolean> = _login
 
-    fun saveUserInfo(id: Long, name: String, weight: Int) {
+    fun saveUserInfo(id: Long = 0L, name: String, weight: Int) {
         memberPreferenceManager.setMemberInfo(id, name, weight)
         _name.value = name
         _weight.value = weight
+        memberPreferenceManager.setLogin(true)
+        _login.value = true
     }
 }

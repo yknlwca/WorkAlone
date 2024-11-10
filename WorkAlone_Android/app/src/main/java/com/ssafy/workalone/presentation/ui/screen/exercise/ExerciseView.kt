@@ -165,9 +165,6 @@ fun ExerciseView(
                                 text = "운동 시작하기",
                                 onClick = {
                                     viewModel.saveExercisesPreferences(exercises.value)
-                                    Log.d("exercise test",
-                                        preferenceManager.getExerciseList().toString()
-                                    )
                                     if (cameraPermissionCheck != PackageManager.PERMISSION_GRANTED || audioPermissionCheck != PackageManager.PERMISSION_GRANTED) {
                                         requestPermissionLauncher.launch(
                                             arrayOf(

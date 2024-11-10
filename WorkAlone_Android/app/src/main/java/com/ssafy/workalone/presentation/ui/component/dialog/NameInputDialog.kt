@@ -21,12 +21,11 @@ import androidx.compose.ui.unit.dp
 fun NameInputDialog(
     initialName: String = "",
     onConfirm: (String) -> Unit,
-    onDismiss: () -> Unit
 ) {
     var name by remember { mutableStateOf(initialName) }
 
     AlertDialog(
-        onDismissRequest = { onDismiss() },
+        onDismissRequest = {  },
         title = { Text("이름 입력") },
         text = {
             Column(
@@ -48,11 +47,6 @@ fun NameInputDialog(
                 onConfirm(name) // 입력된 이름 전달
             }) {
                 Text("확인")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = { onDismiss() }) {
-                Text("취소")
             }
         },
         shape = RoundedCornerShape(15.dp)
