@@ -45,6 +45,7 @@ class ExerciseViewModel(
         viewModelScope.launch {
             val exerciseDataList = exercises.map { exercise ->
                 ExerciseData(
+                    exerciseId = exercise.exerciseId,
                     title = exercise.title,
                     restBtwSet = exercise.restBtwSet,
                     exerciseSet = exercise.exerciseSet,

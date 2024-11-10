@@ -12,16 +12,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ssafy.workalone.data.local.MemberPreferenceManager
+import com.ssafy.workalone.presentation.ui.screen.complete.IndividualCompleteView
 import com.ssafy.workalone.presentation.ui.screen.exercise.ChallengeListView
 import com.ssafy.workalone.presentation.ui.screen.exercise.ExerciseView
 import com.ssafy.workalone.presentation.ui.screen.home.HomeView
-import com.ssafy.workalone.presentation.ui.screen.complete.IndividualCompleteView
 import com.ssafy.workalone.presentation.ui.screen.home.LoginView
 
 @Composable
 fun Navigation(
     navController: NavHostController = rememberNavController(),
-    startDestination: String = Screen.Home.route
+    startDestination: String = Screen.Login.route
 ) {
     val activity = LocalContext.current as? Activity
     val context = LocalContext.current

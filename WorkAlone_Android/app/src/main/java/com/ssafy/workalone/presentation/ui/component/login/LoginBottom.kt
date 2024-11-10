@@ -20,19 +20,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.ssafy.workalone.presentation.navigation.Screen
+import com.ssafy.workalone.presentation.ui.component.dialog.NameInputDialog
+import com.ssafy.workalone.presentation.ui.component.dialog.WeightPickerDialog
+import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
+import com.ssafy.workalone.presentation.viewmodels.member.MemberViewModel
 
 
 @Composable
-fun LoginBottomView(navController: NavController) {
+fun LoginBottomView(navController: NavController, viewModel: MemberViewModel) {
     var showNameDialog by remember { mutableStateOf(false) }
     var showWeightDialog by remember { mutableStateOf(false) }
+    var memberName by remember { mutableStateOf("") }
+    var memberWeight by remember { mutableStateOf(70) }
 
     Button(
-        onClick = { /*TODO*/ },
+        onClick = { showNameDialog = true },
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
@@ -42,7 +48,7 @@ fun LoginBottomView(navController: NavController) {
         ),
         shape = RoundedCornerShape(15.dp),
         colors = ButtonDefaults.buttonColors(
-            Color.Black
+            WalkOneBlue500
         )
     ) {
         Icon(
@@ -70,6 +76,32 @@ fun LoginBottomView(navController: NavController) {
             LoginInfoText("에 ", TextDecoration.None)
             LoginInfoText("동의하시게 됩니다.", TextDecoration.None)
         }
+    }
+
+    if (showNameDialog) {
+        NameInputDialog(
+            initialName = memberName,
+            onConfirm = { name ->
+                memberName = name
+                showNameDialog = false
+                showWeightDialog = true
+            }
+
+        )
+    }
+
+    if (showWeightDialog) {
+        WeightPickerDialog(
+            initialWeight = memberWeight,
+            onConfirm = { weight ->
+                memberWeight = weight
+                viewModel.saveUserInfo(name = memberName, weight = memberWeight)
+                showWeightDialog = false
+                navController.navigate(Screen.Home.route) {
+                    popUpTo(Screen.Login.route) { inclusive = true }
+                }
+            },
+        )
     }
 }
 

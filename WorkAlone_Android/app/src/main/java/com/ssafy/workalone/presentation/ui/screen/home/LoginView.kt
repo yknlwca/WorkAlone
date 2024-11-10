@@ -10,10 +10,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.ssafy.workalone.presentation.ui.component.login.LoginBottomView
 import com.ssafy.workalone.presentation.ui.component.login.LoginMiddleView
+import com.ssafy.workalone.presentation.viewmodels.member.MemberViewModel
 
 @Composable
 fun LoginView(navController: NavController) {
@@ -27,16 +27,7 @@ fun LoginView(navController: NavController) {
         Spacer(modifier = Modifier.weight(1f))
         LoginMiddleView()
         Spacer(modifier = Modifier.weight(1f))
-        LoginBottomView(navController)
+        LoginBottomView(navController, MemberViewModel(LocalContext.current))
         Spacer(modifier = Modifier.weight(1f))
     }
-}
-
-
-
-
-@Preview(showBackground = true)
-@Composable
-fun a() {
-    LoginView(navController = NavController(LocalContext.current))
 }
