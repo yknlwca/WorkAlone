@@ -7,6 +7,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -110,7 +112,7 @@ fun ExerciseView(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(WalkOneGray50)
-                            .padding(30.dp),
+                            .padding(24.dp),
                     ) {
                         // 제목 및 부제목
                         Text(
@@ -130,62 +132,72 @@ fun ExerciseView(
                             viewModel = viewModel
                         )
                     }
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(WalkOneGray50)
-                            .padding(30.dp)
-                            .verticalScroll(scrollState),
-                        verticalArrangement = Arrangement.SpaceBetween,
-                    ) {
-                        // 운동 방법
-                        Text(
-                            text = "운동 방법",
-                            style = WorkAloneTheme.typography.Heading03,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
-                        SectionItem(title = "기본 자세", description = exerciseData.basicPose)
-                        Spacer(modifier = Modifier.height(16.dp))
-                        SectionItem(title = "동작 수행", description = exerciseData.movement)
-                        Spacer(modifier = Modifier.height(16.dp))
-                        SectionItem(title = "호흡", description = exerciseData.breath)
-                        Spacer(modifier = Modifier.height(32.dp))
-                        if (currentIndex < exercises.value.size - 1) {
-                            CustomButton(
-                                text = "다음 운동 보기",
-                                onClick = {
-                                    currentIndex += 1
-                                    coroutineScope.launch {
-                                        scrollState.animateScrollTo(0)
-                                    }
-                                }
+                    Box{
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(WalkOneGray50)
+                                .padding(24.dp)
+                                .verticalScroll(scrollState),
+                            verticalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            // 운동 방법
+                            Text(
+                                text = "운동 방법",
+                                style = WorkAloneTheme.typography.Heading03,
+                                modifier = Modifier.padding(bottom = 16.dp)
                             )
-                        } else {
-                            CustomButton(
-                                text = "운동 시작하기",
-                                onClick = {
-                                    preferenceManager.setExerciseCount(
-                                        title = exerciseData.title,
-                                        restBtwSet = exerciseData.restBtwSet,
-                                        exerciseSet = exerciseData.exerciseSet,
-                                        exerciseRepeat = exerciseData.exerciseRepeat,
-                                        type = exerciseData.setType
-                                    )
+                            SectionItem(title = "기본 자세", description = exerciseData.basicPose)
+                            Spacer(modifier = Modifier.height(16.dp))
+                            SectionItem(title = "동작 수행", description = exerciseData.movement)
+                            Spacer(modifier = Modifier.height(16.dp))
+                            SectionItem(title = "호흡", description = exerciseData.breath)
+                            Spacer(modifier = Modifier.height(64.dp))
 
-                                    if (cameraPermissionCheck != PackageManager.PERMISSION_GRANTED || audioPermissionCheck != PackageManager.PERMISSION_GRANTED) {
-                                        requestPermissionLauncher.launch(
-                                            arrayOf(
-                                                android.Manifest.permission.CAMERA,
-                                                android.Manifest.permission.RECORD_AUDIO
-                                            )
-                                        )
-                                    } else {
-                                        context.startActivity(intent)
-                                    }
-                                },
-                            )
+
                         }
+                        Box(
+                            modifier = Modifier.align(Alignment.BottomCenter).padding(24.dp)
+                        ){
+                            if (currentIndex < exercises.value.size - 1) {
+                                CustomButton(
+                                    text = "다음 운동 보기",
+                                    onClick = {
+                                        currentIndex += 1
+                                        coroutineScope.launch {
+                                            scrollState.animateScrollTo(0)
+                                        }
+                                    }
+                                )
+                            } else {
+                                CustomButton(
+                                    text = "운동 시작하기",
+                                    onClick = {
+                                        preferenceManager.setExerciseCount(
+                                            title = exerciseData.title,
+                                            restBtwSet = exerciseData.restBtwSet,
+                                            exerciseSet = exerciseData.exerciseSet,
+                                            exerciseRepeat = exerciseData.exerciseRepeat,
+                                            type = exerciseData.setType
+                                        )
+
+                                        if (cameraPermissionCheck != PackageManager.PERMISSION_GRANTED || audioPermissionCheck != PackageManager.PERMISSION_GRANTED) {
+                                            requestPermissionLauncher.launch(
+                                                arrayOf(
+                                                    android.Manifest.permission.CAMERA,
+                                                    android.Manifest.permission.RECORD_AUDIO
+                                                )
+                                            )
+                                        } else {
+                                            context.startActivity(intent)
+                                        }
+                                    },
+                                )
+                            }
+                        }
+
                     }
+
                 }
             }
         }
