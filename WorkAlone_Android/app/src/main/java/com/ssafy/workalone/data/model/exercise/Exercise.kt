@@ -5,6 +5,8 @@ import com.google.gson.annotations.SerializedName
 data class Exercise(
     @SerializedName("exerciseId")
     val exerciseId: Long,
+    @SerializedName("seq")
+    val seq: Int,
     @SerializedName("exerciseSet")
     val exerciseSet: Int,
     @SerializedName("exerciseRepeat")
