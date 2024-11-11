@@ -221,7 +221,7 @@ public class PoseClassifierProcessor {
             } else if (command.equalsIgnoreCase("종료")) {
               isTracking = false;
               viewModel.clickExit();
-              shutdown();
+             // shutdown();
              // Log.d(TAG, "운동 추적 종료됨");
             }
           }
@@ -246,10 +246,10 @@ public class PoseClassifierProcessor {
   }
   private void startListening() {
 
-    if (isEnvironmentLoud) {
-      Log.d("exer", "소음이 감지되어 음성 인식을 시작하지 않습니다.");
-      return; // 소음이 있으면 음성 인식 시작 안함
-    }
+//    if (isEnvironmentLoud) {
+//      Log.d("exer", "소음이 감지되어 음성 인식을 시작하지 않습니다.");
+//      return; // 소음이 있으면 음성 인식 시작 안함
+//    }
     Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
     intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
     intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.KOREAN);
@@ -293,7 +293,7 @@ public class PoseClassifierProcessor {
 
     ClassificationResult classification = poseClassifier.classify(pose);
 
-   // Log.d("exer","현재 추적 상태(쉬는시간이면 true): "+viewModel.isResting().getValue());
+    Log.d("exer","현재 추적 상태(쉬는시간이면 true): "+viewModel.isResting().getValue());
     if (viewModel.isResting().getValue()) {result.add("추적이 종료되었습니다.");
       result.add("isTracking: " + isTracking);
       result.add("isPaused: " + isPaused);
