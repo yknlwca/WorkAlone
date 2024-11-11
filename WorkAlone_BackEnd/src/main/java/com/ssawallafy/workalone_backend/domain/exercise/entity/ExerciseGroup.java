@@ -1,8 +1,6 @@
 package com.ssawallafy.workalone_backend.domain.exercise.entity;
 
-import com.ssawallafy.workalone_backend.domain.member.entity.Member;
 import com.ssawallafy.workalone_backend.domain.organization.entity.Organization;
-
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -21,10 +19,6 @@ public class ExerciseGroup {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id")
     private Organization organization;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
 
     private String title;
 
