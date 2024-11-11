@@ -99,13 +99,14 @@ public class PoseClassifierProcessor {
   private PoseClassifier poseClassifier;
   private String lastRepResult;
   private Handler mainHandler = new Handler(Looper.getMainLooper());
-
+  private ExerciseMLKitViewModel viewModel;
 
   @WorkerThread
-  public PoseClassifierProcessor(Context context, boolean isStreamMode,String ExerciseType) {
+  public PoseClassifierProcessor(Context context, boolean isStreamMode,String ExerciseType, ExerciseMLKitViewModel viewModel) {
     Preconditions.checkState(Looper.myLooper() != Looper.getMainLooper());
     this.isStreamMode = isStreamMode;
     this.context = context;
+    this.viewModel = viewModel;
 
 
 
@@ -182,20 +183,20 @@ public class PoseClassifierProcessor {
         Log.e("exer", "음성 인식 오류 발생: " + error);
         switch (error) {
           case SpeechRecognizer.ERROR_NETWORK:
-            Log.e("exer", "네트워크 오류");
+            //Log.e("exer", "네트워크 오류");
             break;
           case SpeechRecognizer.ERROR_AUDIO:
-           Log.e("exer", "오디오 입력 오류");
+           //Log.e("exer", "오디오 입력 오류");
             break;
           case SpeechRecognizer.ERROR_NO_MATCH:
-            Log.e("exer", "일치하는 결과 없음");
+           // Log.e("exer", "일치하는 결과 없음");
             break;
           case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
-            Log.e("exer", "음성 입력 시간 초과");
+            //Log.e("exer", "음성 입력 시간 초과");
             break;
           // 추가 오류 코드 확인 가능
         }
-        Log.e("exer", "오류 발생 시 startListening() 다시 시작");
+     //  Log.e("exer", "오류 발생 시 startListening() 다시 시작");
 
         startListening(); // 오류 발생 시 다시 듣기 시작
       }
@@ -209,12 +210,17 @@ public class PoseClassifierProcessor {
             if (command.equalsIgnoreCase("시작")) {
               isTracking = true;
               isPaused = false;
+              viewModel.startExercise();
+              //Log.d(TAG, "운동 추적 시작됨");
               Log.d("exer", "운동 추적 시작됨");
             } else if (command.equalsIgnoreCase("정지")) {
               isPaused = true;
+              viewModel.stopExercise();
+             // Log.d(TAG, "운동 추적 일시 중지됨");
              Log.d("exer", "운동 추적 일시 중지됨");
             } else if (command.equalsIgnoreCase("종료")) {
               isTracking = false;
+              viewModel.clickExit();
               shutdown();
              // Log.d(TAG, "운동 추적 종료됨");
             }
@@ -283,11 +289,12 @@ public class PoseClassifierProcessor {
     List<String> result = new ArrayList<>();
 
 
+    //Log.d("exer","getPoseResult 호출 ");
+
     ClassificationResult classification = poseClassifier.classify(pose);
 
-
-    if (!isTracking) {
-      result.add("추적이 종료되었습니다.");
+   // Log.d("exer","현재 추적 상태(쉬는시간이면 true): "+viewModel.isResting().getValue());
+    if (viewModel.isResting().getValue()) {result.add("추적이 종료되었습니다.");
       result.add("isTracking: " + isTracking);
       result.add("isPaused: " + isPaused);
       return result;
@@ -333,17 +340,20 @@ public class PoseClassifierProcessor {
             plankFlag = true;
             lastRepResult = String.format(Locale.KOREAN, "%s : 유지 중", PLANK_CLASS);
             Log.d("exer","플랭크 자세 유지중 "+plankFlag);
-            if(!viewModel.getPlankPause().getValue()){
-              viewModel.startPlank();
-            }
           }
           else {
             // 플랭크 자세를 벗어나면 플래그를 false로 설정
             plankFlag = false;
+
             lastRepResult = String.format(Locale.KOREAN, "%s : 중단됨", PLANK_CLASS);
             Log.d("exer","플랭크 자세 유지 X "+plankFlag);
 
             //speakResult("플랭크 자세를 유지해주세요.");
+          }
+          if(plankFlag){
+            viewModel.startExercise();
+          }else{
+            viewModel.stopExercise();
           }
         }
         else {
@@ -356,7 +366,7 @@ public class PoseClassifierProcessor {
 
             lastRepResult = String.format(Locale.KOREAN, "%s : %d", repCounter.getClassName(), repsAfter," iaTracking: "+isTracking+"  isPaues: "+isPaused);
             viewModel.addRep("스쿼트, 푸쉬업, 윗몸일으키기",0);
-            Log.d("exer",String.valueOf(repsAfter));
+            Log.d("exer","count: "+String.valueOf(repsAfter));
             speakResult(String.valueOf(repsAfter));
             break;
           }

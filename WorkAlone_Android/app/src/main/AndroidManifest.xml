@@ -33,7 +33,6 @@
         android:roundIcon="@drawable/w_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.WorkAlone"
-        android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"
@@ -51,10 +50,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <!-- Redirect URI: "kakao${NATIVE_APP_KEY}://oauth" -->
-                <data
-                    android:host="oauth"
-                    android:scheme="@string/kakao_oauth_host" />
+
             </intent-filter>
         </activity>
         <meta-data

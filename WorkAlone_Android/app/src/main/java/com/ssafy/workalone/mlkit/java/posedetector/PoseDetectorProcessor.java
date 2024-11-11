@@ -131,6 +131,7 @@ public class PoseDetectorProcessor
 
   @Override
   protected Task<PoseWithClassification> detectInImage(InputImage image) {
+
     return detector
             .process(image)
             .continueWith(
@@ -142,8 +143,8 @@ public class PoseDetectorProcessor
                       List<String> classificationResult = new ArrayList<>();
                       if (runClassification) {
                         if (poseClassifierProcessor == null) {
-                          Log.d("exer","dectectInImage");
-                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,ExerciseType);
+                          //Log.d("exer","dectectInImage");
+                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,ExerciseType,viewModel);
                         }
                         classificationResult = poseClassifierProcessor.getPoseResult(pose,viewModel);
                       }
@@ -210,7 +211,8 @@ public class PoseDetectorProcessor
                      // Log.d("exer",String.valueOf(runClassification));
                       if (runClassification) {
                         if (poseClassifierProcessor == null) {
-                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,ExerciseType);
+                          Log.d("exer",ExerciseType);
+                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,ExerciseType, viewModel);
                         }
                         classificationResult = poseClassifierProcessor.getPoseResult(pose,viewModel);
                       }
@@ -273,6 +275,7 @@ public class PoseDetectorProcessor
 //            PoseLandmark.RIGHT_WRIST,
 //            PoseLandmark.LEFT_ANKLE,
 //            PoseLandmark.RIGHT_ANKLE
+
     };
 
     for (int landmarkType : requiredLandmarks) {

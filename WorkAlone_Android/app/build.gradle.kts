@@ -1,32 +1,20 @@
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
 }
 
-val localProperties = Properties()
-val localPropertiesFile = rootProject.file("local.properties")
-
-if (localPropertiesFile.exists()) {
-    localProperties.load(localPropertiesFile.inputStream())
-}
-val nativeAppKey = localProperties.getProperty("KAKAO_NATIVE_APP_KEY") ?: ""
-val oauthHost = localProperties.getProperty("KAKAO_OAUTH_HOST") ?: ""
-
 android {
     buildFeatures {
         buildConfig = true
         viewBinding = false
     }
-//    viewBinding.isEnabled = true
     namespace = "com.ssafy.workalone"
     compileSdk = 34
 
     defaultConfig {
         applicationId = "com.ssafy.workalone"
-        minSdk = 23
+        minSdk = 21
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -37,8 +25,6 @@ android {
             useSupportLibrary = true
         }
         setProperty("archivesBaseName", "vision-quickstart")
-        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", nativeAppKey)
-        resValue("string", "kakao_oauth_host", oauthHost)
     }
 
 
@@ -83,14 +69,9 @@ dependencies {
     val compose_version = "1.6.0-alpha08"
     // define a BOM and its version
     implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
 
-    implementation("com.kakao.sdk:v2-all:2.20.6") // 전체 모듈 설치, 2.11.0 버전부터 지원
-    implementation("com.kakao.sdk:v2-user:2.20.6") // 카카오 로그인 API 모듈
-    implementation("com.kakao.sdk:v2-share:2.20.6") // 카카오톡 공유 API 모듈
-    implementation("com.kakao.sdk:v2-talk:2.20.6") // 카카오톡 채널, 카카오톡 소셜, 카카오톡 메시지 API 모듈
-    implementation("com.kakao.sdk:v2-friend:2.20.6") // 피커 API 모듈
-    implementation("com.kakao.sdk:v2-navi:2.20.6") // 카카오내비 API 모듈
-    implementation("com.kakao.sdk:v2-cert:2.20.6") // 카카오톡 인증 서비스 API 모듈
+
 
     // define any required OkHttp artifacts without version
     implementation("com.squareup.okhttp3:okhttp")

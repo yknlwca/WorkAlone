@@ -1,6 +1,6 @@
 package com.ssafy.workalone.data.repository
 
-import com.ssafy.workalone.data.model.ExerciseRecord
+import com.ssafy.workalone.data.model.exercise.ExerciseRecord
 import com.ssafy.workalone.data.remote.ExerciseService
 import com.ssafy.workalone.data.remote.RetrofitFactory
 import com.ssafy.workalone.global.exception.handleApiError
