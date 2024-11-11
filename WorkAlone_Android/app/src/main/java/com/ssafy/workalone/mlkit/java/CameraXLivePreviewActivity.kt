@@ -33,7 +33,7 @@ import com.ssafy.workalone.mlkit.VisionImageProcessor
 import com.ssafy.workalone.mlkit.java.posedetector.PoseDetectorProcessor
 import com.ssafy.workalone.mlkit.preference.PreferenceUtils
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
-import com.ssafy.workalone.presentation.ui.screen.ExerciseMLkitView
+import com.ssafy.workalone.presentation.ui.screen.exercise.ExerciseMLkitView
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModelFactory
 
 
@@ -65,12 +65,9 @@ class CameraXLivePreviewActivity :
 
     super.onCreate(savedInstanceState)
 
-    //쉬는시간 상태 관찰
-//    exerciseViewModel.isResting.observe(this,Observer{isResting ->
-//        if(!isResting)
-//        //카메라 분석 시작
-        bindAllCameraUseCases()
-//    })
+
+//    bindAllCameraUseCases()
+
 
 
 
@@ -93,9 +90,8 @@ class CameraXLivePreviewActivity :
 
     //ComposeView설정
     val composeView: ComposeView = findViewById(R.id.compose_view)
-    val exerciseType = exerciseViewModel.exerciseType.value
     composeView.setContent {
-      ExerciseMLkitView(exerciseType,exerciseViewModel)
+      ExerciseMLkitView(exerciseViewModel)
     }
 
     val options: MutableList<String> = ArrayList()
@@ -228,10 +224,6 @@ class CameraXLivePreviewActivity :
     }
     imageProcessor =
       try {
-            val exerciseType = exerciseViewModel.exerciseType.value
-        if (exerciseType != null) {
-          Log.d("운동 종류",exerciseType)
-        }
             val poseDetectorOptions = PreferenceUtils.getPoseDetectorOptionsForLivePreview(this)
             val shouldShowInFrameLikelihood =
               PreferenceUtils.shouldShowPoseDetectionInFrameLikelihoodLivePreview(this)
@@ -247,7 +239,7 @@ class CameraXLivePreviewActivity :
               rescaleZ,
               runClassification,
               /* isStreamMode = */ true,
-              exerciseType,
+              exerciseViewModel.nowExercise.value.title,
               exerciseViewModel
 
             )
@@ -282,7 +274,7 @@ class CameraXLivePreviewActivity :
 //          return@Analyzer
 //        }
         //이미지 분석 실행
-    //    if(exerciseViewModel.isResting.value==false||exerciseViewModel.restTime.value<3){
+//        if(exerciseViewModel.isResting.value==false||exerciseViewModel.restTime.value<3){
           if (needUpdateGraphicOverlayImageSourceInfo) {
             val isImageFlipped = lensFacing == CameraSelector.LENS_FACING_FRONT
             val rotationDegrees = imageProxy.imageInfo.rotationDegrees
@@ -299,7 +291,7 @@ class CameraXLivePreviewActivity :
             Log.e(TAG, "Failed to process image. Error: " + e.localizedMessage)
             Toast.makeText(applicationContext, e.localizedMessage, Toast.LENGTH_SHORT).show()
           }
-        //}
+//        }
 
       },
     )

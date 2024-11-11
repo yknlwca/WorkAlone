@@ -29,7 +29,6 @@ class ExerciseViewModel(
         get() = _errorMessage
 
 
-
     val getAllChallenge: Flow<List<Challenge>> = flow {
         emitAll(exerciseRepository.getChallenges())
     }.flowOn(Dispatchers.IO).catch { e -> handleException(e, _errorMessage) }
@@ -46,6 +45,7 @@ class ExerciseViewModel(
             val exerciseDataList = exercises.map { exercise ->
                 ExerciseData(
                     exerciseId = exercise.exerciseId,
+                    seq = exercise.seq,
                     title = exercise.title,
                     restBtwSet = exercise.restBtwSet,
                     exerciseSet = exercise.exerciseSet,

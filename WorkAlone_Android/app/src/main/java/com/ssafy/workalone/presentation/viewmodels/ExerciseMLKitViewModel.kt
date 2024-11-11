@@ -17,14 +17,13 @@ class ExerciseMLKitViewModel(context: Context): ViewModel() {
 
     private val _exercises = exerciseInfoPreferenceManager.getExerciseList()
     private val _nowExercise: MutableState<ExerciseData> = mutableStateOf(_exercises[0])
-    private val _exerciseType: MutableState<String> = mutableStateOf(_nowExercise.value.title)
     private val _nowSet: MutableState<Int> = mutableStateOf(1)
     private val _totalSet: MutableState<Int> = mutableStateOf(_nowExercise.value.exerciseSet)
     private val _nowRep: MutableState<Int> = mutableStateOf(0)
     private val _totalRep: MutableState<Int> = mutableStateOf(_nowExercise.value.exerciseRepeat)
     private val _restTime: MutableState<Int> = mutableStateOf(5)
     private val _stage: MutableState<String> = mutableStateOf("ready")
-    private val _isResting: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { value = true }
+    private val _isResting: MutableState<Boolean> = mutableStateOf(true)
     private val _isExercising: MutableState<Boolean> = mutableStateOf(true)
     private val _preSetText: MutableState<String> = mutableStateOf("")
     private val _restText: MutableState<String> = mutableStateOf("")
@@ -35,14 +34,13 @@ class ExerciseMLKitViewModel(context: Context): ViewModel() {
 
     val exercises: List<ExerciseData> = _exercises
     val nowExercise: MutableState<ExerciseData> = _nowExercise
-    val exerciseType: MutableState<String> = _exerciseType
     val nowSet: MutableState<Int> = _nowSet
     val totalSet: MutableState<Int> = _totalSet
     val nowRep: MutableState<Int> = _nowRep
     val totalRep: MutableState<Int> = _totalRep
     val restTime: MutableState<Int> = _restTime
     val stage: MutableState<String> = _stage
-    val isResting: MutableLiveData<Boolean> = _isResting
+    val isResting: MutableState<Boolean> = _isResting
     val isExercising: MutableState<Boolean> = _isExercising
     val restText: MutableState<String> = _restText
     val preSetText: MutableState<String> = _preSetText
@@ -75,12 +73,12 @@ class ExerciseMLKitViewModel(context: Context): ViewModel() {
         _stage.value="rest"
     }
     fun exerciseFinish(){
-        if((_nowExercise.value.exerciseId).toInt() == _exercises.size){
+        if(_nowExercise.value.seq == _exercises.size){
             //운동 종료 알림
             _isFinish.value = true
         }else{
             //다음 운동으로 이동
-            _nowExercise.value = _exercises[_nowExercise.value.exerciseId.toInt()]
+            _nowExercise.value = _exercises[_nowExercise.value.seq]
             _nowRep.value = 0
             _nowSet.value = 1
             //다음 운동의 세트로 적용
@@ -97,11 +95,12 @@ class ExerciseMLKitViewModel(context: Context): ViewModel() {
         }
     }
     fun countDownRestTime(){
-        if(_isResting.value == true){
+        if(_isResting.value){
             _restTime.value --
             if(_restTime.value==0){
                 _restTime.value = _nowExercise.value.restBtwSet
                 stopResting()
+                _stage.value = "rest"
             }
         }
 
@@ -135,11 +134,11 @@ class ExerciseMLKitViewModel(context: Context): ViewModel() {
         _totalRep.value--
     }
     fun startResting() {
-        _isResting.postValue(true)
+        _isResting.value = true
 //        _isExercising.value = false
     }
     fun stopResting() {
-        _isResting.postValue(false)
+        _isResting.value = false
         _isExercising.value = true
     }
     fun stopExercise(){

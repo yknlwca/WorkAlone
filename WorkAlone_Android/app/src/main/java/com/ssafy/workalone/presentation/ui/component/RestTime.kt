@@ -44,7 +44,7 @@ fun RestTime(
         }
     }
 
-        if(viewModel.isResting.value == true){
+        if(viewModel.isResting.value){
             Box(
                 modifier = Modifier
                     .fillMaxSize()

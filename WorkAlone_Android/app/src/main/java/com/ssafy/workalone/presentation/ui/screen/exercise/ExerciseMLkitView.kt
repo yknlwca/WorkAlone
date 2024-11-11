@@ -1,4 +1,4 @@
-package com.ssafy.workalone.presentation.ui.screen
+package com.ssafy.workalone.presentation.ui.screen.exercise
 
 import android.content.Intent
 import android.view.Gravity
@@ -32,7 +32,7 @@ import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 
 @Composable
 fun ExerciseMLkitView(
-    exerciseType: String?,
+//    exerciseType: String?,
     viewModel: ExerciseMLKitViewModel,
 ) {
     val context = LocalContext.current
@@ -70,15 +70,15 @@ fun ExerciseMLkitView(
                         .background(Color.Transparent),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    if (exerciseType != null) {
+                    if (viewModel.nowExercise != null) {
                         Text(
                             modifier = Modifier.padding(horizontal = 24.dp),
-                            text = exerciseType,
+                            text = viewModel.nowExercise.value.title,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
-                        if (exerciseType != "플랭크")
+                        if (viewModel.nowExercise.value.title != "플랭크")
                             RepCounter(viewModel)
                         else
                             ExerciseTimer(viewModel)
@@ -86,7 +86,7 @@ fun ExerciseMLkitView(
                 }
 
                 // 쉬는 시간일 때 RestTime이 최상단에 위치하도록 설정
-                if (viewModel.isResting.value == true) {
+                if (viewModel.isResting.value) {
                     RestTime(viewModel)
                 }
                 if(viewModel.isExit.value){
