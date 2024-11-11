@@ -300,7 +300,7 @@ public class PoseClassifierProcessor {
       return result;
     }
 
-    if (isPaused) {
+    if (!viewModel.isExercising().getValue()) {
       result.add("추적이 현재 일시 중지 상태입니다.");
       result.add("isTracking: " + isTracking);
       result.add("isPaused: " + isPaused);
@@ -367,12 +367,15 @@ public class PoseClassifierProcessor {
             lastRepResult = String.format(Locale.KOREAN, "%s : %d", repCounter.getClassName(), repsAfter," iaTracking: "+isTracking+"  isPaues: "+isPaused);
             viewModel.addRep("스쿼트, 푸쉬업, 윗몸일으키기",0);
             Log.d("exer","count: "+String.valueOf(repsAfter));
-            speakResult(String.valueOf(repsAfter));
+            speakResult(String.valueOf(viewModel.getNowRep().getValue()));
+            //speakResult(String.valueOf(repsAfter));
             break;
           }
           //횟수 다채우면 다음세트
           if(viewModel.getNowRep().getValue() == viewModel.getTotalRep().getValue()){
             viewModel.addSet();
+             repCounter.setNumRepeats();
+
             //세트 다 채우면 다음 운동 or 운동 완료
             if(viewModel.getNowSet().getValue() == viewModel.getTotalSet().getValue()+1){
               viewModel.exerciseFinish();

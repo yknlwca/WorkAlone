@@ -73,4 +73,5 @@ public class RepetitionCounter {
   public int getNumRepeats() {
     return numRepeats;
   }
+  public void setNumRepeats(){ numRepeats=0;}
 }
