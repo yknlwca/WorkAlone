@@ -241,9 +241,3 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
         }
     }
 }
-@Preview(name = "Portrait", widthDp = 360, heightDp = 640)
-@Preview(name = "Landscape", widthDp = 640, heightDp = 360)
-@Composable
-fun previewExerciseTimer(){
-    ExerciseTimer(viewModel = ExerciseMLKitViewModel())
-}

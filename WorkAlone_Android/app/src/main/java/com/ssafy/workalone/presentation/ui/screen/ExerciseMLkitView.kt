@@ -22,10 +22,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ssafy.workalone.MainActivity
 import com.ssafy.workalone.presentation.navigation.Screen
-import com.ssafy.workalone.presentation.ui.component.CustomDialog
+import com.ssafy.workalone.presentation.ui.component.dialog.CustomDialog
 import com.ssafy.workalone.presentation.ui.component.bottombar.ExerciseTimer
 import com.ssafy.workalone.presentation.ui.component.bottombar.RepCounter
 import com.ssafy.workalone.presentation.ui.component.RestTime
+import com.ssafy.workalone.presentation.ui.component.dialog.ExerciseFinishDialog
 import com.ssafy.workalone.presentation.ui.component.topbar.StopwatchScreen
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 
@@ -35,9 +36,17 @@ fun ExerciseMLkitView(
     viewModel: ExerciseMLKitViewModel,
 ) {
     val context = LocalContext.current
-    fun navigateToHome(){
+    fun navigateToHome() {
         val intent = Intent(context, MainActivity::class.java)
         intent.putExtra("startDestination", Screen.Home.route)
+        context.startActivity(intent)
+    }
+    fun navigateToFinish() {
+        val intent = Intent(context, MainActivity::class.java)
+        if(viewModel.exercises.size >1)
+            intent.putExtra("startDestination", Screen.IntegratedComplete.route)
+        else
+            intent.putExtra("startDestination", Screen.IndividualComplete.route)
         context.startActivity(intent)
     }
     Scaffold(
@@ -90,6 +99,9 @@ fun ExerciseMLkitView(
                     toast.setGravity(Gravity.BOTTOM,0,yOffsetInPx)
                     toast.show()
 
+                }
+                if(viewModel.isFinish.value){
+                    ExerciseFinishDialog {  navigateToFinish() }
                 }
                 BackHandler {
                     viewModel.clickExit()

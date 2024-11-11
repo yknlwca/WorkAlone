@@ -374,7 +374,7 @@ public class PoseClassifierProcessor {
             viewModel.addSet();
             //세트 다 채우면 다음 운동 or 운동 완료
             if(viewModel.getNowSet().getValue() == viewModel.getTotalSet().getValue()+1){
-//              viewModel.exerciseFinish();
+              viewModel.exerciseFinish();
             }
           }
         }
@@ -461,7 +461,7 @@ public class PoseClassifierProcessor {
       case "플랭크":
         POSE_SAMPLES_FILE = "pose/plank.csv";
         break;
-      case "윗몸일으키기":
+      case "윗몸 일으키기":
         POSE_SAMPLES_FILE = "pose/situp.csv";
         break;
       default:

@@ -241,10 +241,3 @@ fun RepCounter(viewModel: ExerciseMLKitViewModel){
         }
     }
 }
-
-@Preview(name = "Portrait", widthDp = 360, heightDp = 640)
-@Preview(name = "Landscape", widthDp = 640, heightDp = 360)
-@Composable
-fun previewRepCounter(){
-    RepCounter(viewModel = ExerciseMLKitViewModel())
-}
