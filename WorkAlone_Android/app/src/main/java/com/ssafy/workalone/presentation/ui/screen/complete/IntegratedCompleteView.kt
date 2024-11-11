@@ -1,5 +1,6 @@
 package com.ssafy.workalone.presentation.ui.screen.complete
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,24 +19,34 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.ssafy.workalone.R
-import com.ssafy.workalone.presentation.ui.component.topbar.CloseButton
-import com.ssafy.workalone.presentation.ui.component.complete.ConfettiAnimation
-import com.ssafy.workalone.presentation.ui.component.bottombar.CustomButton
+import com.ssafy.workalone.data.local.ExerciseInfoPreferenceManager
+import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.ExerciseRecordDetail
+import com.ssafy.workalone.presentation.ui.component.bottombar.CustomButton
+import com.ssafy.workalone.presentation.ui.component.complete.ConfettiAnimation
 import com.ssafy.workalone.presentation.ui.component.complete.IntegratedExerciseRecord
+import com.ssafy.workalone.presentation.ui.component.topbar.CloseButton
+import com.ssafy.workalone.presentation.ui.screen.inputStreamToFile
+import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
+import com.ssafy.workalone.presentation.viewmodels.video.AWSS3ViewModel
 import kotlin.math.roundToInt
 
 data class IntegratedExerciseRecordData(
@@ -48,7 +59,10 @@ data class IntegratedExerciseRecordData(
 
 // 운동 완료 화면(통합형)
 @Composable
-fun IntegratedCompleteView(navController: NavController) {
+fun IntegratedCompleteView(
+    navController: NavController,
+    awsViewModel: AWSS3ViewModel = AWSS3ViewModel()
+) {
     val integratedExerciseRecordDataList: List<IntegratedExerciseRecordData> = listOf(
         IntegratedExerciseRecordData("스쿼트",3, 15,0, 1801),
         IntegratedExerciseRecordData("푸쉬업",3, 0, 10,1901),
@@ -58,11 +72,17 @@ fun IntegratedCompleteView(navController: NavController) {
         IntegratedExerciseRecordData("플랭크",3, 0, 30,2000),
         IntegratedExerciseRecordData("플랭크",3, 15,0, 2000),
     )
+    val context = LocalContext.current
+    val preferenceManager = ExerciseInfoPreferenceManager(context)
 
     val totalTime: Int = 3000
     val totalCalorie: Int = 300
     val exerciseType: String = "윗몸일으키기"
     val weight = 60
+
+    val selectedFileUri by remember { mutableStateOf(preferenceManager.getVideoUrl()) }
+    val preSignedUrl by awsViewModel.preSignedUrl.collectAsStateWithLifecycle()
+    val uploadResponse by awsViewModel.uploadVideoResponse.collectAsStateWithLifecycle()
 
     //전체 화면
     Box(
@@ -186,11 +206,39 @@ fun IntegratedCompleteView(navController: NavController) {
                         }
                     }
                 }
-                //확인 버튼
-                CustomButton(
-                    text = "확인",
-                    onClick = { /* 버튼 클릭 이벤트 */ }
-                )
+                Column {
+                    CustomButton(
+                        text = "운동 영상 업로드",
+                        backgroundColor = WalkOneBlue300,
+                        borderColor = WalkOneBlue300,
+                        onClick = {
+                            awsViewModel.getPreSignedUrl()
+                        },
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    //확인 버튼
+                    CustomButton(
+                        text = "확인",
+                        onClick = {
+                            preSignedUrl?.preSignedUrl?.let { url ->
+                                selectedFileUri.let { uri ->
+                                    val inputStream =
+                                        context.contentResolver.openInputStream(Uri.parse(uri))
+                                    if (inputStream != null) {
+                                        awsViewModel.uploadVideo(
+                                            url,
+                                            inputStreamToFile(inputStream, context)
+                                        )
+                                    }
+                                }
+                            }
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(Screen.Home.route) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
             }
         }
         ConfettiAnimation()
@@ -200,6 +248,5 @@ fun IntegratedCompleteView(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewIntegratedCompleteView() {
-    val fake = rememberNavController()
-    IntegratedCompleteView(fake)
+    IntegratedCompleteView(rememberNavController())
 }

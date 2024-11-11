@@ -40,7 +40,9 @@ import android.os.Looper;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
+
 import androidx.annotation.WorkerThread;
 
 import com.google.common.base.Preconditions;
@@ -52,12 +54,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Queue;
-
-import android.speech.tts.TextToSpeech;
 
 /**
  * Accepts a stream of {@link Pose} for classification and Rep counting.

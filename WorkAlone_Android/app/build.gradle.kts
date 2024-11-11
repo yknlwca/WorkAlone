@@ -221,6 +221,8 @@ dependencies {
     implementation("androidx.camera:camera-camera2:1.4.0")
     implementation("androidx.camera:camera-lifecycle:1.0.0-SNAPSHOT")
     implementation("androidx.camera:camera-view:1.4.0")
+    implementation("androidx.camera:camera-video:1.4.0")
+    implementation("androidx.camera:camera-extensions:1.4.0")
 
     // On Device Machine Learnings
     implementation("com.google.android.odml:image:1.0.0-beta1")
