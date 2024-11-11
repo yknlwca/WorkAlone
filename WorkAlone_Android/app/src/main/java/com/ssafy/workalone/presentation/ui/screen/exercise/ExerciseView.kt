@@ -2,7 +2,6 @@ package com.ssafy.workalone.presentation.ui.screen.exercise
 
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -72,11 +71,17 @@ fun ExerciseView(
         android.Manifest.permission.RECORD_AUDIO
     )
 
+    val storagePermissionCheck = ContextCompat.checkSelfPermission(
+        context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+    )
+
     // 권한 요청 런처
     val requestPermissionLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             val cameraGranted = permissions[android.Manifest.permission.CAMERA] ?: false
             val audioGranted = permissions[android.Manifest.permission.RECORD_AUDIO] ?: false
+            val storageGrated =
+                permissions[android.Manifest.permission.WRITE_EXTERNAL_STORAGE] ?: false
             if (cameraGranted) {
                 context.startActivity(intent)
             } else {
@@ -165,11 +170,12 @@ fun ExerciseView(
                                 text = "운동 시작하기",
                                 onClick = {
                                     viewModel.saveExercisesPreferences(exercises.value)
-                                    if (cameraPermissionCheck != PackageManager.PERMISSION_GRANTED || audioPermissionCheck != PackageManager.PERMISSION_GRANTED) {
+                                    if (cameraPermissionCheck != PackageManager.PERMISSION_GRANTED || audioPermissionCheck != PackageManager.PERMISSION_GRANTED || storagePermissionCheck != PackageManager.PERMISSION_GRANTED) {
                                         requestPermissionLauncher.launch(
                                             arrayOf(
                                                 android.Manifest.permission.CAMERA,
-                                                android.Manifest.permission.RECORD_AUDIO
+                                                android.Manifest.permission.RECORD_AUDIO,
+                                                android.Manifest.permission.WRITE_EXTERNAL_STORAGE
                                             )
                                         )
                                     } else {

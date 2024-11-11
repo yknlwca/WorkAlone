@@ -1,16 +1,11 @@
 package com.ssafy.workalone.presentation.viewmodels
 
 import android.content.Context
-import android.content.Intent
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.ssafy.workalone.MainActivity
 import com.ssafy.workalone.data.local.ExerciseInfoPreferenceManager
-import com.ssafy.workalone.data.model.exercise.Exercise
 import com.ssafy.workalone.data.model.exercise.ExerciseData
-import com.ssafy.workalone.presentation.navigation.Screen
 
 class ExerciseMLKitViewModel(context: Context): ViewModel() {
     private val exerciseInfoPreferenceManager = ExerciseInfoPreferenceManager(context)
@@ -105,24 +100,24 @@ class ExerciseMLKitViewModel(context: Context): ViewModel() {
         }
 
     }
-     fun stageDescribe(stage:String){
-         when(stage){
-             "rest" -> {
-                 _restText.value = "훌륭해요! \n잠시 휴식하세요."
-             }
-             "nextSet" -> {
-                 _preSetText.value = "잠시후, 다음 세트를 진행합니다."
-             }
-             "nextExercise" -> {
-                 _preSetText.value = "잠시후, 다음 운동을 진행합니다."
-             }
-             else -> {
-                 _restText.value = ""
-                 _preSetText.value = ""
-             }
+    fun stageDescribe(stage:String){
+        when(stage){
+            "rest" -> {
+                _restText.value = "훌륭해요! \n잠시 휴식하세요."
+            }
+            "nextSet" -> {
+                _preSetText.value = "잠시후, 다음 세트를 진행합니다."
+            }
+            "nextExercise" -> {
+                _preSetText.value = "잠시후, 다음 운동을 진행합니다."
+            }
+            else -> {
+                _restText.value = ""
+                _preSetText.value = ""
+            }
 
-         }
-     }
+        }
+    }
     fun changeStage(){
         if(_nowSet.value <= _totalSet.value){
             _stage.value = "nextSet"

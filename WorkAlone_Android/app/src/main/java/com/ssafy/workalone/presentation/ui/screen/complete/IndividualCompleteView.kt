@@ -1,5 +1,6 @@
 package com.ssafy.workalone.presentation.ui.screen.complete
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,30 +16,43 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.ssafy.workalone.R
+import com.ssafy.workalone.data.local.ExerciseInfoPreferenceManager
 import com.ssafy.workalone.presentation.navigation.Screen
-import com.ssafy.workalone.presentation.ui.component.topbar.CloseButton
-import com.ssafy.workalone.presentation.ui.component.complete.ConfettiAnimation
 import com.ssafy.workalone.presentation.ui.component.bottombar.CustomButton
+import com.ssafy.workalone.presentation.ui.component.complete.ConfettiAnimation
 import com.ssafy.workalone.presentation.ui.component.complete.IndividualExerciseRecord
+import com.ssafy.workalone.presentation.ui.component.topbar.CloseButton
+import com.ssafy.workalone.presentation.ui.screen.inputStreamToFile
+import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
+import com.ssafy.workalone.presentation.viewmodels.video.AWSS3ViewModel
 import kotlin.math.roundToInt
 
 //운동 완료 화면(개별형)
 @Composable
-fun IndividualCompleteView(navController: NavController) {
-
+fun IndividualCompleteView(
+    navController: NavController,
+    awsViewModel: AWSS3ViewModel = AWSS3ViewModel()
+) {
+    val context = LocalContext.current
+    val preferenceManager = ExerciseInfoPreferenceManager(context)
     val exerciseCount: String = "3세트 X 15회"
     val exerciseDuration: Int = 1808
     val exerciseType: String = "푸쉬업"
@@ -55,6 +69,10 @@ fun IndividualCompleteView(navController: NavController) {
         } else {
             0
         }
+    val selectedFileUri by remember { mutableStateOf(preferenceManager.getVideoUrl()) }
+    val preSignedUrl by awsViewModel.preSignedUrl.collectAsStateWithLifecycle()
+    val uploadResponse by awsViewModel.uploadVideoResponse.collectAsStateWithLifecycle()
+
     //전체 화면
     Box(
         modifier = Modifier
@@ -118,16 +136,39 @@ fun IndividualCompleteView(navController: NavController) {
                         calorie
                     )
                 }
-
+                Column {
+                    CustomButton(
+                        text = "운동 영상 업로드",
+                        backgroundColor = WalkOneBlue300,
+                        borderColor = WalkOneBlue300,
+                        onClick = {
+                            awsViewModel.getPreSignedUrl()
+                        },
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
                 //확인 버튼
                 CustomButton(
                     text = "확인",
                     onClick = {
+                        preSignedUrl?.preSignedUrl?.let { url ->
+                            selectedFileUri.let { uri ->
+                                val inputStream =
+                                    context.contentResolver.openInputStream(Uri.parse(uri))
+                                if (inputStream != null) {
+                                    awsViewModel.uploadVideo(
+                                        url,
+                                        inputStreamToFile(inputStream, context)
+                                    )
+                                }
+                            }
+                        }
                         navController.navigate(Screen.Home.route) {
                             popUpTo(Screen.Home.route) { inclusive = true }
                             launchSingleTop = true
                         }
-                    })
+                    }
+                )
+                }
             }
         }
         ConfettiAnimation()
@@ -137,6 +178,5 @@ fun IndividualCompleteView(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewCompleteView() {
-    val fakeNavController = rememberNavController()
-    IndividualCompleteView(navController = fakeNavController)
+    IndividualCompleteView(rememberNavController())
 }

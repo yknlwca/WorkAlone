@@ -22,10 +22,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ssafy.workalone.MainActivity
 import com.ssafy.workalone.presentation.navigation.Screen
-import com.ssafy.workalone.presentation.ui.component.dialog.CustomDialog
+import com.ssafy.workalone.presentation.ui.component.RestTime
 import com.ssafy.workalone.presentation.ui.component.bottombar.ExerciseTimer
 import com.ssafy.workalone.presentation.ui.component.bottombar.RepCounter
-import com.ssafy.workalone.presentation.ui.component.RestTime
+import com.ssafy.workalone.presentation.ui.component.dialog.CustomDialog
 import com.ssafy.workalone.presentation.ui.component.dialog.ExerciseFinishDialog
 import com.ssafy.workalone.presentation.ui.component.topbar.StopwatchScreen
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
@@ -41,9 +41,10 @@ fun ExerciseMLkitView(
         intent.putExtra("startDestination", Screen.Home.route)
         context.startActivity(intent)
     }
+
     fun navigateToFinish() {
         val intent = Intent(context, MainActivity::class.java)
-        if(viewModel.exercises.size >1)
+        if (viewModel.exercises.size > 1)
             intent.putExtra("startDestination", Screen.IntegratedComplete.route)
         else
             intent.putExtra("startDestination", Screen.IndividualComplete.route)
@@ -89,19 +90,27 @@ fun ExerciseMLkitView(
                 if (viewModel.isResting.value) {
                     RestTime(viewModel)
                 }
-                if(viewModel.isExit.value){
-                    CustomDialog({ viewModel.cancelExit() },{ navigateToHome() },"운동을 완료해야 기록이 저장됩니다.\n정말로 종료하시겠어요?")
+                if (viewModel.isExit.value) {
+                    CustomDialog(
+                        { viewModel.cancelExit() },
+                        { navigateToHome() },
+                        "운동을 완료해야 기록이 저장됩니다.\n정말로 종료하시겠어요?"
+                    )
                 }
-                if(!viewModel.isExercising.value && !viewModel.isExit.value){
+                if (!viewModel.isExercising.value && !viewModel.isExit.value) {
 
                     val yOffsetInPx = with(density) { 240.dp.toPx().toInt() }
-                    val toast = Toast.makeText(context,"운동을 다시 진행하고 싶을 때 \"시작\"이라고 말해보세요!", Toast.LENGTH_LONG)
-                    toast.setGravity(Gravity.BOTTOM,0,yOffsetInPx)
+                    val toast = Toast.makeText(
+                        context,
+                        "운동을 다시 진행하고 싶을 때 \"시작\"이라고 말해보세요!",
+                        Toast.LENGTH_LONG
+                    )
+                    toast.setGravity(Gravity.BOTTOM, 0, yOffsetInPx)
                     toast.show()
 
                 }
-                if(viewModel.isFinish.value){
-                    ExerciseFinishDialog {  navigateToFinish() }
+                if (viewModel.isFinish.value) {
+                    ExerciseFinishDialog { navigateToFinish() }
                 }
                 BackHandler {
                     viewModel.clickExit()

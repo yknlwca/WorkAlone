@@ -34,6 +34,13 @@ class ExerciseInfoPreferenceManager(context: Context) {
         return gson.fromJson(json, type)
     }
 
+    fun setVideoUrl(url : String){
+        preferences.edit().putString("video_url", url).apply()
+    }
+
+    fun getVideoUrl() : String{
+        return preferences.getString("video_url", "") ?: ""
+    }
 
     // 운동이 끝나면 삭제
     fun clearAll() {
