@@ -2,6 +2,8 @@ package com.ssafy.workalone.presentation.ui.screen
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -36,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ssafy.workalone.data.model.Member
+import com.ssafy.workalone.mlkit.java.CameraXLivePreviewActivity
 import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.AppBarView
 import com.ssafy.workalone.presentation.ui.component.BottomSheetContent
@@ -145,7 +148,7 @@ fun HomeView(navController: NavController, member: Member) {
                             onClick = {
                   //              navController.navigate(Screen.ExerciseList.route)
                             val intent = Intent(context, CameraXLivePreviewActivity::class.java)
-                            intent.putExtra("exerciseType","스쿼트")
+                            intent.putExtra("exerciseType","윗몸일으키기")
                             Log.d("123","여기여기")
                             context.startActivity(intent)
                             },

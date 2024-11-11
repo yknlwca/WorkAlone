@@ -210,7 +210,7 @@ public class PoseDetectorProcessor
                      // Log.d("exer",String.valueOf(runClassification));
                       if (runClassification) {
                         if (poseClassifierProcessor == null) {
-                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,"스쿼트");
+                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,ExerciseType);
                         }
                         classificationResult = poseClassifierProcessor.getPoseResult(pose,viewModel);
                       }
