@@ -276,6 +276,7 @@ public class PoseDetectorProcessor
 //            PoseLandmark.LEFT_ANKLE,
 //            PoseLandmark.RIGHT_ANKLE
 
+
     };
 
     for (int landmarkType : requiredLandmarks) {

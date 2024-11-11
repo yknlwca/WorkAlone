@@ -187,15 +187,15 @@ public class PoseGraphic extends Graphic {
     drawLine(canvas, rightHeel, rightFootIndex, rightPaint);
 
     // Draw inFrameLikelihood for all points
-    if (showInFrameLikelihood) {
-      for (PoseLandmark landmark : landmarks) {
-        canvas.drawText(
-            String.format(Locale.US, "%.2f", landmark.getInFrameLikelihood()),
-            translateX(landmark.getPosition().x),
-            translateY(landmark.getPosition().y),
-            whitePaint);
-      }
-    }
+//    if (showInFrameLikelihood) {
+//      for (PoseLandmark landmark : landmarks) {
+//        canvas.drawText(
+//            String.format(Locale.US, "%.2f", landmark.getInFrameLikelihood()),
+//            translateX(landmark.getPosition().x),
+//            translateY(landmark.getPosition().y),
+//            whitePaint);
+//      }
+//    }
   }
 
   void drawPoint(Canvas canvas, PoseLandmark landmark, Paint paint) {

@@ -300,7 +300,7 @@ public class PoseClassifierProcessor {
       return result;
     }
 
-    if (isPaused) {
+    if (!viewModel.isExercising().getValue()) {
       result.add("추적이 현재 일시 중지 상태입니다.");
       result.add("isTracking: " + isTracking);
       result.add("isPaused: " + isPaused);
