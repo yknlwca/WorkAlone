@@ -143,7 +143,7 @@ public class PoseDetectorProcessor
                       List<String> classificationResult = new ArrayList<>();
                       if (runClassification) {
                         if (poseClassifierProcessor == null) {
-                          Log.d("exer","dectectInImage");
+                          //Log.d("exer","dectectInImage");
                           poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,ExerciseType,viewModel);
                         }
                         classificationResult = poseClassifierProcessor.getPoseResult(pose,viewModel);
@@ -275,6 +275,7 @@ public class PoseDetectorProcessor
 //            PoseLandmark.RIGHT_WRIST,
 //            PoseLandmark.LEFT_ANKLE,
 //            PoseLandmark.RIGHT_ANKLE
+
     };
 
     for (int landmarkType : requiredLandmarks) {

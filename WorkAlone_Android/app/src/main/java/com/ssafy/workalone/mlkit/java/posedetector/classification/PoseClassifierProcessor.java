@@ -183,20 +183,20 @@ public class PoseClassifierProcessor {
         Log.e("exer", "음성 인식 오류 발생: " + error);
         switch (error) {
           case SpeechRecognizer.ERROR_NETWORK:
-            Log.e("exer", "네트워크 오류");
+            //Log.e("exer", "네트워크 오류");
             break;
           case SpeechRecognizer.ERROR_AUDIO:
-           Log.e("exer", "오디오 입력 오류");
+           //Log.e("exer", "오디오 입력 오류");
             break;
           case SpeechRecognizer.ERROR_NO_MATCH:
-            Log.e("exer", "일치하는 결과 없음");
+           // Log.e("exer", "일치하는 결과 없음");
             break;
           case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
-            Log.e("exer", "음성 입력 시간 초과");
+            //Log.e("exer", "음성 입력 시간 초과");
             break;
           // 추가 오류 코드 확인 가능
         }
-        Log.e("exer", "오류 발생 시 startListening() 다시 시작");
+     //  Log.e("exer", "오류 발생 시 startListening() 다시 시작");
 
         startListening(); // 오류 발생 시 다시 듣기 시작
       }
@@ -289,11 +289,12 @@ public class PoseClassifierProcessor {
     List<String> result = new ArrayList<>();
 
 
+    //Log.d("exer","getPoseResult 호출 ");
+
     ClassificationResult classification = poseClassifier.classify(pose);
 
-
-    if (!isTracking) {
-      result.add("추적이 종료되었습니다.");
+   // Log.d("exer","현재 추적 상태(쉬는시간이면 true): "+viewModel.isResting().getValue());
+    if (viewModel.isResting().getValue()) {result.add("추적이 종료되었습니다.");
       result.add("isTracking: " + isTracking);
       result.add("isPaused: " + isPaused);
       return result;
@@ -365,7 +366,7 @@ public class PoseClassifierProcessor {
 
             lastRepResult = String.format(Locale.KOREAN, "%s : %d", repCounter.getClassName(), repsAfter," iaTracking: "+isTracking+"  isPaues: "+isPaused);
             viewModel.addRep("스쿼트, 푸쉬업, 윗몸일으키기",0);
-            Log.d("exer",String.valueOf(repsAfter));
+            Log.d("exer","count: "+String.valueOf(repsAfter));
             speakResult(String.valueOf(repsAfter));
             break;
           }

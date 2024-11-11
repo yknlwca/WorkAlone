@@ -66,11 +66,11 @@ class CameraXLivePreviewActivity :
     super.onCreate(savedInstanceState)
 
     //쉬는시간 상태 관찰
-    exerciseViewModel.isResting.observe(this,Observer{isResting ->
-        if(!isResting)
-        //카메라 분석 시작
+//    exerciseViewModel.isResting.observe(this,Observer{isResting ->
+//        if(!isResting)
+//        //카메라 분석 시작
         bindAllCameraUseCases()
-    })
+//    })
 
 
 
@@ -277,12 +277,12 @@ class CameraXLivePreviewActivity :
       ContextCompat.getMainExecutor(this),
       ImageAnalysis.Analyzer { imageProxy: ImageProxy ->
         //쉬는시간일 때 이미지 처리 패스
-        if(exerciseViewModel.isResting.value == true){
-          imageProxy.close()
-          return@Analyzer
-        }
+//        if(exerciseViewModel.isResting.value == true){
+//          imageProxy.close()
+//          return@Analyzer
+//        }
         //이미지 분석 실행
-        if(exerciseViewModel.isResting.value==false||exerciseViewModel.restTime.value<3){
+    //    if(exerciseViewModel.isResting.value==false||exerciseViewModel.restTime.value<3){
           if (needUpdateGraphicOverlayImageSourceInfo) {
             val isImageFlipped = lensFacing == CameraSelector.LENS_FACING_FRONT
             val rotationDegrees = imageProxy.imageInfo.rotationDegrees
@@ -299,7 +299,7 @@ class CameraXLivePreviewActivity :
             Log.e(TAG, "Failed to process image. Error: " + e.localizedMessage)
             Toast.makeText(applicationContext, e.localizedMessage, Toast.LENGTH_SHORT).show()
           }
-        }
+        //}
 
       },
     )
