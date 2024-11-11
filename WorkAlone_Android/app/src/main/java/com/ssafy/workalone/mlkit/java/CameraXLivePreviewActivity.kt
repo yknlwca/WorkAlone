@@ -34,6 +34,7 @@ import com.ssafy.workalone.mlkit.java.posedetector.PoseDetectorProcessor
 import com.ssafy.workalone.mlkit.preference.PreferenceUtils
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 import com.ssafy.workalone.presentation.ui.screen.ExerciseMLkitView
+import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModelFactory
 
 
 @KeepName
@@ -52,7 +53,9 @@ class CameraXLivePreviewActivity :
   private var selectedModel = POSE_DETECTION
   private var lensFacing = CameraSelector.LENS_FACING_FRONT
   private var cameraSelector: CameraSelector? = null
-  private val exerciseViewModel: ExerciseMLKitViewModel by viewModels()
+  private val exerciseViewModel: ExerciseMLKitViewModel by viewModels {
+    ExerciseMLKitViewModelFactory(this)
+  }
 
 
 
@@ -90,7 +93,7 @@ class CameraXLivePreviewActivity :
 
     //ComposeView설정
     val composeView: ComposeView = findViewById(R.id.compose_view)
-    val exerciseType = intent.getStringExtra("exerciseType")
+    val exerciseType = exerciseViewModel.exerciseType.value
     composeView.setContent {
       ExerciseMLkitView(exerciseType,exerciseViewModel)
     }
@@ -225,7 +228,7 @@ class CameraXLivePreviewActivity :
     }
     imageProcessor =
       try {
-            val exerciseType = intent.getStringExtra("exerciseType")
+            val exerciseType = exerciseViewModel.exerciseType.value
         if (exerciseType != null) {
           Log.d("운동 종류",exerciseType)
         }

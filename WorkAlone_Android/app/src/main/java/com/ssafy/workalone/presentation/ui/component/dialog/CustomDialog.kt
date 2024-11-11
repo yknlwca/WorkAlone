@@ -1,4 +1,4 @@
-package com.ssafy.workalone.presentation.ui.component
+package com.ssafy.workalone.presentation.ui.component.dialog
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -63,5 +63,5 @@ fun CustomDialog(
 @Preview
 @Composable
 fun previewDialog(){
-//    CustomDialog({},{},"운동을 완료해야 기록이 저장됩니다.\n 정말로 종료하시겠어요?")
+    CustomDialog({},{},"운동을 완료해야 기록이 저장됩니다.\n 정말로 종료하시겠어요?")
 }
