@@ -1,16 +1,14 @@
 package com.ssawallafy.workalone_backend.domain.organization.service;
 
 import com.ssawallafy.workalone_backend.domain.member.entity.Member;
-import com.ssawallafy.workalone_backend.domain.member.exception.BusinessLogicException;
 import com.ssawallafy.workalone_backend.domain.member.repository.MemberRepository;
 import com.ssawallafy.workalone_backend.domain.organization.dto.request.OrganizationReqDto;
 import com.ssawallafy.workalone_backend.domain.organization.dto.response.OrganizationDto;
 import com.ssawallafy.workalone_backend.domain.organization.entity.Organization;
 import com.ssawallafy.workalone_backend.domain.organization.entity.OrganizationMapping;
-import com.ssawallafy.workalone_backend.domain.organization.entity.OrganizationMappingId;
 import com.ssawallafy.workalone_backend.domain.organization.exception.ErrorCode;
 import com.ssawallafy.workalone_backend.domain.organization.exception.OrganizationException;
-import com.ssawallafy.workalone_backend.domain.organization.repository.OranizationMappingRepository;
+import com.ssawallafy.workalone_backend.domain.organization.repository.OrganizationMappingRepository;
 import com.ssawallafy.workalone_backend.domain.organization.repository.OrganizationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +23,7 @@ import java.util.List;
 @Slf4j
 public class OrganizationService {
     private final OrganizationRepository organizationRepository;
-    private final OranizationMappingRepository organizationMappingRepository;
+    private final OrganizationMappingRepository organizationMappingRepository;
     private final MemberRepository memberRepository;
 
     public List<OrganizationDto> getOrganizations(Long memberId) {

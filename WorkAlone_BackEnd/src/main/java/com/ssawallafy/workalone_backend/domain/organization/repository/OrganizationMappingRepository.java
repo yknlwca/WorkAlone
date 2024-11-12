@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface OranizationMappingRepository extends JpaRepository<OrganizationMapping, Long> {
+public interface OrganizationMappingRepository extends JpaRepository<OrganizationMapping, Long> {
     List<OrganizationMapping> findByMemberId(Long memberId);
 }
