@@ -1,7 +1,7 @@
 package com.ssafy.workalone.data.repository
 
 import android.util.Log
-import com.ssafy.workalone.data.model.ExerciseSummary
+import com.ssafy.workalone.data.model.exercise.ExerciseSummary
 import com.ssafy.workalone.data.remote.ExerciseService
 import com.ssafy.workalone.data.remote.RetrofitFactory
 import com.ssafy.workalone.global.exception.handleApiError

@@ -1,11 +1,11 @@
 package com.ssafy.workalone.mlkit.java
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.pm.PackageManager
+import android.content.ContentValues
+import android.os.Build
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
@@ -22,377 +22,408 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.video.FallbackStrategy
+import androidx.camera.video.MediaStoreOutputOptions
+import androidx.camera.video.Quality
+import androidx.camera.video.QualitySelector
+import androidx.camera.video.Recorder
+import androidx.camera.video.Recording
+import androidx.camera.video.VideoCapture
+import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.PreviewView
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.common.annotation.KeepName
 import com.google.mlkit.common.MlKitException
 import com.ssafy.workalone.R
+import com.ssafy.workalone.data.local.ExerciseInfoPreferenceManager
 import com.ssafy.workalone.mlkit.CameraXViewModel
 import com.ssafy.workalone.mlkit.GraphicOverlay
 import com.ssafy.workalone.mlkit.VisionImageProcessor
 import com.ssafy.workalone.mlkit.java.posedetector.PoseDetectorProcessor
 import com.ssafy.workalone.mlkit.preference.PreferenceUtils
-import com.ssafy.workalone.presentation.ui.component.ExerciseTimer
-import com.ssafy.workalone.presentation.ui.component.RepCounter
-import com.ssafy.workalone.presentation.ui.component.RestTime
-import com.ssafy.workalone.presentation.ui.component.StopwatchScreen
+import com.ssafy.workalone.presentation.ui.screen.exercise.ExerciseMLkitView
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
+import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModelFactory
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
-
-/** Live preview demo app for ML Kit APIs using CameraX. */
 @KeepName
 @RequiresApi(VERSION_CODES.LOLLIPOP)
-class CameraXLivePreviewActivity :
-  AppCompatActivity(), OnItemSelectedListener, CompoundButton.OnCheckedChangeListener {
+class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
+    CompoundButton.OnCheckedChangeListener {
 
-  private var previewView: PreviewView? = null
-  private var graphicOverlay: GraphicOverlay? = null
-  private var cameraProvider: ProcessCameraProvider? = null
-  private var camera: Camera? = null
-  private var previewUseCase: Preview? = null
-  private var analysisUseCase: ImageAnalysis? = null
-  private var imageProcessor: VisionImageProcessor? = null
-  private var needUpdateGraphicOverlayImageSourceInfo = false
-  private var selectedModel = POSE_DETECTION
-  private var lensFacing = CameraSelector.LENS_FACING_FRONT
-  private var cameraSelector: CameraSelector? = null
-  private val exerciseViewModel: ExerciseMLKitViewModel by viewModels()
-
-
-
-
-  @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-  override fun onCreate(savedInstanceState: Bundle?) {
-
-    super.onCreate(savedInstanceState)
-
-    //쉬는시간 상태 관찰
-    exerciseViewModel.isExercising.observe(this,Observer{isExercising ->
-      if(!isExercising){
-        //카메라 분석 멈춤
-        unbindAnalysisUseCase()
-      }else{
-        //카메라 분석 시작
-        bindAllCameraUseCases()
-      }
-    })
-
-
-
-    if (savedInstanceState != null) {
-      selectedModel = savedInstanceState.getString(STATE_SELECTED_MODEL, POSE_DETECTION)
+    private var previewView: PreviewView? = null
+    private var graphicOverlay: GraphicOverlay? = null
+    private var cameraProvider: ProcessCameraProvider? = null
+    private var camera: Camera? = null
+    private var previewUseCase: Preview? = null
+    private var analysisUseCase: ImageAnalysis? = null
+    private var imageProcessor: VisionImageProcessor? = null
+    private var needUpdateGraphicOverlayImageSourceInfo = false
+    private var selectedModel = POSE_DETECTION
+    private var lensFacing = CameraSelector.LENS_FACING_FRONT
+    private var cameraSelector: CameraSelector? = null
+    private val exerciseViewModel: ExerciseMLKitViewModel by viewModels {
+        ExerciseMLKitViewModelFactory(this)
     }
-    cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
-    setContentView(R.layout.activity_vision_camerax_live_preview)
+
+    private var videoCapture: VideoCapture<Recorder>? = null
+    private var recording: Recording? = null
+
+    private lateinit var cameraExecutor: ExecutorService
+
+    private lateinit var preferenceManger: ExerciseInfoPreferenceManager
+
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+    override fun onCreate(savedInstanceState: Bundle?) {
+
+        super.onCreate(savedInstanceState)
+        preferenceManger = ExerciseInfoPreferenceManager(applicationContext)
+        setContentView(R.layout.activity_vision_camerax_live_preview)
+
+        previewView = findViewById(R.id.preview_view)
+        graphicOverlay = findViewById(R.id.graphic_overlay)
+
+        cameraExecutor = Executors.newSingleThreadExecutor()
 
 
-    requestAudioPermission(this);
+        ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+        ).get(CameraXViewModel::class.java).processCameraProvider.observe(this) { provider ->
+            cameraProvider = provider
+            bindAllCameraUseCases()
+            captureVideo()
+        }
 
-    previewView = findViewById(R.id.preview_view)
-    if (previewView == null) {
-      Log.d(TAG, "previewView is null")
-    }
-    graphicOverlay = findViewById(R.id.graphic_overlay)
-    if (graphicOverlay == null) {
-      Log.d(TAG, "graphicOverlay is null")
-    }
+
+        if (savedInstanceState != null) {
+            selectedModel = savedInstanceState.getString(STATE_SELECTED_MODEL, POSE_DETECTION)
+        }
+        cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
+
+        if (previewView == null) {
+            Log.d(TAG, "previewView is null")
+        }
+        if (graphicOverlay == null) {
+            Log.d(TAG, "graphicOverlay is null")
+        }
 
     //ComposeView설정
     val composeView: ComposeView = findViewById(R.id.compose_view)
-    val exerciseType = intent.getStringExtra("exerciseType")
     composeView.setContent {
-        ExerciseView(exerciseType,exerciseViewModel)
+      ExerciseMLkitView(exerciseViewModel)
     }
 
-    val options: MutableList<String> = ArrayList()
-    options.add(POSE_DETECTION)
-
-
-
-    ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(application))
-      .get(CameraXViewModel::class.java)
-      .processCameraProvider
-      .observe(
-        this,
-        Observer { provider: ProcessCameraProvider? ->
-          cameraProvider = provider
-          bindAllCameraUseCases()
-        },
-      )
-  }
-
-  private fun requestAudioPermission(activity: Activity) {
-    if (ContextCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO)
-      != PackageManager.PERMISSION_GRANTED
-    ) {
-      ActivityCompat.requestPermissions(
-        activity,
-        arrayOf(Manifest.permission.RECORD_AUDIO),
-        REQUEST_RECORD_AUDIO_PERMISSION
-      )
-    }
-  }
-
-  // 카메라 분석 기능을 멈추는 기능
-  private fun unbindAnalysisUseCase() {
-    if (analysisUseCase != null) {
-      cameraProvider?.unbind(analysisUseCase)
-      analysisUseCase = null
-    }
-  }
-
-
-  override fun onSaveInstanceState(bundle: Bundle) {
-    super.onSaveInstanceState(bundle)
-    bundle.putString(STATE_SELECTED_MODEL, selectedModel)
-  }
-
-  @Synchronized
-  override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
-    // An item was selected. You can retrieve the selected item using
-    // parent.getItemAtPosition(pos)
-    selectedModel = parent?.getItemAtPosition(pos).toString()
-    Log.d(TAG, "Selected model: $selectedModel")
-    bindAnalysisUseCase()
-  }
-
-  override fun onNothingSelected(parent: AdapterView<*>?) {
-    // Do nothing.
-  }
-
-  override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
-    if (cameraProvider == null) {
-      return
-    }
-    val newLensFacing =
-      if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
-        CameraSelector.LENS_FACING_BACK
-      } else {
-        CameraSelector.LENS_FACING_FRONT
-      }
-    val newCameraSelector = CameraSelector.Builder().requireLensFacing(newLensFacing).build()
-    try {
-      if (cameraProvider!!.hasCamera(newCameraSelector)) {
-        Log.d(TAG, "Set facing to " + newLensFacing)
-        lensFacing = newLensFacing
-        cameraSelector = newCameraSelector
-        bindAllCameraUseCases()
-        return
-      }
-    } catch (e: CameraInfoUnavailableException) {
-      // Falls through
-    }
-    Toast.makeText(
-      applicationContext,
-      "This device does not have lens with facing: $newLensFacing",
-      Toast.LENGTH_SHORT,
-    )
-      .show()
-  }
-
-  public override fun onResume() {
-    super.onResume()
-    bindAllCameraUseCases()
-  }
-
-  override fun onPause() {
-    super.onPause()
-
-    imageProcessor?.run { this.stop() }
-  }
-
-  public override fun onDestroy() {
-    super.onDestroy()
-    imageProcessor?.run { this.stop() }
-  }
-
-  private fun bindAllCameraUseCases() {
-    if (cameraProvider == null || exerciseViewModel.isExercising.value != true) {
-      return // 쉬는 시간일 경우, 분석을 실행하지 않음
+        val options: MutableList<String> = ArrayList()
+        options.add(POSE_DETECTION)
     }
 
-    if (cameraProvider != null) {
-      // As required by CameraX API, unbinds all use cases before trying to re-bind any of them.
-      cameraProvider!!.unbindAll()
-      bindPreviewUseCase()
-      bindAnalysisUseCase()
-    }
-  }
-
-  private fun bindPreviewUseCase() {
-    if (!PreferenceUtils.isCameraLiveViewportEnabled(this)) {
-      return
-    }
-    if (cameraProvider == null) {
-      return
-    }
-    if (previewUseCase != null) {
-      cameraProvider!!.unbind(previewUseCase)
+    override fun onSaveInstanceState(bundle: Bundle) {
+        super.onSaveInstanceState(bundle)
+        bundle.putString("STATE_SELECTED_MODEL", selectedModel)
     }
 
-    val builder = Preview.Builder()
-    val targetResolution = PreferenceUtils.getCameraXTargetResolution(this, lensFacing)
-    if (targetResolution != null) {
-      builder.setTargetResolution(targetResolution)
+    @Synchronized
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
+        // An item was selected. You can retrieve the selected item using
+        // parent.getItemAtPosition(pos)
+        selectedModel = parent?.getItemAtPosition(pos).toString()
+        Log.d(TAG, "Selected model: $selectedModel")
+        bindAnalysisUseCase()
     }
-    previewUseCase = builder.build()
-    previewUseCase!!.setSurfaceProvider(previewView!!.getSurfaceProvider())
-    camera = cameraProvider!!.bindToLifecycle(this, cameraSelector!!, previewUseCase)
-  }
 
-
-  // audio
-
-  private fun bindAnalysisUseCase() {
-    if(exerciseViewModel.isExercising.value != true)
-      return
-
-    if (cameraProvider == null) {
-      return
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+        // Do nothing.
     }
-    if (analysisUseCase != null) {
-      cameraProvider!!.unbind(analysisUseCase)
-    }
-    if (imageProcessor != null) {
-      imageProcessor!!.stop()
-    }
-    imageProcessor =
-      try {
-            val exerciseType = intent.getStringExtra("exerciseType")
-        if (exerciseType != null) {
-          Log.d("운동 종류",exerciseType)
+
+    override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
+        if (cameraProvider == null) {
+            return
         }
-            val poseDetectorOptions = PreferenceUtils.getPoseDetectorOptionsForLivePreview(this)
-            val shouldShowInFrameLikelihood =
-              PreferenceUtils.shouldShowPoseDetectionInFrameLikelihoodLivePreview(this)
-            val visualizeZ = PreferenceUtils.shouldPoseDetectionVisualizeZ(this)
-            val rescaleZ = PreferenceUtils.shouldPoseDetectionRescaleZForVisualization(this)
-            val runClassification = true
-              //PreferenceUtils.shouldPoseDetectionRunClassification(this)
-            PoseDetectorProcessor(
-              this,
-              poseDetectorOptions,
-              shouldShowInFrameLikelihood,
-              visualizeZ,
-              rescaleZ,
-              runClassification,
-              /* isStreamMode = */ true,
-              exerciseType,
-              exerciseViewModel
-
-            )
-      } catch (e: Exception) {
-        Log.e(TAG, "Can not create image processor: $selectedModel", e)
-        Toast.makeText(
-          applicationContext,
-          "Can not create image processor: " + e.localizedMessage,
-          Toast.LENGTH_LONG,
-        )
-          .show()
-        return
-      }
-
-    val builder = ImageAnalysis.Builder()
-    val targetResolution = PreferenceUtils.getCameraXTargetResolution(this, lensFacing)
-    if (targetResolution != null) {
-      builder.setTargetResolution(targetResolution)
-    }
-    analysisUseCase = builder.build()
-
-    needUpdateGraphicOverlayImageSourceInfo = true
-
-    analysisUseCase?.setAnalyzer(
-      // imageProcessor.processImageProxy will use another thread to run the detection underneath,
-      // thus we can just runs the analyzer itself on main thread.
-      ContextCompat.getMainExecutor(this),
-      ImageAnalysis.Analyzer { imageProxy: ImageProxy ->
-        if (needUpdateGraphicOverlayImageSourceInfo) {
-          val isImageFlipped = lensFacing == CameraSelector.LENS_FACING_FRONT
-          val rotationDegrees = imageProxy.imageInfo.rotationDegrees
-          if (rotationDegrees == 0 || rotationDegrees == 180) {
-            graphicOverlay!!.setImageSourceInfo(imageProxy.width, imageProxy.height, isImageFlipped)
-          } else {
-            graphicOverlay!!.setImageSourceInfo(imageProxy.height, imageProxy.width, isImageFlipped)
-          }
-          needUpdateGraphicOverlayImageSourceInfo = false
+        val newLensFacing = if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
+            CameraSelector.LENS_FACING_BACK
+        } else {
+            CameraSelector.LENS_FACING_FRONT
         }
+        val newCameraSelector = CameraSelector.Builder().requireLensFacing(newLensFacing).build()
         try {
-          imageProcessor!!.processImageProxy(imageProxy, graphicOverlay)
-        } catch (e: MlKitException) {
-          Log.e(TAG, "Failed to process image. Error: " + e.localizedMessage)
-          Toast.makeText(applicationContext, e.localizedMessage, Toast.LENGTH_SHORT).show()
+            if (cameraProvider!!.hasCamera(newCameraSelector)) {
+                Log.d(TAG, "Set facing to " + newLensFacing)
+                lensFacing = newLensFacing
+                cameraSelector = newCameraSelector
+                bindAllCameraUseCases()
+                return
+            }
+        } catch (e: CameraInfoUnavailableException) {
+            // Falls through
         }
-      },
-    )
-    cameraProvider!!.bindToLifecycle(this, cameraSelector!!, analysisUseCase)
-  }
-
-  companion object {
-    private const val TAG = "CameraXLivePreview"
-   private const val POSE_DETECTION = "Pose Detection"
-    private const val REQUEST_RECORD_AUDIO_PERMISSION = 200
-
-    private const val STATE_SELECTED_MODEL = "selected_model"
-  }
-}
-@Composable
-fun ExerciseView(exerciseType: String?, viewModel: ExerciseMLKitViewModel) {
-  Scaffold(
-    topBar = { StopwatchScreen(true) },
-    containerColor = Color.Transparent,
-    contentColor = Color.Transparent,
-    content = {
-      Box(
-        modifier = Modifier
-          .fillMaxSize()
-          .background(Color.Transparent)
-      ) {
-        // 쉬는 시간이 아닐 때 보여줄 Column 구성 요소들
-        Column(
-          modifier = Modifier
-            .fillMaxSize()
-            .padding(it)
-            .background(Color.Transparent),
-          verticalArrangement = Arrangement.SpaceBetween
-        ) {
-          if (exerciseType != null) {
-            androidx.compose.material.Text(
-              modifier = Modifier.padding(horizontal = 24.dp),
-              text = exerciseType,
-              fontSize = 20.sp,
-              fontWeight = FontWeight.Bold,
-              color = Color.White
-            )
-            if (exerciseType != "플랭크")
-              RepCounter(viewModel)
-            else
-              ExerciseTimer(viewModel)
-          }
-        }
-
-        // 쉬는 시간일 때 RestTime이 최상단에 위치하도록 설정
-        if (viewModel.isExercising.value != true) {
-          RestTime(viewModel)
-        }
-      }
+        Toast.makeText(
+            applicationContext,
+            "This device does not have lens with facing: $newLensFacing",
+            Toast.LENGTH_SHORT,
+        ).show()
     }
-  )
+
+    public override fun onResume() {
+        super.onResume()
+        resumeRecording()
+        bindAllCameraUseCases()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        pauseRecording()
+        imageProcessor?.run { this.stop() }
+    }
+
+    public override fun onDestroy() {
+        super.onDestroy()
+        stopRecording()
+        imageProcessor?.run { this.stop() }
+    }
+
+    private fun bindAllCameraUseCases() {
+//    if (cameraProvider == null || (exerciseViewModel.isResting.value == true&& exerciseViewModel.restTime.value<3)) {
+//      return // 쉬는 시간일 경우, 분석을 실행하지 않음
+//    }
+
+        if (cameraProvider != null) {
+            // As required by CameraX API, unbinds all use cases before trying to re-bind any of them.
+            cameraProvider!!.unbindAll()
+            bindPreviewUseCase()
+            bindAnalysisUseCase()
+            bindVideoCaptureUseCase()
+        }
+    }
+
+    private fun bindPreviewUseCase() {
+        if (!PreferenceUtils.isCameraLiveViewportEnabled(this)) {
+            return
+        }
+        if (cameraProvider == null) {
+            return
+        }
+        if (previewUseCase != null) {
+            cameraProvider!!.unbind(previewUseCase)
+        }
+
+        val builder = Preview.Builder()
+        val targetResolution = PreferenceUtils.getCameraXTargetResolution(this, lensFacing)
+        if (targetResolution != null) {
+            builder.setTargetResolution(targetResolution)
+        }
+        previewUseCase = builder.build()
+        previewUseCase!!.setSurfaceProvider(previewView!!.getSurfaceProvider())
+        camera = cameraProvider!!.bindToLifecycle(this, cameraSelector!!, previewUseCase)
+    }
+
+
+    private fun bindAnalysisUseCase() {
+//    if(exerciseViewModel.isResting.value == true && exerciseViewModel.restTime.value<3)
+//      return
+
+        if (cameraProvider == null) {
+            return
+        }
+        if (analysisUseCase != null) {
+            cameraProvider!!.unbind(analysisUseCase)
+        }
+        if (imageProcessor != null) {
+            imageProcessor!!.stop()
+        }
+        imageProcessor =
+            try {
+                val poseDetectorOptions = PreferenceUtils.getPoseDetectorOptionsForLivePreview(this)
+                val shouldShowInFrameLikelihood =
+                    PreferenceUtils.shouldShowPoseDetectionInFrameLikelihoodLivePreview(this)
+                val visualizeZ = PreferenceUtils.shouldPoseDetectionVisualizeZ(this)
+                val rescaleZ = PreferenceUtils.shouldPoseDetectionRescaleZForVisualization(this)
+                val runClassification = true
+                //PreferenceUtils.shouldPoseDetectionRunClassification(this)
+                PoseDetectorProcessor(
+                    this,
+                    poseDetectorOptions,
+                    shouldShowInFrameLikelihood,
+                    visualizeZ,
+                    rescaleZ,
+                    runClassification,
+                    /* isStreamMode = */ true,
+                    exerciseViewModel.nowExercise.value.title,
+                    exerciseViewModel
+
+                )
+            } catch (e: Exception) {
+                Log.e(TAG, "Can not create image processor: $selectedModel", e)
+                Toast.makeText(
+                    applicationContext,
+                    "Can not create image processor: " + e.localizedMessage,
+                    Toast.LENGTH_LONG,
+                )
+                    .show()
+                return
+            }
+        //새로운 분석 설정 및 바인딩
+        val builder = ImageAnalysis.Builder()
+        val targetResolution = PreferenceUtils.getCameraXTargetResolution(this, lensFacing)
+        if (targetResolution != null) {
+            builder.setTargetResolution(targetResolution)
+        }
+        analysisUseCase = builder.build()
+
+        needUpdateGraphicOverlayImageSourceInfo = true
+
+        analysisUseCase?.setAnalyzer(
+            // imageProcessor.processImageProxy will use another thread to run the detection underneath,
+            // thus we can just runs the analyzer itself on main thread.
+            ContextCompat.getMainExecutor(this),
+            ImageAnalysis.Analyzer { imageProxy: ImageProxy ->
+                //쉬는시간일 때 이미지 처리 패스
+//        if(exerciseViewModel.isResting.value == true){
+//          imageProxy.close()
+//          return@Analyzer
+//        }
+                //이미지 분석 실행
+//        if(exerciseViewModel.isResting.value==false||exerciseViewModel.restTime.value<3){
+                if (needUpdateGraphicOverlayImageSourceInfo) {
+                    val isImageFlipped = lensFacing == CameraSelector.LENS_FACING_FRONT
+                    val rotationDegrees = imageProxy.imageInfo.rotationDegrees
+                    if (rotationDegrees == 0 || rotationDegrees == 180) {
+                        graphicOverlay!!.setImageSourceInfo(
+                            imageProxy.width,
+                            imageProxy.height,
+                            isImageFlipped
+                        )
+                    } else {
+                        graphicOverlay!!.setImageSourceInfo(
+                            imageProxy.height,
+                            imageProxy.width,
+                            isImageFlipped
+                        )
+                    }
+                    needUpdateGraphicOverlayImageSourceInfo = false
+                }
+                try {
+                    imageProcessor!!.processImageProxy(imageProxy, graphicOverlay)
+                } catch (e: MlKitException) {
+                    Log.e(TAG, "Failed to process image. Error: " + e.localizedMessage)
+                    Toast.makeText(applicationContext, e.localizedMessage, Toast.LENGTH_SHORT)
+                        .show()
+                }
+//        }
+
+            },
+        )
+        cameraProvider!!.bindToLifecycle(this, cameraSelector!!, analysisUseCase)
+    }
+
+
+    private fun bindVideoCaptureUseCase() {
+        val recorder = Recorder.Builder()
+            .setQualitySelector(
+                QualitySelector.from(
+                    Quality.HIGHEST,
+                    FallbackStrategy.higherQualityOrLowerThan(Quality.SD)
+                )
+            )
+            .build()
+        videoCapture = VideoCapture.withOutput(recorder)
+        cameraProvider?.bindToLifecycle(this, cameraSelector(), videoCapture)
+    }
+
+    private fun cameraSelector(): CameraSelector {
+        return CameraSelector.Builder().requireLensFacing(lensFacing).build()
+    }
+
+    private fun captureVideo() {
+        // 현재 VideoCapture 객체의 참조를 확인하거나 초기화되지 않았으면 함수를 종료한다.
+        val videoCapture = this.videoCapture ?: return
+
+        // VideoRecordListener에서 중복 녹화를 방지하기 위해 다시 설정 된다.
+        val curRecording = recording
+        // 진행 중인 활성 녹화 세션이 있으면 중지하고 현재 recording 자원을 해제한다.
+        if (curRecording != null) {
+            curRecording.stop()
+            recording = null
+            return
+        }
+
+        // create and start a new recording session
+        // 녹화를 시작하기 위해 비디오 녹화를 위한 파일 이름을 생성한다.
+        val name = SimpleDateFormat(FILENAME_FORMAT, Locale.KOREA)
+            .format(System.currentTimeMillis())
+
+        // 비디오 파일의 메타데이터를 설정한다.
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+            put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4")
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+                put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/CameraX-Video")
+            }
+        }
+
+        // 콘텐츠의 외부 저장 위치를 옵션으로 설정하기 위해 빌더를 만들고 인스턴스를 빌드한다.
+        val mediaStoreOutputOptions = MediaStoreOutputOptions
+            .Builder(contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
+            .setContentValues(contentValues)
+            .build()
+
+        // 비디오 캡처 출력 옵션을 설정하고 녹화 영상 출력을 위한 세션을 만든다.
+        recording = videoCapture.output
+            .prepareRecording(this, mediaStoreOutputOptions)
+            .apply {
+                withAudioEnabled()
+            }
+            .start(ContextCompat.getMainExecutor(this)) { recordEvent ->
+                // 새 녹음을 시작하고 리스너를 등록
+                when (recordEvent) {
+                    // 녹화 종료
+                    is VideoRecordEvent.Finalize -> {
+                        if (!recordEvent.hasError()) {
+                            val msg =
+                                "Video capture succeeded: ${recordEvent.outputResults.outputUri}"
+                            Toast.makeText(this@CameraXLivePreviewActivity, msg, Toast.LENGTH_SHORT)
+                                .show()
+                            Log.d(TAG, msg)
+                            val saveUrl = recordEvent.outputResults.outputUri
+                            preferenceManger.setVideoUrl(saveUrl.toString())
+
+                        } else {
+                            recording?.close()
+                            recording = null
+                            Log.e(TAG, "Video capture ends with error: ${recordEvent.error}")
+
+                        }
+                    }
+                }
+            }
+    }
+
+
+    private fun stopRecording() {
+        recording?.stop() // 녹화 끝
+        Log.d("Finish Recording", "Well Finish")
+    }
+
+    private fun pauseRecording() {
+        recording?.pause()
+    }
+
+    private fun resumeRecording() {
+        recording?.resume()
+    }
+
+    companion object {
+        private const val TAG = "CameraXLivePreview"
+        private const val POSE_DETECTION = "Pose Detection"
+        private const val REQUEST_RECORD_AUDIO_PERMISSION = 200
+
+        private const val STATE_SELECTED_MODEL = "selected_model"
+        private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
+    }
+
 }

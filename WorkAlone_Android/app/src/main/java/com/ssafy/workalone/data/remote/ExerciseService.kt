@@ -1,11 +1,10 @@
 package com.ssafy.workalone.data.remote
 
-import com.ssafy.workalone.data.model.Challenge
-import com.ssafy.workalone.data.model.Exercise
-import com.ssafy.workalone.data.model.ExerciseSummary
+import com.ssafy.workalone.data.model.exercise.Challenge
+import com.ssafy.workalone.data.model.exercise.Exercise
+import com.ssafy.workalone.data.model.exercise.ExerciseSummary
 import retrofit2.Response
 import retrofit2.http.GET
-import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 

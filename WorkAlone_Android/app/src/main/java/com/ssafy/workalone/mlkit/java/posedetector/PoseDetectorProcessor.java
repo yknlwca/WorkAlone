@@ -60,10 +60,16 @@ public class PoseDetectorProcessor
   private final String ExerciseType;
   private TextToSpeech textToSpeech;  // TTS instance
   private final ExerciseMLKitViewModel viewModel;
+  private static final long TTS_COOLDOWN_MS = 10000; // 메시지 호출 간 최소 간격 (10초)
+  private long lastTtsTimeOutOfFrame = 0; // "화면 안으로 들어와 주세요" 메시지의 마지막 호출 시간
+  private long lastTtsTimeInFrame = 0; // "안으로 들어왔습니다" 메시지의 마지막 호출 시간
 
-  private static final long TTS_COOLDOWN_MS = 10000; // TTS 호출 간 최소 5초 간격
   private long lastTtsTime = 0; // 마지막 TTS 호출 시간
   private PoseClassifierProcessor poseClassifierProcessor;
+
+  private boolean wasOutOfFrame = false;
+
+
   /** Internal class to hold Pose and classification results. */
   protected static class PoseWithClassification {
     private final Pose pose;
@@ -137,8 +143,8 @@ public class PoseDetectorProcessor
                       List<String> classificationResult = new ArrayList<>();
                       if (runClassification) {
                         if (poseClassifierProcessor == null) {
-                          Log.d("exer","dectectInImage");
-                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,ExerciseType);
+                          //Log.d("exer","dectectInImage");
+                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,ExerciseType,viewModel);
                         }
                         classificationResult = poseClassifierProcessor.getPoseResult(pose,viewModel);
                       }
@@ -150,7 +156,6 @@ public class PoseDetectorProcessor
   // 화면 전부 들어오게 하는부분
   @Override
   protected Task<PoseWithClassification> detectInImage(MlImage image) {
-
     return detector
             .process(image)
             .continueWith(
@@ -161,29 +166,53 @@ public class PoseDetectorProcessor
 
                       // 이게 false면 화면안에 없는거임
 
-                      boolean isIn = true;
+//                      boolean isIn = true;
+//
+//                      if (!isFullBodyVisible(pose)) {
+//                        Log.d(TAG, "Full body is not visible. Skipping frame.");
+//
+//                        isIn= false;
+//                        long currentTime = System.currentTimeMillis();
+//                        // 마지막 TTS 호출 시간에서 10초가 경과했는지 확인
+//                        if (currentTime - lastTtsTime >= TTS_COOLDOWN_MS) {
+//                          textToSpeech.speak("화면 안으로 모두 들어와주세요", TextToSpeech.QUEUE_FLUSH, null, null);
+//                          lastTtsTime = currentTime; // 마지막 TTS 호출 시간 업데이트
+//                        }
+//
+//                        return null;
+//                      }
+                      boolean isInFrame = isFullBodyVisible(pose);
 
-                      if (!isFullBodyVisible(pose)) {
-                        Log.d(TAG, "Full body is not visible. Skipping frame.");
+                      long currentTime = System.currentTimeMillis();
 
-                        isIn= false;
-                        long currentTime = System.currentTimeMillis();
-                        // 마지막 TTS 호출 시간에서 10초가 경과했는지 확인
-                        if (currentTime - lastTtsTime >= TTS_COOLDOWN_MS) {
-                          textToSpeech.speak("화면 안으로 모두 들어와주세요", TextToSpeech.QUEUE_FLUSH, null, null);
-                          lastTtsTime = currentTime; // 마지막 TTS 호출 시간 업데이트
+                      // 화면 안에 들어온 경우
+                      if (isInFrame) {
+                        if (wasOutOfFrame) {
+                          // Cooldown 시간 이후에만 "안으로 들어왔습니다" 메시지 출력
+                          if (currentTime - lastTtsTimeInFrame >= TTS_COOLDOWN_MS) {
+                            textToSpeech.speak("안으로 들어왔습니다", TextToSpeech.QUEUE_FLUSH, null, null);
+                            lastTtsTimeInFrame = currentTime;
+                          }
+                          wasOutOfFrame = false; // 상태를 화면 안에 있음으로 변경
                         }
-
-                        return null;
+                      } else { // 화면 밖에 있는 경우
+                        if (!wasOutOfFrame) {
+                          wasOutOfFrame = true; // 상태를 화면 밖으로 설정
+                        }
+                        // Cooldown 시간 이후에만 "화면 안으로 들어와 주세요" 메시지 출력
+                        if (currentTime - lastTtsTimeOutOfFrame >= TTS_COOLDOWN_MS) {
+                          textToSpeech.speak("화면 안으로 모두 들어와주세요", TextToSpeech.QUEUE_FLUSH, null, null);
+                          lastTtsTimeOutOfFrame = currentTime;
+                        }
+                        return null; // 화면 밖에 있으면 포즈 인식을 진행하지 않음
                       }
-                      Log.d("exer","dectectInImage");
+                      //Log.d("exer","dectectInImage");
                       List<String> classificationResult = new ArrayList<>();
                      // Log.d("exer",String.valueOf(runClassification));
                       if (runClassification) {
                         if (poseClassifierProcessor == null) {
-                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,"스쿼트");
                           Log.d("exer",ExerciseType);
-                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,ExerciseType);
+                          poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,ExerciseType, viewModel);
                         }
                         classificationResult = poseClassifierProcessor.getPoseResult(pose,viewModel);
                       }
@@ -239,13 +268,15 @@ public class PoseDetectorProcessor
     int[] requiredLandmarks = {
 
             PoseLandmark.LEFT_SHOULDER,
-            PoseLandmark.RIGHT_SHOULDER,
-            PoseLandmark.LEFT_HIP,
-            PoseLandmark.RIGHT_HIP,
-            PoseLandmark.LEFT_WRIST,
-            PoseLandmark.RIGHT_WRIST,
-            PoseLandmark.LEFT_ANKLE,
-            PoseLandmark.RIGHT_ANKLE
+//            PoseLandmark.RIGHT_SHOULDER,
+//            PoseLandmark.LEFT_HIP,
+//            PoseLandmark.RIGHT_HIP,
+//            PoseLandmark.LEFT_WRIST,
+//            PoseLandmark.RIGHT_WRIST,
+//            PoseLandmark.LEFT_ANKLE,
+//            PoseLandmark.RIGHT_ANKLE
+
+
     };
 
     for (int landmarkType : requiredLandmarks) {

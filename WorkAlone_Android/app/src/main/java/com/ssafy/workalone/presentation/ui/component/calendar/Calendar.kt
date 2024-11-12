@@ -42,7 +42,7 @@ import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue100
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue600
 import com.ssafy.workalone.presentation.viewmodels.CalendarViewModel
-import com.ssafy.workalone.presentation.viewmodels.ExerciseSummaryViewModel
+import com.ssafy.workalone.presentation.viewmodels.exercise.ExerciseSummaryViewModel
 import io.github.boguszpawlowski.composecalendar.SelectableCalendar
 import io.github.boguszpawlowski.composecalendar.day.DayState
 import io.github.boguszpawlowski.composecalendar.rememberSelectableCalendarState

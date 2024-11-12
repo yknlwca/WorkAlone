@@ -12,21 +12,28 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ssafy.workalone.data.local.MemberPreferenceManager
+<<<<<<< HEAD
 import com.ssafy.workalone.presentation.ui.screen.ExerciseDetailView
 import com.ssafy.workalone.presentation.ui.screen.ExerciseListView
 import com.ssafy.workalone.presentation.ui.screen.HomeView
 import com.ssafy.workalone.presentation.ui.screen.IndividualCompleteView
 import com.ssafy.workalone.presentation.ui.screen.LoginView
+=======
+import com.ssafy.workalone.presentation.ui.screen.complete.IndividualCompleteView
+import com.ssafy.workalone.presentation.ui.screen.exercise.ChallengeListView
+import com.ssafy.workalone.presentation.ui.screen.exercise.ExerciseView
+import com.ssafy.workalone.presentation.ui.screen.home.HomeView
+import com.ssafy.workalone.presentation.ui.screen.home.LoginView
+>>>>>>> origin/develop
 
 @Composable
 fun Navigation(
     navController: NavHostController = rememberNavController(),
-    startDestination: String = Screen.Home.route
+    startDestination: String = Screen.Login.route
 ) {
     val activity = LocalContext.current as? Activity
     val context = LocalContext.current
-    val memberPreference = remember { MemberPreferenceManager(context) }
-
+    val memberManager = remember { MemberPreferenceManager(context) }
 
     BackHandler(enabled = true) {
         if (!navController.popBackStack()) {
@@ -39,7 +46,7 @@ fun Navigation(
         startDestination = startDestination
     ) {
         composable(Screen.Home.route) {
-            HomeView(navController, memberPreference.getMember())
+            HomeView(navController, memberManager.getName())
         }
 
         composable(Screen.Login.route) {
@@ -47,7 +54,7 @@ fun Navigation(
         }
 
         composable(Screen.ExerciseList.route) {
-            ExerciseListView(navController)
+            ChallengeListView(navController)
         }
 
         composable(
@@ -61,7 +68,7 @@ fun Navigation(
         ) { entry ->
             val exerciseId =
                 if (entry.arguments != null) entry.arguments!!.getLong("groupId") else 0L
-            ExerciseDetailView(
+            ExerciseView(
                 navController = navController,
                 id = exerciseId,
             )

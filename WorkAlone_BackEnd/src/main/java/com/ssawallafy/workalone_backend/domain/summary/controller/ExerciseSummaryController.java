@@ -1,6 +1,7 @@
 package com.ssawallafy.workalone_backend.domain.summary.controller;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -67,5 +68,16 @@ public class ExerciseSummaryController {
 		ExerciseSummaryReadRes res = exerciseSummaryService.readSummary(memberId, date);
 
 		return new ResponseEntity<>(res, HttpStatus.OK);
+	}
+
+	@GetMapping("/date-list")
+	@Operation(summary = "운동기록 날짜 조회", description = "날짜에 해당하는 회원의 운동 기록을 조회합니다.")
+	public ResponseEntity<List<LocalDate>> getSummaryDateList() {
+
+		long memberId = 1L;
+
+		List<LocalDate> dateList = exerciseSummaryService.readDateList(memberId);
+
+		return new ResponseEntity<>(dateList, HttpStatus.OK);
 	}
 }

@@ -40,7 +40,9 @@ import android.os.Looper;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
+
 import androidx.annotation.WorkerThread;
 
 import com.google.common.base.Preconditions;
@@ -54,7 +56,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import android.speech.tts.TextToSpeech;
 
 /**
  * Accepts a stream of {@link Pose} for classification and Rep counting.
@@ -70,11 +71,11 @@ public class PoseClassifierProcessor {
   private static final String PULLUPS_CLASS = "pullups_down";
   private static final String SITUP_CLASS = "situp_down";
   private static final String PLANK_CLASS = "plank";
-  private static long plankStartTime = 0;
   private boolean plankFlag = false;
-
   private static final float MINIMUM_RMS_THRESHOLD = 3.5f; // 감도 기준 설정 (조정 가능)
   private boolean isEnvironmentLoud = false;
+
+
   // 음석인식 부분
   private SpeechRecognizer speechRecognizer;
   private boolean isTracking = true; // "시작" 명령이 들어오면 true
@@ -96,13 +97,14 @@ public class PoseClassifierProcessor {
   private PoseClassifier poseClassifier;
   private String lastRepResult;
   private Handler mainHandler = new Handler(Looper.getMainLooper());
-
+  private ExerciseMLKitViewModel viewModel;
 
   @WorkerThread
-  public PoseClassifierProcessor(Context context, boolean isStreamMode,String ExerciseType) {
+  public PoseClassifierProcessor(Context context, boolean isStreamMode,String ExerciseType, ExerciseMLKitViewModel viewModel) {
     Preconditions.checkState(Looper.myLooper() != Looper.getMainLooper());
     this.isStreamMode = isStreamMode;
     this.context = context;
+    this.viewModel = viewModel;
 
 
 
@@ -141,13 +143,15 @@ public class PoseClassifierProcessor {
     speechRecognizer.setRecognitionListener(new RecognitionListener() {
 
       @Override
-      public void onReadyForSpeech(Bundle bundle) {
+      public void onReadyForSpeech(Bundle bundle)
+      {
         //Log.d(TAG, "음성 인식 준비됨");
         //System.out.println("음석 인식 준비 됨");
       }
 
       @Override
-      public void onBeginningOfSpeech() {
+      public void onBeginningOfSpeech()
+      {
         //Log.d(TAG, "음성 인식 시작됨");
        // S//ystem.out.println("음성 인식 시작");
 
@@ -177,20 +181,20 @@ public class PoseClassifierProcessor {
         Log.e("exer", "음성 인식 오류 발생: " + error);
         switch (error) {
           case SpeechRecognizer.ERROR_NETWORK:
-            Log.e("exer", "네트워크 오류");
+            //Log.e("exer", "네트워크 오류");
             break;
           case SpeechRecognizer.ERROR_AUDIO:
-           Log.e("exer", "오디오 입력 오류");
+           //Log.e("exer", "오디오 입력 오류");
             break;
           case SpeechRecognizer.ERROR_NO_MATCH:
-            Log.e("exer", "일치하는 결과 없음");
+           // Log.e("exer", "일치하는 결과 없음");
             break;
           case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
-            Log.e("exer", "음성 입력 시간 초과");
+            //Log.e("exer", "음성 입력 시간 초과");
             break;
           // 추가 오류 코드 확인 가능
         }
-        Log.e("exer", "오류 발생 시 startListening() 다시 시작");
+     //  Log.e("exer", "오류 발생 시 startListening() 다시 시작");
 
         startListening(); // 오류 발생 시 다시 듣기 시작
       }
@@ -204,13 +208,18 @@ public class PoseClassifierProcessor {
             if (command.equalsIgnoreCase("시작")) {
               isTracking = true;
               isPaused = false;
+              viewModel.startExercise();
               //Log.d(TAG, "운동 추적 시작됨");
+              Log.d("exer", "운동 추적 시작됨");
             } else if (command.equalsIgnoreCase("정지")) {
               isPaused = true;
+              viewModel.stopExercise();
              // Log.d(TAG, "운동 추적 일시 중지됨");
+             Log.d("exer", "운동 추적 일시 중지됨");
             } else if (command.equalsIgnoreCase("종료")) {
               isTracking = false;
-              shutdown();
+              viewModel.clickExit();
+             // shutdown();
              // Log.d(TAG, "운동 추적 종료됨");
             }
           }
@@ -235,10 +244,10 @@ public class PoseClassifierProcessor {
   }
   private void startListening() {
 
-    if (isEnvironmentLoud) {
-      Log.d("exer", "소음이 감지되어 음성 인식을 시작하지 않습니다.");
-      return; // 소음이 있으면 음성 인식 시작 안함
-    }
+//    if (isEnvironmentLoud) {
+//      Log.d("exer", "소음이 감지되어 음성 인식을 시작하지 않습니다.");
+//      return; // 소음이 있으면 음성 인식 시작 안함
+//    }
     Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
     intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
     intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.KOREAN);
@@ -278,17 +287,18 @@ public class PoseClassifierProcessor {
     List<String> result = new ArrayList<>();
 
 
+    //Log.d("exer","getPoseResult 호출 ");
+
     ClassificationResult classification = poseClassifier.classify(pose);
 
-
-    if (!isTracking) {
-      result.add("추적이 종료되었습니다.");
+    Log.d("exer","현재 추적 상태(쉬는시간이면 true): "+viewModel.isResting().getValue());
+    if (viewModel.isResting().getValue()) {result.add("추적이 종료되었습니다.");
       result.add("isTracking: " + isTracking);
       result.add("isPaused: " + isPaused);
       return result;
     }
 
-    if (isPaused) {
+    if (!viewModel.isExercising().getValue()) {
       result.add("추적이 현재 일시 중지 상태입니다.");
       result.add("isTracking: " + isTracking);
       result.add("isPaused: " + isPaused);
@@ -316,7 +326,7 @@ public class PoseClassifierProcessor {
 
 
 
-      Log.d("exer","pose sample file:"+POSE_SAMPLES_FILE);
+    //  Log.d("exer","pose sample file:"+POSE_SAMPLES_FILE);
       for (RepetitionCounter repCounter : repCounters) {
 
         //Log.d("exer",String.valueOf(repCounter.getClassName()));
@@ -328,39 +338,43 @@ public class PoseClassifierProcessor {
             plankFlag = true;
             lastRepResult = String.format(Locale.KOREAN, "%s : 유지 중", PLANK_CLASS);
             Log.d("exer","플랭크 자세 유지중 "+plankFlag);
-            if(!viewModel.getPlankPause().getValue()){
-              viewModel.startPlank();
-            }
           }
           else {
             // 플랭크 자세를 벗어나면 플래그를 false로 설정
             plankFlag = false;
+
             lastRepResult = String.format(Locale.KOREAN, "%s : 중단됨", PLANK_CLASS);
             Log.d("exer","플랭크 자세 유지 X "+plankFlag);
 
             //speakResult("플랭크 자세를 유지해주세요.");
           }
+          if(plankFlag){
+            viewModel.startExercise();
+          }else{
+            viewModel.stopExercise();
+          }
         }
         else {
           int repsBefore = repCounter.getNumRepeats();
           int repsAfter = repCounter.addClassificationResult(classification);
-          //현재 횟수 저장
-//          viewModel.setNowReps(repsAfter);
           if (repsAfter > repsBefore) {
 
 
             lastRepResult = String.format(Locale.KOREAN, "%s : %d", repCounter.getClassName(), repsAfter," iaTracking: "+isTracking+"  isPaues: "+isPaused);
-            viewModel.addRep("스쿼트, 푸쉬업, 윗몸일으키기",0);
-            Log.d("exer",String.valueOf(repsAfter));
-            speakResult(String.valueOf(repsAfter));
+            viewModel.addRep("스쿼트, 푸쉬업, 윗몸일으키기");
+            Log.d("exer","count: "+String.valueOf(repsAfter));
+            speakResult(String.valueOf(viewModel.getNowRep().getValue()));
+            //speakResult(String.valueOf(repsAfter));
             break;
           }
           //횟수 다채우면 다음세트
           if(viewModel.getNowRep().getValue() == viewModel.getTotalRep().getValue()){
             viewModel.addSet();
+             repCounter.setNumRepeats();
+
             //세트 다 채우면 다음 운동 or 운동 완료
             if(viewModel.getNowSet().getValue() == viewModel.getTotalSet().getValue()+1){
-//              viewModel.exerciseFinish();
+              viewModel.exerciseFinish();
             }
           }
         }
@@ -447,7 +461,7 @@ public class PoseClassifierProcessor {
       case "플랭크":
         POSE_SAMPLES_FILE = "pose/plank.csv";
         break;
-      case "윗몸일으키기":
+      case "윗몸 일으키기":
         POSE_SAMPLES_FILE = "pose/situp.csv";
         break;
       default:

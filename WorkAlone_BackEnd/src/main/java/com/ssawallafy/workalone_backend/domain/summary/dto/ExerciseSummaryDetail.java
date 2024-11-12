@@ -17,7 +17,11 @@ public class ExerciseSummaryDetail {
 
 	private String exerciseType;
 
-	private LocalTime time;
+	private int exerciseSet;
+	
+	private int exerciseRepeat;
+
+	private int time;
 
 	private int kcal;
 
