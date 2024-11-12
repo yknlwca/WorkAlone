@@ -21,7 +21,7 @@ public class ExerciseSummaryDetail {
 	
 	private int exerciseRepeat;
 
-	private LocalTime time;
+	private int time;
 
 	private int kcal;
 
