@@ -20,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
@@ -32,7 +31,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
 
-    var isExercise = viewModel.isExercising.value
+    var isExercise by viewModel.isExercising
     var goalTime by viewModel.totalRep
     val totalSets by viewModel.totalSet
     var currentSet by viewModel.nowSet
@@ -40,19 +39,23 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
     val configuration = LocalConfiguration.current
 
     LaunchedEffect(Unit) {
-        while (goalTime > 0) {
-            if (isExercise) {
-                // 1초 대기
-                delay(1000L)
-                // 일시정지가 아닐 때만 감소
-                if (isExercise == true) {
-                    viewModel.decreaseTime()
-                }
-            } else {
-                // 일시정지 상태에서 짧은 대기
-                delay(100L)
+        while (goalTime >0) {
+            //1초씩 대기
+            delay(1000L)
+            // 일시정지가 아닐 때만 감소
+            if (isExercise&&!viewModel.isResting.value) {
+                    viewModel.addRep("플랭크")
+            }
+            if(viewModel.totalRep.value==0){
+                viewModel.addSet()
+            }
+
+            //세트 다 채우면 다음 운동 or 운동 완료
+            if (viewModel.nowSet.value == viewModel.totalSet.value + 1) {
+                viewModel.exerciseFinish()
             }
         }
+
     }
 
     if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -65,7 +68,8 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                         topEnd = 20.dp,
                         bottomStart = 0.dp,
                         bottomEnd = 0.dp
-                    ))
+                    )
+                )
                 .fillMaxWidth()
                 .padding(25.dp),
 
@@ -157,7 +161,8 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                         topEnd = 20.dp,
                         bottomStart = 0.dp,
                         bottomEnd = 0.dp
-                    ))
+                    )
+                )
                 .fillMaxWidth()
                 .padding(25.dp),
 

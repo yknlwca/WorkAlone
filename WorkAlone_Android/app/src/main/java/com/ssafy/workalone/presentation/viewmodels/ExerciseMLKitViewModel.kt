@@ -3,6 +3,7 @@ package com.ssafy.workalone.presentation.viewmodels
 import android.content.Context
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ssafy.workalone.data.local.ExerciseInfoPreferenceManager
 import com.ssafy.workalone.data.model.exercise.ExerciseData
@@ -12,6 +13,7 @@ class ExerciseMLKitViewModel(context: Context): ViewModel() {
 
     private val _exercises = exerciseInfoPreferenceManager.getExerciseList()
     private val _nowExercise: MutableState<ExerciseData> = mutableStateOf(_exercises[0])
+    private val _exercistType: MutableLiveData<String> = MutableLiveData<String>().apply { _nowExercise.value.title }
     private val _nowSet: MutableState<Int> = mutableStateOf(1)
     private val _totalSet: MutableState<Int> = mutableStateOf(_nowExercise.value.exerciseSet)
     private val _nowRep: MutableState<Int> = mutableStateOf(0)
@@ -62,8 +64,12 @@ class ExerciseMLKitViewModel(context: Context): ViewModel() {
 
 
     fun addSet(){
+        if(_nowExercise.value.title=="플랭크"){
+            _totalRep.value = _nowExercise.value.exerciseRepeat
+        }else{
+            _nowRep.value = 0
+        }
         _nowSet.value += 1
-        _nowRep.value = 0
         startResting()
         _stage.value="rest"
     }
@@ -82,9 +88,9 @@ class ExerciseMLKitViewModel(context: Context): ViewModel() {
             _totalRep.value = _nowExercise.value.exerciseRepeat
         }
     }
-    fun addRep(type: String, plankTime:Long = 0){
+    fun addRep(type: String){
         if(type == "플랭크") {
-            _totalRep.value -= plankTime.toInt()
+            _totalRep.value -= 1;
         }else{
             _nowRep.value++
         }
@@ -97,6 +103,7 @@ class ExerciseMLKitViewModel(context: Context): ViewModel() {
                 stopResting()
                 _stage.value = "rest"
             }
+
         }
 
     }
@@ -119,14 +126,11 @@ class ExerciseMLKitViewModel(context: Context): ViewModel() {
         }
     }
     fun changeStage(){
-        if(_nowSet.value <= _totalSet.value){
+        if(_nowSet.value <= _totalSet.value && _nowSet.value != 1){
             _stage.value = "nextSet"
-        }else if(_nowSet.value == _totalSet.value+1){
+        }else if(_nowSet.value == 1){
             _stage.value = "nextExercise"
         }
-    }
-    fun decreaseTime() {
-        _totalRep.value--
     }
     fun startResting() {
         _isResting.value = true

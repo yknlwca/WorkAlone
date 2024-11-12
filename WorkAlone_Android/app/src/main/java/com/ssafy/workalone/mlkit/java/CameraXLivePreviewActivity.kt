@@ -76,12 +76,13 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
 
     private lateinit var cameraExecutor: ExecutorService
 
-    private val preferenceManger = ExerciseInfoPreferenceManager(this)
+    private lateinit var preferenceManger: ExerciseInfoPreferenceManager
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+        preferenceManger = ExerciseInfoPreferenceManager(applicationContext)
         setContentView(R.layout.activity_vision_camerax_live_preview)
 
         previewView = findViewById(R.id.preview_view)
