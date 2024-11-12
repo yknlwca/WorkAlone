@@ -17,7 +17,7 @@ import lombok.ToString;
 @ToString
 public class ExerciseSummaryReadRes {
 
-	private LocalTime totalTime;
+	private int totalTime;
 
 	private int totalKcal;
 
