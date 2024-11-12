@@ -9,6 +9,6 @@ public class OrganizationMappingId implements Serializable {
 
 	private Long organization_id;
 
-	private Long trainer_id;
+	private Long member_id;
 
 }
