@@ -43,12 +43,12 @@ VALUES (1,'스쿼트', '허벅지와 코어 근력 강화',
         '일어날 때 숨을 내쉬고, 내려갈 때 숨을 들이마십니다.');
 
 
--- ExerciseGroup 테이블의 더미 데이터 (member_id가 1인 경우)
-INSERT INTO exercise_group (id, member_id, title, rest_btw_exercise) VALUES (1, 1, '통합형 운동1', 90);
-INSERT INTO exercise_group (id, member_id, title, rest_btw_exercise) VALUES (2, 1, '통합형 운동2', 90);
-INSERT INTO exercise_group (id, member_id, title, rest_btw_exercise) VALUES (3, 1, '개별형 운동', null);
-INSERT INTO exercise_group (id, member_id, title, rest_btw_exercise) VALUES (4, 1, '플랭크 운동', null);
-INSERT INTO exercise_group (id, member_id, title, rest_btw_exercise) VALUES (5, 1, '통합 운동', 15);
+-- ExerciseGroup 테이블의 더미 데이터
+INSERT INTO exercise_group (id, organization_id, title, rest_btw_exercise) VALUES (1, 1, '통합형 운동1', 90);
+INSERT INTO exercise_group (id, organization_id, title, rest_btw_exercise) VALUES (2, 1, '통합형 운동2', 90);
+INSERT INTO exercise_group (id, organization_id, title, rest_btw_exercise) VALUES (3, 1, '개별형 운동', null);
+INSERT INTO exercise_group (id, organization_id, title, rest_btw_exercise) VALUES (4, 1, '플랭크 운동', null);
+INSERT INTO exercise_group (id, organization_id, title, rest_btw_exercise) VALUES (5, 1, '통합 운동', 15);
 
 -- Exercise 테이블에 더미 데이터 추가
 INSERT INTO exercise (id, group_id, type_id, seq, exercise_set, exercise_repeat, rest_btw_set, set_type, deleted)
