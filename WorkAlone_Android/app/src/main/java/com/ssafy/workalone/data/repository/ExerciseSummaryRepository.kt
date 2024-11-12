@@ -1,6 +1,7 @@
 package com.ssafy.workalone.data.repository
 
-import com.ssafy.workalone.data.model.exercise.ExerciseRecord
+import android.util.Log
+import com.ssafy.workalone.data.model.exercise.ExerciseSummary
 import com.ssafy.workalone.data.remote.ExerciseService
 import com.ssafy.workalone.data.remote.RetrofitFactory
 import com.ssafy.workalone.global.exception.handleApiError
@@ -9,12 +10,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
-class ExerciseRecordRepository(
+class ExerciseSummaryRepository(
     private val exerciseService: ExerciseService =
         RetrofitFactory.getInstance().create(ExerciseService::class.java)
 ) {
-    fun getExersiceRecords(date: String): Flow<ExerciseRecord> = flow {
-        val response = exerciseService.getExerciseRecords(date)
+    fun getExerciseSummary(date: String): Flow<ExerciseSummary> = flow {
+        val response = exerciseService.getExerciseSummary(date)
+        Log.d("SummaryRepository", "response: $response")
         if (response.isSuccessful) {
             response.body()?.let { emit(it) }
         } else {

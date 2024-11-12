@@ -14,23 +14,23 @@ import com.google.gson.annotations.SerializedName
 //    @SerializedName("calorie")
 //    val calorie: Int
 //)
-data class ExerciseRecord(
+data class ExerciseSummary(
     @SerializedName("totalTime")
-    val totalTime: ExerciseTime,
+    val totalDuration: Int,
     val totalKcal: Int,
     @SerializedName("totalSummary")
     val totalSummary: List<List<ExerciseDetail>>
 
 )
 
-data class ExerciseTime(
-    @SerializedName("hour")
-    val hours: Int,
-    @SerializedName("minutes")
-    val minutes: Int,
-    @SerializedName("seconds")
-    val seconds: Int,
-)
+//data class ExerciseTime(
+//    @SerializedName("hour")
+//    val hours: Int,
+//    @SerializedName("minutes")
+//    val minutes: Int,
+//    @SerializedName("seconds")
+//    val seconds: Int,
+//)
 
 data class ExerciseDetail(
     @SerializedName("groupId")
@@ -40,7 +40,7 @@ data class ExerciseDetail(
     @SerializedName("exerciseType")
     val exerciseType: String,
     @SerializedName("time")
-    val exerciseTime: ExerciseTime,
+    val exerciseDuration: Int,
     @SerializedName("kcal")
     val kcal: Int,
 )

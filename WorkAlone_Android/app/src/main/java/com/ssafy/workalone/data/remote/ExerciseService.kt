@@ -2,7 +2,7 @@ package com.ssafy.workalone.data.remote
 
 import com.ssafy.workalone.data.model.exercise.Challenge
 import com.ssafy.workalone.data.model.exercise.Exercise
-import com.ssafy.workalone.data.model.exercise.ExerciseRecord
+import com.ssafy.workalone.data.model.exercise.ExerciseSummary
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -19,7 +19,7 @@ interface ExerciseService {
     ): Response<List<Exercise>>
 
     @GET("/summary")
-    suspend fun getExerciseRecords(
+    suspend fun getExerciseSummary(
         @Query("date") date: String,
-    ):Response<ExerciseRecord>
+    ):Response<ExerciseSummary>
 }

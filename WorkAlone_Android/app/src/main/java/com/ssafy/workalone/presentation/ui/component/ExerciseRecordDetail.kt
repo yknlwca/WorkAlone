@@ -20,12 +20,12 @@ fun ExerciseRecordDetail(
     title: String,
     setCount: Int,
     exerciseCount: Int = 0,
-    exerciseDuration: Int = 0,
-    totalExerciseDuration: Int,
+    exerciseDuration: Int,
     calorie: Int
 ){
-    val minutes: Int = totalExerciseDuration/60
-    val seconds: Int = totalExerciseDuration%60
+    val hours: Int = exerciseDuration/3600
+    val minutes: Int = (exerciseDuration%3600)/60
+    val seconds: Int = exerciseDuration%60
 
     Column(
         modifier = Modifier
@@ -46,10 +46,10 @@ fun ExerciseRecordDetail(
 
             Text(
                 text =
-                    if(exerciseDuration == 0){
-                        "${setCount}세트 X ${exerciseCount}회"
+                    if(title == "플랭크"){
+                        "${setCount}세트 X ${exerciseCount}초"
                     } else {
-                        "${setCount}세트 X ${exerciseDuration}초"
+                        "${setCount}세트 X ${exerciseCount}회"
                     },
                 fontWeight = FontWeight.Black,
                 fontSize = 16.sp
@@ -67,7 +67,12 @@ fun ExerciseRecordDetail(
             )
 
             Text(
-                text = "${minutes}:${String.format("%02d", seconds)}",
+                text =
+                    if (hours > 0){
+                        "${String.format("%02d", hours)}:${String.format("%02d", minutes)}:${String.format("%02d", seconds)}"
+                    } else {
+                        "${String.format("%02d", minutes)}:${String.format("%02d", seconds)}"
+                    },
                 fontSize = 14.sp,
             )
         }
@@ -93,5 +98,5 @@ fun ExerciseRecordDetail(
 @Preview(showBackground = true)
 @Composable
 fun ExerciseRecodePreview() {
-    ExerciseRecordDetail("스쿼트",3, 0, 5, 1800, 300)
+    ExerciseRecordDetail("플랭크",3, 2, 3675, 300)
 }
