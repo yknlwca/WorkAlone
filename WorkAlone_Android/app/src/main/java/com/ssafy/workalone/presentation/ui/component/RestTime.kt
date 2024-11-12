@@ -48,7 +48,7 @@ fun RestTime(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Transparent)
+                    .background(Color.Black.copy(alpha = 0.9f))
                     .padding(20.dp)
             ) {
                 if(viewModel.stage.value == "rest")

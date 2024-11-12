@@ -357,13 +357,11 @@ public class PoseClassifierProcessor {
         else {
           int repsBefore = repCounter.getNumRepeats();
           int repsAfter = repCounter.addClassificationResult(classification);
-          //현재 횟수 저장
-//          viewModel.setNowReps(repsAfter);
           if (repsAfter > repsBefore) {
 
 
             lastRepResult = String.format(Locale.KOREAN, "%s : %d", repCounter.getClassName(), repsAfter," iaTracking: "+isTracking+"  isPaues: "+isPaused);
-            viewModel.addRep("스쿼트, 푸쉬업, 윗몸일으키기",0);
+            viewModel.addRep("스쿼트, 푸쉬업, 윗몸일으키기");
             Log.d("exer","count: "+String.valueOf(repsAfter));
             speakResult(String.valueOf(viewModel.getNowRep().getValue()));
             //speakResult(String.valueOf(repsAfter));
