@@ -1,6 +1,7 @@
 package com.ssawallafy.workalone_backend.domain.summary.service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import com.amazonaws.HttpMethod;
 import com.ssawallafy.workalone_backend.domain.summary.dto.ExerciseSummaryReadRes;
@@ -15,5 +16,5 @@ public interface ExerciseSummaryService {
 
 	void saveSummary(long memberId, ExerciseSummarySaveReq exerciseSummarySaveReq);
 
-
+	List<LocalDate> readDateList(long memberId);
 }

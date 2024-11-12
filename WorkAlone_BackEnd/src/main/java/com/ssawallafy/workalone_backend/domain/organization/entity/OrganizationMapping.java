@@ -7,8 +7,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class OrganizationMapping {
 
 	@EmbeddedId
@@ -20,7 +22,7 @@ public class OrganizationMapping {
 	private Organization organization;
 
 	@ManyToOne
-	@MapsId("trainer_id") // OrganizationMappingId의 memberId와 매핑
-	@JoinColumn(name = "trainer_id")
+	@MapsId("member_id") // OrganizationMappingId의 memberId와 매핑
+	@JoinColumn(name = "member_id")
 	private Member member;
 }

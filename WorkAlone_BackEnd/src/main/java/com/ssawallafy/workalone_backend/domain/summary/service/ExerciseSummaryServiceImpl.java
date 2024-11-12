@@ -2,12 +2,15 @@ package com.ssawallafy.workalone_backend.domain.summary.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +87,19 @@ public class ExerciseSummaryServiceImpl implements ExerciseSummaryService {
 
 			exerciseSummaryRepository.save(exerciseSummary);
 		}
+	}
+
+	@Override
+	public List<LocalDate> readDateList(long memberId) {
+
+		List<LocalDate> rawDateList = exerciseSummaryRepository.findAllDateByMemberId(memberId);
+		Set<LocalDate> dateSet = new TreeSet<>();
+		for (LocalDate d : rawDateList) {
+			dateSet.add(d);
+		}
+		List<LocalDate> dateList = new ArrayList<>(dateSet);
+
+		return dateList;
 	}
 
 	@Override
