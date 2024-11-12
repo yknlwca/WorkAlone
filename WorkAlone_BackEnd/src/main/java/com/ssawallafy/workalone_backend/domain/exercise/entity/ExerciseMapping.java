@@ -8,14 +8,18 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ExerciseMapping {
 
 	@EmbeddedId
-	private ExerciseMappingId id;
+	private final ExerciseMappingId id = new ExerciseMappingId();
 
 	@ManyToOne
 	@MapsId("group_id")
@@ -27,4 +31,9 @@ public class ExerciseMapping {
 	@JoinColumn(name = "member_id")
 	private Member member;
 
+	@Builder
+	public ExerciseMapping(ExerciseGroup exerciseGroup, Member member) {
+		this.exerciseGroup = exerciseGroup;
+		this.member = member;
+	}
 }
