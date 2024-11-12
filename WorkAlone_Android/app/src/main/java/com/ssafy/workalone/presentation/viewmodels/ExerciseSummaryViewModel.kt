@@ -1,25 +1,24 @@
 package com.ssafy.workalone.presentation.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import com.ssafy.workalone.data.model.ExerciseRecord
-import com.ssafy.workalone.data.repository.ExerciseRecordRepository
-import com.ssafy.workalone.global.exception.handleException
+import com.ssafy.workalone.data.model.ExerciseSummary
+import com.ssafy.workalone.data.repository.ExerciseSummaryRepository
+import com.ssafy.workalone.global.exception.CustomException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
-class ExerciseRecordViewModel(
-    private val exerciseRecordRepository: ExerciseRecordRepository = ExerciseRecordRepository()
+class ExerciseSummaryViewModel(
+    private val exerciseSummaryRepository: ExerciseSummaryRepository = ExerciseSummaryRepository()
 ): ViewModel() {
 
-    fun getExerciseRecords(date: String): Flow<ExerciseRecord> = flow {
-        emitAll(exerciseRecordRepository.getExersiceRecords(date))
+    fun getExerciseSummary(date: String): Flow<ExerciseSummary> = flow {
+        emitAll(exerciseSummaryRepository.getExerciseSummary(date))
+        Log.d("SummaryViewModel", "getExerciseSummary called with date: $date")
     }.flowOn(Dispatchers.IO).catch { e -> handleException(e) }
 
     private fun handleException(exception: Throwable) {

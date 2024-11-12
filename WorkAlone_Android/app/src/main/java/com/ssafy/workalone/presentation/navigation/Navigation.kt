@@ -17,8 +17,6 @@ import com.ssafy.workalone.presentation.ui.screen.ExerciseListView
 import com.ssafy.workalone.presentation.ui.screen.HomeView
 import com.ssafy.workalone.presentation.ui.screen.IndividualCompleteView
 import com.ssafy.workalone.presentation.ui.screen.LoginView
-import com.ssafy.workalone.presentation.viewmodels.ExerciseRecordViewModel
-import com.ssafy.workalone.presentation.viewmodels.ExerciseViewModel
 
 @Composable
 fun Navigation(

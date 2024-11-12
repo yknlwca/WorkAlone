@@ -43,20 +43,20 @@ data class IntegratedExerciseRecordData(
     val setCount: Int,
     val exerciseCount: Int,
     val exerciseDuration: Int,
-    val totalExerciseDuration: Int
+    val calorie: Int
 )
 
 // 운동 완료 화면(통합형)
 @Composable
 fun IntegratedCompleteView(navController: NavController) {
     val integratedExerciseRecordDataList: List<IntegratedExerciseRecordData> = listOf(
-        IntegratedExerciseRecordData("스쿼트",3, 15,0, 1801),
-        IntegratedExerciseRecordData("푸쉬업",3, 0, 10,1901),
-        IntegratedExerciseRecordData("플랭크",3, 15,0, 2000),
-        IntegratedExerciseRecordData("플랭크",3, 15,0, 2000),
-        IntegratedExerciseRecordData("플랭크",3, 0, 20,2000),
-        IntegratedExerciseRecordData("플랭크",3, 0, 30,2000),
-        IntegratedExerciseRecordData("플랭크",3, 15,0, 2000),
+        IntegratedExerciseRecordData("스쿼트",3, 15,1000, 200),
+        IntegratedExerciseRecordData("푸쉬업",3, 0, 100,300),
+        IntegratedExerciseRecordData("플랭크",3, 15,2000, 400),
+        IntegratedExerciseRecordData("플랭크",3, 15,4000, 500),
+        IntegratedExerciseRecordData("플랭크",3, 0, 22200,250),
+        IntegratedExerciseRecordData("플랭크",3, 0, 300,600),
+        IntegratedExerciseRecordData("플랭크",3, 15,10, 700),
     )
 
     val totalTime: Int = 3000
@@ -150,26 +150,25 @@ fun IntegratedCompleteView(navController: NavController) {
                         LazyColumn {
                             // 기록 상세 표
                             items(integratedExerciseRecordDataList) { record ->
-                                val calorie: Int =
-                                    if (exerciseType == "스쿼트") {
-                                        (6.0 * weight * (record.totalExerciseDuration / 3600.0)).roundToInt()
-                                    } else if (exerciseType == "푸쉬업") {
-                                        (4.0 * weight * (record.totalExerciseDuration / 3600.0)).roundToInt()
-                                    } else if (exerciseType == "윗몸일으키기") {
-                                        (4.0 * weight * (record.totalExerciseDuration / 3600.0)).roundToInt()
-                                    } else if (exerciseType == "플랭크") {
-                                        (3.0 * weight * (record.totalExerciseDuration / 3600.0)).roundToInt()
-                                    } else {
-                                        0
-                                    }
+//                                val calorie: Int =
+//                                    if (exerciseType == "스쿼트") {
+//                                        (6.0 * weight * (record.totalExerciseDuration / 3600.0)).roundToInt()
+//                                    } else if (exerciseType == "푸쉬업") {
+//                                        (4.0 * weight * (record.totalExerciseDuration / 3600.0)).roundToInt()
+//                                    } else if (exerciseType == "윗몸일으키기") {
+//                                        (4.0 * weight * (record.totalExerciseDuration / 3600.0)).roundToInt()
+//                                    } else if (exerciseType == "플랭크") {
+//                                        (3.0 * weight * (record.totalExerciseDuration / 3600.0)).roundToInt()
+//                                    } else {
+//                                        0
+//                                    }
                                 Column {
                                     ExerciseRecordDetail(
                                         record.title,
                                         record.setCount,
                                         record.exerciseCount,
                                         record.exerciseDuration,
-                                        record.totalExerciseDuration,
-                                        calorie
+                                        record.calorie
                                     )
 
                                     Spacer(modifier = Modifier.height(10.dp))

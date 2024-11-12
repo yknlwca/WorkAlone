@@ -51,6 +51,7 @@ import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray900
 import com.ssafy.workalone.presentation.ui.theme.WorkAloneTheme
 import com.ssafy.workalone.presentation.viewmodels.CalendarViewModel
+import com.ssafy.workalone.presentation.viewmodels.ExerciseSummaryViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -60,7 +61,8 @@ import kotlinx.coroutines.launch
 fun HomeView(navController: NavController, member: Member) {
     WorkAloneTheme {
         val typography = LocalWorkAloneTypography.current
-        val viewModel: CalendarViewModel = viewModel()
+        val calendarViewModel: CalendarViewModel = viewModel()
+        val summaryViewModel: ExerciseSummaryViewModel = viewModel()
         val context = LocalContext.current
         var backPressedTime by remember { mutableStateOf(0L) }
         val coroutineScope = rememberCoroutineScope()
@@ -126,7 +128,7 @@ fun HomeView(navController: NavController, member: Member) {
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
-                            Calendar(viewModel)
+                            Calendar(calendarViewModel, summaryViewModel)
                         }
                     }
 
