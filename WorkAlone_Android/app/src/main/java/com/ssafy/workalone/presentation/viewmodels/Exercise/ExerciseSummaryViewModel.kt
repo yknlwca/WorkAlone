@@ -2,13 +2,8 @@ package com.ssafy.workalone.presentation.viewmodels.exercise
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-<<<<<<<< HEAD:WorkAlone_Android/app/src/main/java/com/ssafy/workalone/presentation/viewmodels/ExerciseSummaryViewModel.kt
-import com.ssafy.workalone.data.model.ExerciseSummary
+import com.ssafy.workalone.data.model.exercise.ExerciseSummary
 import com.ssafy.workalone.data.repository.ExerciseSummaryRepository
-========
-import com.ssafy.workalone.data.model.exercise.ExerciseRecord
-import com.ssafy.workalone.data.repository.ExerciseRecordRepository
->>>>>>>> origin/develop:WorkAlone_Android/app/src/main/java/com/ssafy/workalone/presentation/viewmodels/Exercise/ExerciseRecordViewModel.kt
 import com.ssafy.workalone.global.exception.CustomException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

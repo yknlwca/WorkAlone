@@ -10,6 +10,9 @@ class AWSS3Repository(
     private val videoService: AWSS3Service = RetrofitFactory.getInstance()
         .create(AWSS3Service::class.java)
 ) {
+    // PreSignedUrl과 ObjectUrl을 받아 SharedPreference에 저장
+    // PreSignedUrl은 파일과 함께 업로드 요청으로
+    // ObjectUrl은 운동 기록과 함께 요청
     suspend fun getPreSignedUrl(): PreSignedUrl? {
         return try {
             val response = videoService.getPreSignedUrl()

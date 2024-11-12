@@ -1,8 +1,12 @@
 package com.ssafy.workalone.presentation.viewmodels
 
 import android.content.Context
+import androidx.camera.video.Recording
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ssafy.workalone.data.local.ExerciseInfoPreferenceManager
@@ -13,7 +17,8 @@ class ExerciseMLKitViewModel(context: Context): ViewModel() {
 
     private val _exercises = exerciseInfoPreferenceManager.getExerciseList()
     private val _nowExercise: MutableState<ExerciseData> = mutableStateOf(_exercises[0])
-    private val _exercistType: MutableLiveData<String> = MutableLiveData<String>().apply { _nowExercise.value.title }
+    private val _exerciseType: MutableLiveData<String> =
+        MutableLiveData<String>().apply { _nowExercise.value.title }
     private val _nowSet: MutableState<Int> = mutableStateOf(1)
     private val _totalSet: MutableState<Int> = mutableStateOf(_nowExercise.value.exerciseSet)
     private val _nowRep: MutableState<Int> = mutableStateOf(0)
@@ -43,7 +48,6 @@ class ExerciseMLKitViewModel(context: Context): ViewModel() {
     val preSetText: MutableState<String> = _preSetText
     val isExit: MutableState<Boolean> = _isExit
     val isFinish: MutableState<Boolean> = _isFinish
-
 
 
     fun setNowReps(rep:Int){
@@ -148,7 +152,7 @@ class ExerciseMLKitViewModel(context: Context): ViewModel() {
     }
     fun clickExit(){
         _isExit.value = true
-        _isExercising.value = false;
+        _isExercising.value = false
     }
     fun cancelExit(){
         _isExit.value = false
