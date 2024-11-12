@@ -1,6 +1,5 @@
 package com.ssafy.workalone.presentation.ui.screen.complete
 
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,12 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-<<<<<<< HEAD:WorkAlone_Android/app/src/main/java/com/ssafy/workalone/presentation/ui/screen/IndividualCompleteView.kt
-=======
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
->>>>>>> origin/develop:WorkAlone_Android/app/src/main/java/com/ssafy/workalone/presentation/ui/screen/complete/IndividualCompleteView.kt
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -37,24 +33,16 @@ import androidx.navigation.compose.rememberNavController
 import com.ssafy.workalone.R
 import com.ssafy.workalone.data.local.ExerciseInfoPreferenceManager
 import com.ssafy.workalone.presentation.navigation.Screen
-<<<<<<< HEAD:WorkAlone_Android/app/src/main/java/com/ssafy/workalone/presentation/ui/screen/IndividualCompleteView.kt
-import com.ssafy.workalone.presentation.ui.component.CloseButton
-import com.ssafy.workalone.presentation.ui.component.ConfettiAnimation
-import com.ssafy.workalone.presentation.ui.component.CustomButton
-import com.ssafy.workalone.presentation.ui.component.IndividualExerciseRecord
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
-=======
 import com.ssafy.workalone.presentation.ui.component.bottombar.CustomButton
 import com.ssafy.workalone.presentation.ui.component.complete.ConfettiAnimation
 import com.ssafy.workalone.presentation.ui.component.complete.IndividualExerciseRecord
 import com.ssafy.workalone.presentation.ui.component.topbar.CloseButton
-import com.ssafy.workalone.presentation.ui.screen.inputStreamToFile
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.viewmodels.video.AWSS3ViewModel
->>>>>>> origin/develop:WorkAlone_Android/app/src/main/java/com/ssafy/workalone/presentation/ui/screen/complete/IndividualCompleteView.kt
 import kotlin.math.roundToInt
 
 //운동 완료 화면(개별형)
@@ -81,7 +69,7 @@ fun IndividualCompleteView(
         } else {
             0
         }
-    val selectedFileUri by remember { mutableStateOf(preferenceManager.getVideoUrl()) }
+    val requestUri by remember { mutableStateOf(preferenceManager.getAWSUrl()) }
     val preSignedUrl by awsViewModel.preSignedUrl.collectAsStateWithLifecycle()
     val uploadResponse by awsViewModel.uploadVideoResponse.collectAsStateWithLifecycle()
 
@@ -155,6 +143,7 @@ fun IndividualCompleteView(
                         borderColor = WalkOneBlue300,
                         onClick = {
                             awsViewModel.getPreSignedUrl()
+
                         },
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -162,18 +151,6 @@ fun IndividualCompleteView(
                 CustomButton(
                     text = "확인",
                     onClick = {
-                        preSignedUrl?.preSignedUrl?.let { url ->
-                            selectedFileUri.let { uri ->
-                                val inputStream =
-                                    context.contentResolver.openInputStream(Uri.parse(uri))
-                                if (inputStream != null) {
-                                    awsViewModel.uploadVideo(
-                                        url,
-                                        inputStreamToFile(inputStream, context)
-                                    )
-                                }
-                            }
-                        }
                         navController.navigate(Screen.Home.route) {
                             popUpTo(Screen.Home.route) { inclusive = true }
                             launchSingleTop = true

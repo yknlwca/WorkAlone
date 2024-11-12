@@ -2,7 +2,6 @@ package com.ssafy.workalone.presentation.ui.screen.home
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -36,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.ssafy.workalone.mlkit.java.CameraXLivePreviewActivity
 import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.bottombar.BottomSheetContent
 import com.ssafy.workalone.presentation.ui.component.bottombar.CustomButton
@@ -47,7 +45,7 @@ import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray900
 import com.ssafy.workalone.presentation.ui.theme.WorkAloneTheme
 import com.ssafy.workalone.presentation.viewmodels.CalendarViewModel
-import com.ssafy.workalone.presentation.viewmodels.ExerciseSummaryViewModel
+import com.ssafy.workalone.presentation.viewmodels.exercise.ExerciseSummaryViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -67,18 +65,7 @@ fun HomeView(navController: NavController, name: String) {
             initialValue = ModalBottomSheetValue.Hidden,
             skipHalfExpanded = false
         )
-//        var showWeightDialog by remember { mutableStateOf(true) }
-//        var userWeight by remember { mutableStateOf(70) } // 기본 몸무게
 
-//        if (showWeightDialog) {
-//            WeightPickerDialog(
-//                initialWeight = userWeight,
-//                onConfirm = { selectedWeight ->
-//                    userWeight = selectedWeight
-//                },
-//                onDismiss = { showWeightDialog = false }
-//            )
-//        }
         BackHandler {
             if (System.currentTimeMillis() - backPressedTime < 2000) {
                 (context as? Activity)?.finish()
@@ -110,7 +97,9 @@ fun HomeView(navController: NavController, name: String) {
                         .padding(it),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column {
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
                         Text(
                             text = "${name}님, 반갑습니다!",
                             style = typography.Heading01.copy(

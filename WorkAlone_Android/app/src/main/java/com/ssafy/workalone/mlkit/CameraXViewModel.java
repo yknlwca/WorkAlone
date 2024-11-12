@@ -60,7 +60,6 @@ public final class CameraXViewModel extends AndroidViewModel {
           },
           ContextCompat.getMainExecutor(getApplication()));
     }
-
     return cameraProviderLiveData;
   }
 }

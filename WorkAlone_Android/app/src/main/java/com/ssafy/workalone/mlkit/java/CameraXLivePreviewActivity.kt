@@ -1,6 +1,5 @@
 package com.ssafy.workalone.mlkit.java
 
-import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.os.Build
 import android.os.Build.VERSION_CODES
@@ -33,11 +32,13 @@ import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.PreviewView
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.common.annotation.KeepName
 import com.google.mlkit.common.MlKitException
 import com.ssafy.workalone.R
 import com.ssafy.workalone.data.local.ExerciseInfoPreferenceManager
+import com.ssafy.workalone.data.local.SettingsPreferenceManager
 import com.ssafy.workalone.mlkit.CameraXViewModel
 import com.ssafy.workalone.mlkit.GraphicOverlay
 import com.ssafy.workalone.mlkit.VisionImageProcessor
@@ -46,6 +47,7 @@ import com.ssafy.workalone.mlkit.preference.PreferenceUtils
 import com.ssafy.workalone.presentation.ui.screen.exercise.ExerciseMLkitView
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModelFactory
+import com.ssafy.workalone.presentation.viewmodels.video.AWSS3ViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.ExecutorService
@@ -71,25 +73,29 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
         ExerciseMLKitViewModelFactory(this)
     }
 
+    private val awss3ViewModel: AWSS3ViewModel by viewModels()
+
     private var videoCapture: VideoCapture<Recorder>? = null
-    private var recording: Recording? = null
+    private var recording: Recording? = null // 최적화 -> 뷰 모델 이동
+    private val isInitRecording = MutableLiveData(false) // Recording 상태 감지
 
     private lateinit var cameraExecutor: ExecutorService
-
     private lateinit var preferenceManger: ExerciseInfoPreferenceManager
+    private lateinit var settingManager: SettingsPreferenceManager
 
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
         preferenceManger = ExerciseInfoPreferenceManager(applicationContext)
+        settingManager = SettingsPreferenceManager(applicationContext)
+
         setContentView(R.layout.activity_vision_camerax_live_preview)
+        Log.d("init recording", "$recording")
 
         previewView = findViewById(R.id.preview_view)
         graphicOverlay = findViewById(R.id.graphic_overlay)
 
         cameraExecutor = Executors.newSingleThreadExecutor()
-
 
         ViewModelProvider(
             this,
@@ -97,7 +103,9 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
         ).get(CameraXViewModel::class.java).processCameraProvider.observe(this) { provider ->
             cameraProvider = provider
             bindAllCameraUseCases()
+            if (settingManager.getRecordingMode()) {
             captureVideo()
+            }
         }
 
 
@@ -113,11 +121,22 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
             Log.d(TAG, "graphicOverlay is null")
         }
 
-    //ComposeView설정
-    val composeView: ComposeView = findViewById(R.id.compose_view)
-    composeView.setContent {
-      ExerciseMLkitView(exerciseViewModel)
-    }
+        isInitRecording.observe(this) {
+            //ComposeView설정
+            val composeView: ComposeView = findViewById(R.id.compose_view)
+            composeView.setContent {
+                ExerciseMLkitView(
+                    viewModel = exerciseViewModel,
+                    recording = if (it) recording else null
+                )
+            }
+        }
+
+//        //ComposeView설정
+//        val composeView: ComposeView = findViewById(R.id.compose_view)
+//        composeView.setContent {
+//            ExerciseMLkitView(exerciseViewModel, recording)
+//        }
 
         val options: MutableList<String> = ArrayList()
         options.add(POSE_DETECTION)
@@ -171,19 +190,16 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
 
     public override fun onResume() {
         super.onResume()
-        resumeRecording()
         bindAllCameraUseCases()
     }
 
     override fun onPause() {
         super.onPause()
-        pauseRecording()
         imageProcessor?.run { this.stop() }
     }
 
     public override fun onDestroy() {
         super.onDestroy()
-        stopRecording()
         imageProcessor?.run { this.stop() }
     }
 
@@ -255,7 +271,6 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
                     /* isStreamMode = */ true,
                     exerciseViewModel.nowExercise.value.title,
                     exerciseViewModel
-
                 )
             } catch (e: Exception) {
                 Log.e(TAG, "Can not create image processor: $selectedModel", e)
@@ -358,6 +373,8 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
             .format(System.currentTimeMillis())
 
         // 비디오 파일의 메타데이터를 설정한다.
+        // 비디오 파일을 저장하지 않고 바로 서버로 올릴 수 있지만 네트워크 환경에 영향을 많이 받는다.
+        // 일단 저장 -> 업로드 -> 삭제 방식
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, name)
             put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4")
@@ -389,41 +406,29 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
                             Toast.makeText(this@CameraXLivePreviewActivity, msg, Toast.LENGTH_SHORT)
                                 .show()
                             Log.d(TAG, msg)
-                            val saveUrl = recordEvent.outputResults.outputUri
-                            preferenceManger.setVideoUrl(saveUrl.toString())
-
+                            // 파일의 URI
+                            val fileUri = recordEvent.outputResults.outputUri
+                            preferenceManger.setFileUrl(fileUri.toString())
+                            recording?.close()
+                            recording = null
+                            Log.d("FILE URI", fileUri.toString())
                         } else {
                             recording?.close()
                             recording = null
                             Log.e(TAG, "Video capture ends with error: ${recordEvent.error}")
-
                         }
                     }
                 }
             }
+        isInitRecording.value = true
     }
 
-
-    private fun stopRecording() {
-        recording?.stop() // 녹화 끝
-        Log.d("Finish Recording", "Well Finish")
-    }
-
-    private fun pauseRecording() {
-        recording?.pause()
-    }
-
-    private fun resumeRecording() {
-        recording?.resume()
-    }
 
     companion object {
         private const val TAG = "CameraXLivePreview"
         private const val POSE_DETECTION = "Pose Detection"
-        private const val REQUEST_RECORD_AUDIO_PERMISSION = 200
 
         private const val STATE_SELECTED_MODEL = "selected_model"
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
     }
-
 }

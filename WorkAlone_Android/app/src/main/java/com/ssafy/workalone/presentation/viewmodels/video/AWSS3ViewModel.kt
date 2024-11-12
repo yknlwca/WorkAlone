@@ -28,10 +28,12 @@ class AWSS3ViewModel(private val awsS3Repository: AWSS3Repository = AWSS3Reposit
         }
     }
 
-    fun uploadVideo(preSignedUrl: String, file: File) {
+    fun uploadVideo(file: File) {
         viewModelScope.launch {
+            getPreSignedUrl()
             val requestBody = file.asRequestBody("video/mp4".toMediaTypeOrNull())
-            _uploadVideoResponse.value = awsS3Repository.uploadToS3(preSignedUrl, requestBody)
+            _uploadVideoResponse.value =
+                awsS3Repository.uploadToS3(_preSignedUrl.value!!.preSignedUrl, requestBody)
         }
     }
 }

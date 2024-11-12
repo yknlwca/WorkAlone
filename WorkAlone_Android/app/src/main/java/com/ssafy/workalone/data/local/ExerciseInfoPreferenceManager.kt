@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.ssafy.workalone.data.model.exercise.ExerciseData
+import com.ssafy.workalone.data.model.video.PreSignedUrl
 
 class ExerciseInfoPreferenceManager(context: Context) {
     private val preferences: SharedPreferences =
@@ -34,12 +35,23 @@ class ExerciseInfoPreferenceManager(context: Context) {
         return gson.fromJson(json, type)
     }
 
-    fun setVideoUrl(url : String){
-        preferences.edit().putString("video_url", url).apply()
+    fun setAWSUrl(preSignedUrl: PreSignedUrl){
+        val json = gson.toJson(preSignedUrl)
+        preferences.edit().putString("preSigned_url", json).apply()
     }
 
-    fun getVideoUrl() : String{
-        return preferences.getString("video_url", "") ?: ""
+    fun getAWSUrl() : PreSignedUrl{
+        val json = preferences.getString("preSigned_url", null) ?: return PreSignedUrl()
+        val type = object : TypeToken<PreSignedUrl>() {}.type
+        return gson.fromJson(json, type)
+    }
+
+    fun setFileUrl(fileUrl: String){
+        preferences.edit().putString("file_url", fileUrl).apply()
+    }
+
+    fun getFileUrl() : String{
+        return preferences.getString("file_url", null) ?: return ""
     }
 
     // 운동이 끝나면 삭제

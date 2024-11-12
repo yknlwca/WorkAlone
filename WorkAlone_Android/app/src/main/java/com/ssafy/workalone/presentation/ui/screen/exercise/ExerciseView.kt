@@ -2,6 +2,7 @@ package com.ssafy.workalone.presentation.ui.screen.exercise
 
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -60,7 +61,9 @@ fun ExerciseView(
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
     val preferenceManager = ExerciseInfoPreferenceManager(context)
-    val intent = Intent(context, CameraXLivePreviewActivity::class.java)
+    val intent = Intent(context, CameraXLivePreviewActivity::class.java).apply {
+        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
 
     val cameraPermissionCheck = ContextCompat.checkSelfPermission(
         context,
@@ -80,8 +83,7 @@ fun ExerciseView(
         rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             val cameraGranted = permissions[android.Manifest.permission.CAMERA] ?: false
             val audioGranted = permissions[android.Manifest.permission.RECORD_AUDIO] ?: false
-            val storageGrated =
-                permissions[android.Manifest.permission.WRITE_EXTERNAL_STORAGE] ?: false
+
             if (cameraGranted) {
                 context.startActivity(intent)
             } else {
@@ -170,6 +172,10 @@ fun ExerciseView(
                                 text = "운동 시작하기",
                                 onClick = {
                                     viewModel.saveExercisesPreferences(exercises.value)
+                                    Log.d(
+                                        "Get Exercise",
+                                        preferenceManager.getExerciseList().toString()
+                                    )
                                     if (cameraPermissionCheck != PackageManager.PERMISSION_GRANTED || audioPermissionCheck != PackageManager.PERMISSION_GRANTED || storagePermissionCheck != PackageManager.PERMISSION_GRANTED) {
                                         requestPermissionLauncher.launch(
                                             arrayOf(

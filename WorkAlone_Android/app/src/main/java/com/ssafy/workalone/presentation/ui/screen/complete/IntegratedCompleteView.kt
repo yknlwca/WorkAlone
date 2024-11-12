@@ -1,6 +1,5 @@
 package com.ssafy.workalone.presentation.ui.screen.complete
 
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -42,12 +41,10 @@ import com.ssafy.workalone.presentation.ui.component.bottombar.CustomButton
 import com.ssafy.workalone.presentation.ui.component.complete.ConfettiAnimation
 import com.ssafy.workalone.presentation.ui.component.complete.IntegratedExerciseRecord
 import com.ssafy.workalone.presentation.ui.component.topbar.CloseButton
-import com.ssafy.workalone.presentation.ui.screen.inputStreamToFile
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.viewmodels.video.AWSS3ViewModel
-import kotlin.math.roundToInt
 
 data class IntegratedExerciseRecordData(
     val title: String,
@@ -80,7 +77,7 @@ fun IntegratedCompleteView(
     val exerciseType: String = "윗몸일으키기"
     val weight = 60
 
-    val selectedFileUri by remember { mutableStateOf(preferenceManager.getVideoUrl()) }
+    val selectedFileUri by remember { mutableStateOf(preferenceManager.getAWSUrl()) }
     val preSignedUrl by awsViewModel.preSignedUrl.collectAsStateWithLifecycle()
     val uploadResponse by awsViewModel.uploadVideoResponse.collectAsStateWithLifecycle()
 
@@ -219,18 +216,6 @@ fun IntegratedCompleteView(
                     CustomButton(
                         text = "확인",
                         onClick = {
-                            preSignedUrl?.preSignedUrl?.let { url ->
-                                selectedFileUri.let { uri ->
-                                    val inputStream =
-                                        context.contentResolver.openInputStream(Uri.parse(uri))
-                                    if (inputStream != null) {
-                                        awsViewModel.uploadVideo(
-                                            url,
-                                            inputStreamToFile(inputStream, context)
-                                        )
-                                    }
-                                }
-                            }
                             navController.navigate(Screen.Home.route) {
                                 popUpTo(Screen.Home.route) { inclusive = true }
                                 launchSingleTop = true
