@@ -43,30 +43,45 @@ VALUES (1,'스쿼트', '허벅지와 코어 근력 강화',
         '일어날 때 숨을 내쉬고, 내려갈 때 숨을 들이마십니다.');
 
 
--- ExerciseGroup 테이블의 더미 데이터 (member_id가 1인 경우)
-INSERT INTO exercise_group (id, member_id, title, rest_btw_exercise) VALUES (1, 1, '통합형 운동1', 90);
-INSERT INTO exercise_group (id, member_id, title, rest_btw_exercise) VALUES (2, 1, '통합형 운동2', 90);
-INSERT INTO exercise_group (id, member_id, title, rest_btw_exercise) VALUES (3, 1, '개별형 운동', null);
+-- ExerciseGroup 테이블의 더미 데이터
+INSERT INTO exercise_group (id, organization_id, title, rest_btw_exercise) VALUES (1, 1, '통합형 운동1', 90);
+INSERT INTO exercise_group (id, organization_id, title, rest_btw_exercise) VALUES (2, 1, '통합형 운동2', 90);
+INSERT INTO exercise_group (id, organization_id, title, rest_btw_exercise) VALUES (3, 1, '개별형 운동', null);
+INSERT INTO exercise_group (id, organization_id, title, rest_btw_exercise) VALUES (4, 1, '플랭크 운동', null);
+INSERT INTO exercise_group (id, organization_id, title, rest_btw_exercise) VALUES (5, 1, '통합 운동', 15);
 
 -- Exercise 테이블에 더미 데이터 추가
 INSERT INTO exercise (id, group_id, type_id, seq, exercise_set, exercise_repeat, rest_btw_set, set_type, deleted)
 VALUES
-    -- 복합형 운동: group_id = 1 (Upper Body Workout)
+    -- 복합형 운동
     (1, 1, 1, 1, 2, 10, 60, 'COUNT', false),
     (2, 1, 1, 2, 3, 15, 45, 'COUNT', false),
     (3, 1, 2, 3, 2, 10, 30, 'COUNT', false),
 
-    -- 복합형 운동: group_id = 2 (Lower Body Workout)
+    -- 복합형 운동
     (4, 2, 2, 1, 3, 15, 60, 'COUNT', false),
     (5, 2, 1, 2, 2, 10, 45, 'COUNT', false),
     (6, 2, 3, 3, 3, 30, 30, 'TIMER', false),  -- TIMER로 30 설정
 
-    -- 단일 운동: group_id = 3 (Core Workout)
-    (7, 3, 4, 1, 2, 15, 90, 'COUNT', false);
+    -- 개별형 운동
+    (7, 3, 3, 1, 2, 5,15, 'TIMER',false),
+
+    -- 개별형 운동
+    (8, 4, 3, 1, 2, 5, 15, 'TIMER', false),
+
+    -- 통합형 운동
+    (9, 5, 1, 1, 2, 2, 5, 'COUNT', false),
+    (10, 5, 2, 2, 2, 2, 5, 'COUNT', false),
+    (11, 5, 3, 3, 2, 5, 5, 'TIMER', false);
+
 
 -- ExerciseMapping 테이블에 더미 데이터 추가
 INSERT INTO exercise_mapping (group_id, member_id)
-VALUES (1, 1), (2, 1), (3, 1);
+VALUES (1, 1),
+       (2, 1),
+       (3, 1),
+       (4, 1),
+       (5, 1);
 
 
 INSERT INTO exercise_summary (member_id, date, exercise_id, kcal, time)

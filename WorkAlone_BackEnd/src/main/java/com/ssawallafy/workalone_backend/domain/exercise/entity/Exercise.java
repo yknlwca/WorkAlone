@@ -1,16 +1,13 @@
 package com.ssawallafy.workalone_backend.domain.exercise.entity;
 
+import com.ssawallafy.workalone_backend.domain.exercise.dto.request.ExerciseDetailReqDto;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class Exercise {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,4 +34,28 @@ public class Exercise {
     @ColumnDefault(value = "false")
     @Column(columnDefinition = "TINYINT(1)")
     private boolean deleted;
+
+    @Builder
+    public Exercise(ExerciseGroup exerciseGroup, ExerciseType exerciseType, int seq, int exerciseSet, int exerciseRepeat, Set setType, Integer restBtwSet) {
+        this.exerciseGroup = exerciseGroup;
+        this.exerciseType = exerciseType;
+        this.seq = seq;
+        this.exerciseSet = exerciseSet;
+        this.exerciseRepeat = exerciseRepeat;
+        this.setType = setType;
+        this.restBtwSet = restBtwSet;
+        this.deleted = false;
+    }
+
+    public static Exercise of(ExerciseGroup exerciseGroup, ExerciseType exerciseType, ExerciseDetailReqDto exerciseDetailReqDto) {
+        return Exercise.builder()
+                .exerciseGroup(exerciseGroup)
+                .seq(exerciseDetailReqDto.getSeq())
+                .exerciseRepeat(exerciseDetailReqDto.getExerciseRepeat())
+                .exerciseSet(exerciseDetailReqDto.getExerciseSet())
+                .exerciseType(exerciseType)
+                .restBtwSet(exerciseDetailReqDto.getRestBtwSet())
+                .setType(Set.valueOf(exerciseDetailReqDto.getSetType().toUpperCase()))
+                .build();
+    }
 }
