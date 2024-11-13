@@ -1,5 +1,6 @@
 package com.ssafy.workalone.presentation.ui.screen.exercise
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -62,9 +63,12 @@ fun ChallengeListView(navController: NavController, viewModel: ExerciseViewModel
             ) {
                 items(challengeList.value) { challenge ->
                     ExerciseItem(challenge = challenge) {
-                        if(challenge.restBtwExercise != null) {
-                            preferenceManager.setRestBtwExercise(challenge.restBtwExercise)
-                        }
+
+                            challenge.restBtwExercise?.let { it1 ->
+                                preferenceManager.setRestBtwExercise(
+                                    it1
+                                )
+                            }
                         navController.navigate(
                             Screen.ExerciseDetail.createRoute(
                                 challenge.groupId

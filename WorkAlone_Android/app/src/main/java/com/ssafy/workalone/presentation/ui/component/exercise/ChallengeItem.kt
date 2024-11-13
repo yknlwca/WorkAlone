@@ -55,7 +55,7 @@ fun ExerciseItem(challenge: Challenge, onClick: () -> Unit) {
                         .background(WalkOneGray50)
                 ) {
                     var imageResId = R.drawable.w_logo
-                    if (challenge.exerciseType.equals("스쿼드")) {
+                    if (challenge.exerciseType.equals("스쿼트")) {
                         imageResId = R.drawable.squat
                     } else if (challenge.exerciseType.equals("푸쉬업")) {
                         imageResId = R.drawable.push_up

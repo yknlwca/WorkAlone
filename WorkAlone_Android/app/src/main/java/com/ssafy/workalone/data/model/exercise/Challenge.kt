@@ -11,7 +11,7 @@ data class Challenge(
     val exerciseSet: Int?,
     @SerializedName("exerciseRepeat")
     val exerciseRepeat: Int?,
-    @SerializedName("restBtwSet")
+    @SerializedName("restBtwExercise")
     val restBtwExercise: Int?,
     @SerializedName("kind")
     val kind: String,

@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ssafy.workalone.presentation.ui.component.complete.ConfettiAnimation
+import com.ssafy.workalone.presentation.ui.component.toast.NextExercise
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 import kotlinx.coroutines.delay
@@ -79,6 +80,16 @@ fun RestTime(
                     ),
                     modifier = Modifier.align(Alignment.Center)
                 )
+                if (viewModel.stage.value == "nextExercise") {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 20.dp)
+                    ) {
+                        NextExercise(viewModel)
+                    }
+                }
+
             }
         }
 }
