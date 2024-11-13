@@ -3,6 +3,7 @@ package com.ssafy.workalone.presentation.ui.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -13,13 +14,17 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ssafy.workalone.R
@@ -62,7 +67,11 @@ fun AppBarView(
                 Image(
                     painter = painterResource(R.drawable.workalone),
                     contentDescription = "Walk Alone",
-                    modifier = Modifier.size(200.dp)
+                    modifier = Modifier
+//                        .size(200.dp)
+                        .height(36.dp),
+                    contentScale = ContentScale.FillHeight
+
 
                 )
             },
@@ -81,7 +90,19 @@ fun AppBarView(
                     )
                 }
             },
-            modifier = Modifier.height(70.dp)
+            modifier = Modifier.height(40.dp)
         )
     }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Preview(showBackground = true)
+@Composable
+fun a() {
+    AppBarView(
+        title="HOME",
+    )
+//    AppBarView(
+//        title="123",
+//    )
 }

@@ -22,4 +22,7 @@ interface ExerciseService {
     suspend fun getExerciseSummary(
         @Query("date") date: String,
     ):Response<ExerciseSummary>
+
+    @GET("/summary/date-list")
+    suspend fun getCompletedExerciseDate(): Response<List<String>>
 }
