@@ -1,6 +1,6 @@
 package com.ssafy.workalone.data.remote
 
-import com.ssafy.workalone.data.model.video.PreSignedUrl
+import com.ssafy.workalone.data.model.video.AwsUrl
 import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -16,5 +16,5 @@ interface AWSS3Service {
     ): Response<Void>
 
     @GET("/summary/url")
-    suspend fun getPreSignedUrl(): Response<PreSignedUrl>
+    suspend fun getPreSignedUrl(): Response<AwsUrl>
 }

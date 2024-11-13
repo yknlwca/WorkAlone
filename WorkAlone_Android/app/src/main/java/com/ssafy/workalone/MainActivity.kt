@@ -8,9 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.rememberNavController
 import com.ssafy.workalone.data.local.MemberPreferenceManager
-import com.ssafy.workalone.presentation.navigation.Navigation
 import com.ssafy.workalone.presentation.navigation.Screen
+import com.ssafy.workalone.presentation.ui.screen.complete.IndividualCompleteView
 import com.ssafy.workalone.presentation.ui.theme.WorkAloneTheme
 
 class MainActivity : ComponentActivity() {
@@ -30,8 +31,8 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background)
                 ) {
-                    Navigation(startDestination = startDestination)
-//                    AWSS3UploadScreen()
+//                    Navigation(startDestination = startDestination)
+                    IndividualCompleteView(rememberNavController())
                 }
             }
         }

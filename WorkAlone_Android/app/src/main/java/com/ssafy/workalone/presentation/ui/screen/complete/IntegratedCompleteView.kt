@@ -207,7 +207,7 @@ fun IntegratedCompleteView(
                         backgroundColor = WalkOneBlue300,
                         borderColor = WalkOneBlue300,
                         onClick = {
-                            awsViewModel.getPreSignedUrl()
+                            awsViewModel.getAwsUrlRequest()
                         },
                     )
                     Spacer(modifier = Modifier.height(8.dp))

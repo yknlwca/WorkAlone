@@ -1,7 +1,7 @@
 package com.ssafy.workalone.data.repository
 
 import android.util.Log
-import com.ssafy.workalone.data.model.video.PreSignedUrl
+import com.ssafy.workalone.data.model.video.AwsUrl
 import com.ssafy.workalone.data.remote.AWSS3Service
 import com.ssafy.workalone.data.remote.RetrofitFactory
 import okhttp3.RequestBody
@@ -13,7 +13,7 @@ class AWSS3Repository(
     // PreSignedUrl과 ObjectUrl을 받아 SharedPreference에 저장
     // PreSignedUrl은 파일과 함께 업로드 요청으로
     // ObjectUrl은 운동 기록과 함께 요청
-    suspend fun getPreSignedUrl(): PreSignedUrl? {
+    suspend fun getPreSignedUrl(): AwsUrl? {
         return try {
             val response = videoService.getPreSignedUrl()
             if (response.isSuccessful) {

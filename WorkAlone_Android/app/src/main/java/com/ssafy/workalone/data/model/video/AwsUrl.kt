@@ -2,7 +2,7 @@ package com.ssafy.workalone.data.model.video
 
 import com.google.gson.annotations.SerializedName
 
-data class PreSignedUrl(
+data class AwsUrl(
     @SerializedName("presignedUrl")
     val preSignedUrl: String = "",
 
