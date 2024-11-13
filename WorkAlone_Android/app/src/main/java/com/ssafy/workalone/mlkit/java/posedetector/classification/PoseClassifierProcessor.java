@@ -145,15 +145,14 @@ public class PoseClassifierProcessor {
       @Override
       public void onReadyForSpeech(Bundle bundle)
       {
-        //Log.d(TAG, "음성 인식 준비됨");
+        Log.d("exer", "음성 인식 준비됨");
         //System.out.println("음석 인식 준비 됨");
       }
 
       @Override
       public void onBeginningOfSpeech()
-      {
-        //Log.d(TAG, "음성 인식 시작됨");
-       // S//ystem.out.println("음성 인식 시작");
+      {Log.i("exer", "음성 인식 시작됨");
+       // ystem.out.println("음성 인식 시작");
 
       }
 
@@ -192,9 +191,9 @@ public class PoseClassifierProcessor {
           case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
             //Log.e("exer", "음성 입력 시간 초과");
             break;
-          // 추가 오류 코드 확인 가능
+
         }
-     //  Log.e("exer", "오류 발생 시 startListening() 다시 시작");
+
 
         startListening(); // 오류 발생 시 다시 듣기 시작
       }
@@ -209,18 +208,15 @@ public class PoseClassifierProcessor {
               isTracking = true;
               isPaused = false;
               viewModel.startExercise();
-              //Log.d(TAG, "운동 추적 시작됨");
               Log.d("exer", "운동 추적 시작됨");
             } else if (command.equalsIgnoreCase("정지")) {
               isPaused = true;
               viewModel.stopExercise();
-             // Log.d(TAG, "운동 추적 일시 중지됨");
              Log.d("exer", "운동 추적 일시 중지됨");
             } else if (command.equalsIgnoreCase("종료")) {
               isTracking = false;
               viewModel.clickExit();
-             // shutdown();
-             // Log.d(TAG, "운동 추적 종료됨");
+
             }
           }
         }
@@ -244,10 +240,7 @@ public class PoseClassifierProcessor {
   }
   private void startListening() {
 
-//    if (isEnvironmentLoud) {
-//      Log.d("exer", "소음이 감지되어 음성 인식을 시작하지 않습니다.");
-//      return; // 소음이 있으면 음성 인식 시작 안함
-//    }
+
     Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
     intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
     intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.KOREAN);
@@ -268,7 +261,6 @@ public class PoseClassifierProcessor {
         csvLine = reader.readLine();
       }
     } catch (IOException e) {
-     // Log.e(TAG, "Error when loading pose samples.\n" + e);
     }
     poseClassifier = new PoseClassifier(poseSamples);
     if (isStreamMode) {
@@ -279,7 +271,6 @@ public class PoseClassifierProcessor {
   }
 
 
-  // 운동 reps,시간 보여주는곳
 
   @WorkerThread
   public List<String> getPoseResult(Pose pose, ExerciseMLKitViewModel viewModel) {
@@ -287,11 +278,10 @@ public class PoseClassifierProcessor {
     List<String> result = new ArrayList<>();
 
 
-    //Log.d("exer","getPoseResult 호출 ");
+
 
     ClassificationResult classification = poseClassifier.classify(pose);
 
-    Log.d("exer","현재 추적 상태(쉬는시간이면 true): "+viewModel.isResting().getValue());
     if (viewModel.isResting().getValue()) {result.add("추적이 종료되었습니다.");
       result.add("isTracking: " + isTracking);
       result.add("isPaused: " + isPaused);
@@ -313,23 +303,9 @@ public class PoseClassifierProcessor {
         return result;
       }
 
-      // 특정 자세가 잘못된 경우 피드백 추가
-//      if (classification.getMaxConfidenceClass().equals(SQUATS_CLASS)) {
-//        if (isKneeTooFarForward(pose)) {
-//          speakResult("무릎을 앞으로 내밀지 마세요");
-//          result.add("무릎을 앞으로 내밀지 마세요");
-//        } else if (isUpperBodyNotUpright(pose)) {
-//          speakResult("상체를 곧게 펴세요");
-//          result.add("상체를 곧게 펴세요");
-//        }
-//      }
 
-
-
-    //  Log.d("exer","pose sample file:"+POSE_SAMPLES_FILE);
       for (RepetitionCounter repCounter : repCounters) {
 
-        //Log.d("exer",String.valueOf(repCounter.getClassName()));
 
         if (POSE_SAMPLES_FILE.equals("pose/plank.csv")) {
           if (classification.getMaxConfidenceClass().equals(PLANK_CLASS))
@@ -345,8 +321,6 @@ public class PoseClassifierProcessor {
 
             lastRepResult = String.format(Locale.KOREAN, "%s : 중단됨", PLANK_CLASS);
             Log.d("exer","플랭크 자세 유지 X "+plankFlag);
-
-            //speakResult("플랭크 자세를 유지해주세요.");
           }
           if(plankFlag){
             viewModel.startExercise();
@@ -364,7 +338,6 @@ public class PoseClassifierProcessor {
             viewModel.addRep("스쿼트, 푸쉬업, 윗몸일으키기");
             Log.d("exer","count: "+String.valueOf(repsAfter));
             speakResult(String.valueOf(viewModel.getNowRep().getValue()));
-            //speakResult(String.valueOf(repsAfter));
             break;
           }
           //횟수 다채우면 다음세트
@@ -414,42 +387,6 @@ public class PoseClassifierProcessor {
     }
   }
 
-
-  // 무릎이 앞으로 너무 나갔는지 판단하는 메서드
-  private boolean isKneeTooFarForward(Pose pose) {
-    PoseLandmark leftKnee = pose.getPoseLandmark(PoseLandmark.LEFT_KNEE);
-    PoseLandmark leftAnkle = pose.getPoseLandmark(PoseLandmark.LEFT_ANKLE);
-    PoseLandmark leftHip = pose.getPoseLandmark(PoseLandmark.LEFT_HIP);
-
-    if (leftKnee != null && leftAnkle != null && leftHip != null) {
-      // 무릎이 발 앞쪽으로 나간 경우: x 좌표로 비교
-      if (leftKnee.getPosition().x > leftAnkle.getPosition().x) {
-        // 무릎이 발보다 앞에 위치하면 잘못된 자세로 판단
-        return true;
-      }
-    }
-    return false;
-  }
-
-  // 상체가 앞으로 기울어졌는지 판단하는 메서드
-  private boolean isUpperBodyNotUpright(Pose pose) {
-    PoseLandmark leftShoulder = pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER);
-    PoseLandmark leftHip = pose.getPoseLandmark(PoseLandmark.LEFT_HIP);
-
-    if (leftShoulder != null && leftHip != null) {
-      // 상체 기울기 계산 (y 좌표 차이를 이용해 세로 기울기 확인)
-      float shoulderToHipYDifference = leftShoulder.getPosition().y - leftHip.getPosition().y;
-      float shoulderToHipXDifference = leftShoulder.getPosition().x - leftHip.getPosition().x;
-
-      // 상체가 수직에 가깝지 않으면 (기울기가 임계값 이상인 경우)
-      if (Math.abs(shoulderToHipXDifference) > 0.3 * Math.abs(shoulderToHipYDifference)) {
-        // 상체가 기울어졌다고 판단
-        return true;
-      }
-    }
-    return false;
-  }
-
   private void setPoseSamplesFile(String exerciseType) {
     switch (exerciseType.toLowerCase()) {
       case "스쿼트":
@@ -467,8 +404,7 @@ public class PoseClassifierProcessor {
       default:
         break;
     }
-    // 스쿼트
-    //
+
   }
 
 }

@@ -125,7 +125,7 @@ public class PoseDetectorProcessor
       textToSpeech.stop();
       textToSpeech.shutdown();
     }
-
+    poseClassifierProcessor.shutdown();
     detector.close();
   }
 
@@ -164,23 +164,6 @@ public class PoseDetectorProcessor
                       Pose pose = task.getResult();
 
 
-                      // 이게 false면 화면안에 없는거임
-
-//                      boolean isIn = true;
-//
-//                      if (!isFullBodyVisible(pose)) {
-//                        Log.d(TAG, "Full body is not visible. Skipping frame.");
-//
-//                        isIn= false;
-//                        long currentTime = System.currentTimeMillis();
-//                        // 마지막 TTS 호출 시간에서 10초가 경과했는지 확인
-//                        if (currentTime - lastTtsTime >= TTS_COOLDOWN_MS) {
-//                          textToSpeech.speak("화면 안으로 모두 들어와주세요", TextToSpeech.QUEUE_FLUSH, null, null);
-//                          lastTtsTime = currentTime; // 마지막 TTS 호출 시간 업데이트
-//                        }
-//
-//                        return null;
-//                      }
                       boolean isInFrame = isFullBodyVisible(pose);
 
                       long currentTime = System.currentTimeMillis();
@@ -199,6 +182,7 @@ public class PoseDetectorProcessor
                         if (!wasOutOfFrame) {
                           wasOutOfFrame = true; // 상태를 화면 밖으로 설정
                         }
+                        viewModel.stopExercise();
                         // Cooldown 시간 이후에만 "화면 안으로 들어와 주세요" 메시지 출력
                         if (currentTime - lastTtsTimeOutOfFrame >= TTS_COOLDOWN_MS) {
                           textToSpeech.speak("화면 안으로 모두 들어와주세요", TextToSpeech.QUEUE_FLUSH, null, null);
@@ -211,7 +195,7 @@ public class PoseDetectorProcessor
                      // Log.d("exer",String.valueOf(runClassification));
                       if (runClassification) {
                         if (poseClassifierProcessor == null) {
-                          Log.d("exer",ExerciseType);
+//                          Log.d("exer",ExerciseType);
                           poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,ExerciseType, viewModel);
                         }
                         classificationResult = poseClassifierProcessor.getPoseResult(pose,viewModel);

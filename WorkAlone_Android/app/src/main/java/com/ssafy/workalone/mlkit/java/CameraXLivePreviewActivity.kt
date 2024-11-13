@@ -1,5 +1,6 @@
 package com.ssafy.workalone.mlkit.java
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.os.Build
 import android.os.Build.VERSION_CODES
@@ -30,6 +31,7 @@ import androidx.camera.video.Recording
 import androidx.camera.video.VideoCapture
 import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.PreviewView
+import androidx.compose.runtime.snapshots.Snapshot.Companion.observe
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
@@ -83,6 +85,8 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
     private lateinit var preferenceManger: ExerciseInfoPreferenceManager
     private lateinit var settingManager: SettingsPreferenceManager
 
+
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -90,7 +94,6 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
         settingManager = SettingsPreferenceManager(applicationContext)
 
         setContentView(R.layout.activity_vision_camerax_live_preview)
-        Log.d("init recording", "$recording")
 
         previewView = findViewById(R.id.preview_view)
         graphicOverlay = findViewById(R.id.graphic_overlay)
@@ -106,6 +109,13 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
             if (settingManager.getRecordingMode()) {
             captureVideo()
             }
+        }
+        exerciseViewModel.exerciseType.observe(this) { newExerciseType ->
+            // exerciseType이 변경될 때마다 bindAnalysisUseCase 호출
+            if(newExerciseType != null){
+                bindAnalysisUseCase()
+            }
+
         }
 
 
@@ -131,12 +141,6 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
                 )
             }
         }
-
-//        //ComposeView설정
-//        val composeView: ComposeView = findViewById(R.id.compose_view)
-//        composeView.setContent {
-//            ExerciseMLkitView(exerciseViewModel, recording)
-//        }
 
         val options: MutableList<String> = ArrayList()
         options.add(POSE_DETECTION)
@@ -201,12 +205,10 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
     public override fun onDestroy() {
         super.onDestroy()
         imageProcessor?.run { this.stop() }
+
     }
 
     private fun bindAllCameraUseCases() {
-//    if (cameraProvider == null || (exerciseViewModel.isResting.value == true&& exerciseViewModel.restTime.value<3)) {
-//      return // 쉬는 시간일 경우, 분석을 실행하지 않음
-//    }
 
         if (cameraProvider != null) {
             // As required by CameraX API, unbinds all use cases before trying to re-bind any of them.
@@ -240,9 +242,6 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
 
 
     private fun bindAnalysisUseCase() {
-//    if(exerciseViewModel.isResting.value == true && exerciseViewModel.restTime.value<3)
-//      return
-
         if (cameraProvider == null) {
             return
         }
@@ -260,7 +259,7 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
                 val visualizeZ = PreferenceUtils.shouldPoseDetectionVisualizeZ(this)
                 val rescaleZ = PreferenceUtils.shouldPoseDetectionRescaleZForVisualization(this)
                 val runClassification = true
-                //PreferenceUtils.shouldPoseDetectionRunClassification(this)
+//                PreferenceUtils.shouldPoseDetectionRunClassification(this)
                 PoseDetectorProcessor(
                     this,
                     poseDetectorOptions,
@@ -269,7 +268,7 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
                     rescaleZ,
                     runClassification,
                     /* isStreamMode = */ true,
-                    exerciseViewModel.nowExercise.value.title,
+                    exerciseViewModel.exerciseType.value,
                     exerciseViewModel
                 )
             } catch (e: Exception) {
@@ -297,13 +296,7 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
             // thus we can just runs the analyzer itself on main thread.
             ContextCompat.getMainExecutor(this),
             ImageAnalysis.Analyzer { imageProxy: ImageProxy ->
-                //쉬는시간일 때 이미지 처리 패스
-//        if(exerciseViewModel.isResting.value == true){
-//          imageProxy.close()
-//          return@Analyzer
-//        }
-                //이미지 분석 실행
-//        if(exerciseViewModel.isResting.value==false||exerciseViewModel.restTime.value<3){
+
                 if (needUpdateGraphicOverlayImageSourceInfo) {
                     val isImageFlipped = lensFacing == CameraSelector.LENS_FACING_FRONT
                     val rotationDegrees = imageProxy.imageInfo.rotationDegrees
@@ -329,8 +322,6 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
                     Toast.makeText(applicationContext, e.localizedMessage, Toast.LENGTH_SHORT)
                         .show()
                 }
-//        }
-
             },
         )
         cameraProvider!!.bindToLifecycle(this, cameraSelector!!, analysisUseCase)
@@ -373,8 +364,6 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
             .format(System.currentTimeMillis())
 
         // 비디오 파일의 메타데이터를 설정한다.
-        // 비디오 파일을 저장하지 않고 바로 서버로 올릴 수 있지만 네트워크 환경에 영향을 많이 받는다.
-        // 일단 저장 -> 업로드 -> 삭제 방식
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, name)
             put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4")

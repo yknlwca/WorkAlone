@@ -65,6 +65,7 @@ android {
 
 
 dependencies {
+    implementation ("com.pierfrancescosoffritti.androidyoutubeplayer:chromecast-sender:0.30")
     implementation(libs.androidx.lifecycle.runtime.compose.android)
     val nav_version = "2.7.5"
     val compose_version = "1.6.0-alpha08"
