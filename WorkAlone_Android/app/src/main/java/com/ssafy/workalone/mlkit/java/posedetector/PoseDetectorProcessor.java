@@ -164,23 +164,6 @@ public class PoseDetectorProcessor
                       Pose pose = task.getResult();
 
 
-                      // 이게 false면 화면안에 없는거임
-
-//                      boolean isIn = true;
-//
-//                      if (!isFullBodyVisible(pose)) {
-//                        Log.d(TAG, "Full body is not visible. Skipping frame.");
-//
-//                        isIn= false;
-//                        long currentTime = System.currentTimeMillis();
-//                        // 마지막 TTS 호출 시간에서 10초가 경과했는지 확인
-//                        if (currentTime - lastTtsTime >= TTS_COOLDOWN_MS) {
-//                          textToSpeech.speak("화면 안으로 모두 들어와주세요", TextToSpeech.QUEUE_FLUSH, null, null);
-//                          lastTtsTime = currentTime; // 마지막 TTS 호출 시간 업데이트
-//                        }
-//
-//                        return null;
-//                      }
                       boolean isInFrame = isFullBodyVisible(pose);
 
                       long currentTime = System.currentTimeMillis();
