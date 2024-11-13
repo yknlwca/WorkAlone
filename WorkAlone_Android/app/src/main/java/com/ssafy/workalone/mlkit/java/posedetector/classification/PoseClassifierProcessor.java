@@ -145,14 +145,13 @@ public class PoseClassifierProcessor {
       @Override
       public void onReadyForSpeech(Bundle bundle)
       {
-        //Log.d(TAG, "음성 인식 준비됨");
+        Log.d("exer", "음성 인식 준비됨");
         //System.out.println("음석 인식 준비 됨");
       }
 
       @Override
       public void onBeginningOfSpeech()
-      {
-        //Log.d(TAG, "음성 인식 시작됨");
+      {Log.i("exer", "음성 인식 시작됨");
        // S//ystem.out.println("음성 인식 시작");
 
       }
@@ -291,7 +290,7 @@ public class PoseClassifierProcessor {
 
     ClassificationResult classification = poseClassifier.classify(pose);
 
-    Log.d("exer","현재 추적 상태(쉬는시간이면 true): "+viewModel.isResting().getValue());
+    //Log.d("exer","현재 추적 상태(쉬는시간이면 true): "+viewModel.isResting().getValue());
     if (viewModel.isResting().getValue()) {result.add("추적이 종료되었습니다.");
       result.add("isTracking: " + isTracking);
       result.add("isPaused: " + isPaused);

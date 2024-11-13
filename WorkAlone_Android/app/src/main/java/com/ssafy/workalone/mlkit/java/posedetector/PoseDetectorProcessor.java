@@ -199,6 +199,7 @@ public class PoseDetectorProcessor
                         if (!wasOutOfFrame) {
                           wasOutOfFrame = true; // 상태를 화면 밖으로 설정
                         }
+                        viewModel.stopExercise();
                         // Cooldown 시간 이후에만 "화면 안으로 들어와 주세요" 메시지 출력
                         if (currentTime - lastTtsTimeOutOfFrame >= TTS_COOLDOWN_MS) {
                           textToSpeech.speak("화면 안으로 모두 들어와주세요", TextToSpeech.QUEUE_FLUSH, null, null);
