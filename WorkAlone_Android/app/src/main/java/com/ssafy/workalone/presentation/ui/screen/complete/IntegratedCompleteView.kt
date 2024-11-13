@@ -30,7 +30,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.ssafy.workalone.R
@@ -78,8 +77,8 @@ fun IntegratedCompleteView(
     val weight = 60
 
     val selectedFileUri by remember { mutableStateOf(preferenceManager.getAWSUrl()) }
-    val preSignedUrl by awsViewModel.preSignedUrl.collectAsStateWithLifecycle()
-    val uploadResponse by awsViewModel.uploadVideoResponse.collectAsStateWithLifecycle()
+//    val preSignedUrl by awsViewModel.preSignedUrl.collectAsStateWithLifecycle()
+//    val uploadResponse by awsViewModel.uploadVideoResponse.collectAsStateWithLifecycle()
 
     //전체 화면
     Box(

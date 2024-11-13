@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ssafy.workalone.data.local.MemberPreferenceManager
 import com.ssafy.workalone.presentation.ui.screen.complete.IndividualCompleteView
+import com.ssafy.workalone.presentation.ui.screen.complete.IntegratedCompleteView
 import com.ssafy.workalone.presentation.ui.screen.exercise.ChallengeListView
 import com.ssafy.workalone.presentation.ui.screen.exercise.ExerciseView
 import com.ssafy.workalone.presentation.ui.screen.home.HomeView
@@ -68,6 +69,11 @@ fun Navigation(
 
         composable(Screen.IndividualComplete.route) {
             IndividualCompleteView(
+                navController = navController
+            )
+        }
+        composable(Screen.IntegratedComplete.route) {
+            IntegratedCompleteView(
                 navController = navController
             )
         }
