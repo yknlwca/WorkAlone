@@ -29,13 +29,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import com.ssafy.workalone.R
 import com.ssafy.workalone.data.local.ExerciseInfoPreferenceManager
 import com.ssafy.workalone.mlkit.java.CameraXLivePreviewActivity
 import com.ssafy.workalone.presentation.ui.component.bottombar.CustomButton
-import com.ssafy.workalone.presentation.ui.component.exercise.VideoPlayer
+import com.ssafy.workalone.presentation.ui.component.exercise.YouTubePlayer
 import com.ssafy.workalone.presentation.ui.component.topbar.AppBarView
 import com.ssafy.workalone.presentation.ui.theme.LocalWorkAloneTypography
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
@@ -118,23 +120,30 @@ fun ExerciseView(
                             .fillMaxWidth()
                             .background(WalkOneGray50)
                             .padding(30.dp),
+                        verticalArrangement = Arrangement.SpaceBetween
+
                     ) {
                         // 제목 및 부제목
                         Text(
                             text = exerciseData.title,
                             style = typography.Heading02,
-                            modifier = Modifier.padding(bottom = 8.dp)
                         )
                         Text(
                             text = exerciseData.subTitle,
                             style = typography.Heading04,
                             color = WalkOneBlue500,
-                            modifier = Modifier.padding(bottom = 24.dp)
+                            modifier = Modifier.padding(8.dp)
                         )
-
-                        VideoPlayer(
-                            videoUrl = "android.resource://com.ssafy.workalone/raw/sample_video",
-                            viewModel = viewModel
+                        Log.d("ExerciseView", "currentExercise: ${R.string.pushup}")
+                        YouTubePlayer(
+                            youtubeId =
+                            when (exerciseData.title) {
+                                "푸쉬업" -> context.getString(R.string.pushup)
+                                "스쿼트" -> context.getString(R.string.squat)
+                                "플랭크" -> context.getString(R.string.plank)
+                                else -> context.getString(R.string.situp)
+                            },
+                            lifecycleOwner = LocalLifecycleOwner.current
                         )
                     }
                     Column(

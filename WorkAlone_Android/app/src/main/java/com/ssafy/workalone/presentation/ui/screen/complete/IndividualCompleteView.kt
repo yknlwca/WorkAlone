@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ssafy.workalone.R
 import com.ssafy.workalone.data.local.ExerciseInfoPreferenceManager
@@ -53,7 +54,7 @@ import kotlin.math.roundToInt
 @Composable
 fun IndividualCompleteView(
     navController: NavController,
-    awsViewModel: AWSS3ViewModel = AWSS3ViewModel()
+    awsViewModel: AWSS3ViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val exerciseManager = ExerciseInfoPreferenceManager(context)

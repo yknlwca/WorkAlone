@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">WorkAlone</string>
+    <string name="squat">50f62PSGY7k</string>
+    <string name="pushup">-_DUjHxgmWk</string>
+    <string name="situp">puco-LjNgbE</string>
+    <string name="plank">Zq8nRY9P_cM</string>
     <string name="java_entry_title" translatable="false">Run the ML Kit quickstart written in Java</string>
     <string name="kotlin_entry_title" translatable="false">Run the ML Kit quickstart written in Kotlin</string>
     <string name="ok" translatable="false">OK</string>
