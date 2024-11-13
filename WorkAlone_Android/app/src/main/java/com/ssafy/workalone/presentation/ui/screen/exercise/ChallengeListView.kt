@@ -71,7 +71,7 @@ fun ChallengeListView(navController: NavController, viewModel: ExerciseViewModel
                             }
                         navController.navigate(
                             Screen.ExerciseDetail.createRoute(
-                                challenge.groupId
+                                challenge.groupId, 1
                             )
                         )
                     }

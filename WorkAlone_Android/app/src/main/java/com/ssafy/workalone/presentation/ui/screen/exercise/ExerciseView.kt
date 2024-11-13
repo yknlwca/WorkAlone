@@ -22,11 +22,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -36,7 +33,7 @@ import androidx.navigation.NavController
 import com.ssafy.workalone.R
 import com.ssafy.workalone.data.local.ExerciseInfoPreferenceManager
 import com.ssafy.workalone.mlkit.java.CameraXLivePreviewActivity
-import com.ssafy.workalone.presentation.ui.component.bottombar.CustomButton
+import com.ssafy.workalone.presentation.ui.component.bottombar.NavigationButtons
 import com.ssafy.workalone.presentation.ui.component.exercise.YouTubePlayer
 import com.ssafy.workalone.presentation.ui.component.topbar.AppBarView
 import com.ssafy.workalone.presentation.ui.theme.LocalWorkAloneTypography
@@ -45,7 +42,6 @@ import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.ui.theme.WorkAloneTheme
 import com.ssafy.workalone.presentation.viewmodels.exercise.ExerciseViewModel
-import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -53,15 +49,17 @@ import kotlinx.coroutines.launch
 fun ExerciseView(
     navController: NavController,
     viewModel: ExerciseViewModel = ExerciseViewModel(context = LocalContext.current),
-    id: Long
+    id: Long,
+    seq: Int
 ) {
     val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
     val exercises = viewModel.getExerciseById(id).collectAsState(initial = listOf())
-    var currentIndex by remember { mutableStateOf(0) }
-    var currentExercise = exercises.value.getOrNull(currentIndex)
+
+    val currentIndex = remember { mutableStateOf(seq - 1) }
+    val currentExercise = exercises.value.getOrNull(currentIndex.value)
+
     val scrollState = rememberScrollState()
-    val coroutineScope = rememberCoroutineScope()
     val preferenceManager = ExerciseInfoPreferenceManager(context)
     val intent = Intent(context, CameraXLivePreviewActivity::class.java).apply {
         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -119,7 +117,7 @@ fun ExerciseView(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(WalkOneGray50)
-                            .padding(30.dp),
+                            .padding(horizontal = 30.dp, vertical = 10.dp),
                         verticalArrangement = Arrangement.SpaceBetween
 
                     ) {
@@ -134,7 +132,6 @@ fun ExerciseView(
                             color = WalkOneBlue500,
                             modifier = Modifier.padding(8.dp)
                         )
-                        Log.d("ExerciseView", "currentExercise: ${R.string.pushup}")
                         YouTubePlayer(
                             youtubeId =
                             when (exerciseData.title) {
@@ -150,7 +147,9 @@ fun ExerciseView(
                         modifier = Modifier
                             .fillMaxSize()
                             .background(WalkOneGray50)
-                            .padding(30.dp)
+                            .padding(top = 10.dp)
+                            .padding(bottom = 3.dp)
+                            .padding(horizontal = 30.dp)
                             .verticalScroll(scrollState),
                         verticalArrangement = Arrangement.SpaceBetween,
                     ) {
@@ -166,39 +165,35 @@ fun ExerciseView(
                         Spacer(modifier = Modifier.height(16.dp))
                         SectionItem(title = "호흡", description = exerciseData.breath)
                         Spacer(modifier = Modifier.height(32.dp))
-                        if (currentIndex < exercises.value.size - 1) {
-                            CustomButton(
-                                text = "다음 운동 보기",
-                                onClick = {
-                                    currentIndex += 1
-                                    coroutineScope.launch {
-                                        scrollState.animateScrollTo(0)
-                                    }
-                                }
-                            )
-                        } else {
-                            CustomButton(
-                                text = "운동 시작하기",
-                                onClick = {
-                                    viewModel.saveExercisesPreferences(exercises.value)
-                                    Log.d(
-                                        "Get Exercise",
-                                        preferenceManager.getExerciseList().toString()
-                                    )
-                                    if (cameraPermissionCheck != PackageManager.PERMISSION_GRANTED || audioPermissionCheck != PackageManager.PERMISSION_GRANTED || storagePermissionCheck != PackageManager.PERMISSION_GRANTED) {
-                                        requestPermissionLauncher.launch(
-                                            arrayOf(
-                                                android.Manifest.permission.CAMERA,
-                                                android.Manifest.permission.RECORD_AUDIO,
-                                                android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                            )
+
+                        val isLast = currentExercise.seq == exercises.value.lastOrNull()?.seq
+                        val isFirst = seq == 1
+
+                        NavigationButtons(
+                            navController = navController,
+                            id = id,
+                            seq = seq,
+                            isLast = isLast,
+                            isFirst = isFirst,
+                            onStartExercise = {
+                                viewModel.saveExercisesPreferences(exercises.value)
+                                Log.d("Get Exercise", preferenceManager.getExerciseList().toString())
+                                if (cameraPermissionCheck != PackageManager.PERMISSION_GRANTED ||
+                                    audioPermissionCheck != PackageManager.PERMISSION_GRANTED ||
+                                    storagePermissionCheck != PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    requestPermissionLauncher.launch(
+                                        arrayOf(
+                                            android.Manifest.permission.CAMERA,
+                                            android.Manifest.permission.RECORD_AUDIO,
+                                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
                                         )
-                                    } else {
-                                        context.startActivity(intent)
-                                    }
-                                },
-                            )
-                        }
+                                    )
+                                } else {
+                                    context.startActivity(intent)
+                                }
+                            }
+                        )
                     }
                 }
             }

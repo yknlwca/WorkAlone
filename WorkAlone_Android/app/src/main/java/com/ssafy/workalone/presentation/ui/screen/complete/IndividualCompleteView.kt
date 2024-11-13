@@ -36,6 +36,7 @@ import androidx.navigation.NavController
 import com.ssafy.workalone.R
 import com.ssafy.workalone.data.local.ExerciseInfoPreferenceManager
 import com.ssafy.workalone.data.local.MemberPreferenceManager
+import com.ssafy.workalone.data.local.SettingsPreferenceManager
 import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.bottombar.CustomButton
 import com.ssafy.workalone.presentation.ui.component.complete.ConfettiAnimation
@@ -58,6 +59,7 @@ fun IndividualCompleteView(
 ) {
     val context = LocalContext.current
     val exerciseManager = ExerciseInfoPreferenceManager(context)
+    val settingManager = SettingsPreferenceManager(context)
     val videoUri = Uri.parse(exerciseManager.getFileUrl())
 
 
@@ -65,7 +67,6 @@ fun IndividualCompleteView(
     val uploadResponse by awsViewModel.uploadVideoResponse.collectAsState()
     val awsUrl by awsViewModel.awsUrl.collectAsState()
 
-    val preSigned by awsViewModel.preSigned.collectAsState()
 
 
     // TODO 운동 결과 바꾸자 이제
@@ -151,25 +152,26 @@ fun IndividualCompleteView(
                     )
                 }
                 Column {
-                    CustomButton(
-                        text = if (uploadInProgress.value) "업로드 중"
-                        else if (uploadResponse == true) "업로드 완료"
-                        else "운동 영상 업로드",
-                        backgroundColor = WalkOneBlue300,
-                        borderColor = WalkOneBlue300,
-                        onClick = {
-                            uploadInProgress.value = true
-                            awsViewModel.getAwsUrlRequest()
-                            Log.d("File Uri", "$videoUri")
-                        },
-                    )
+                    if (settingManager.getRecordingMode()) {
+                        CustomButton(
+                            text = if (uploadInProgress.value) "업로드 중"
+                            else if (uploadResponse == true) "업로드 완료"
+                            else "운동 영상 업로드",
+                            backgroundColor = WalkOneBlue300,
+                            borderColor = WalkOneBlue300,
+                            onClick = {
+                                uploadInProgress.value = true
+                                awsViewModel.getAwsUrlRequest()
+                                Log.d("File Uri", "$videoUri")
+                            },
+                        )
+                    }
                     Spacer(modifier = Modifier.height(8.dp))
                     //확인 버튼
                     CustomButton(
                         text = "확인",
                         onClick = {
-                            Log.d("File Uri", "$videoUri")
-                            awsUrl?.objectUrl // TODO 운동 결과에 같이 보내기
+                            Log.d("Object Url", "${awsUrl?.objectUrl}")// TODO 운동 결과에 같이 보내기
                             navController.navigate(Screen.Home.route) {
                                 popUpTo(Screen.Home.route) { inclusive = true }
                                 launchSingleTop = true
@@ -181,39 +183,18 @@ fun IndividualCompleteView(
         }
         ConfettiAnimation()
     }
-    Log.d("View Check","$preSigned")
-    LaunchedEffect(preSigned) {
-        Log.d("Test PreSigned", "${preSigned} 잘 되는건가??")
-        Log.d("Upload", "업로드 요청")
+    LaunchedEffect(awsUrl) {
         val file = getFileFromContentUri(videoUri, context)
-        Log.d("Last Check", "$preSigned")
-        preSigned?.let {
+        awsUrl?.let {
             if (file != null) {
-                awsViewModel.uploadVideo(it, file)
+                awsViewModel.uploadVideo(it.preSignedUrl, file)
             }
         }
     }
-
-    LaunchedEffect(awsUrl) {
-        Log.d("Test Aws", "${awsUrl} 잘 되는건가??")
-    }
 }
-
-
-
-
-
-
-
-
-
-
-
 
 fun getFileFromContentUri(contentUri: Uri?, context: Context): File? {
     if (contentUri == null || contentUri.toString().isEmpty()) {
-        Log.e("File Error", "Invalid URI")
-        Log.d("URI Check", "Generated URI: $contentUri")
         return null
     }
     return try {
@@ -223,7 +204,6 @@ fun getFileFromContentUri(contentUri: Uri?, context: Context): File? {
                 inputStream.copyTo(outputStream)
             }
         }
-        Log.d("File Make","$file")
         file
     } catch (e: FileNotFoundException) {
         Log.e("File Error", "Content provider not found for URI: $contentUri", e)

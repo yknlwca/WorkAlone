@@ -1,14 +1,16 @@
 package com.ssafy.workalone.data.remote
 
-import com.ssafy.workalone.data.model.video.AwsUrl
+import com.ssafy.workalone.data.model.result.AwsUrl
+import com.ssafy.workalone.data.model.result.ResultList
 import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Url
 
-interface AWSS3Service {
+interface ResultService {
     @PUT
     suspend fun uploadVideo(
         @Url preSignedUrl: String,
@@ -17,4 +19,9 @@ interface AWSS3Service {
 
     @GET("/summary/url")
     suspend fun getPreSignedUrl(): Response<AwsUrl>
+
+    @POST("/summary")
+    suspend fun sendExerciseResult(
+        @Body resultList: ResultList
+    ): Response<Void>
 }

@@ -57,13 +57,21 @@ fun Navigation(
                     type = NavType.LongType
                     defaultValue = 0L
                     nullable = false
+                },
+                navArgument("seq") {
+                    type = NavType.IntType
+                    defaultValue = 1
+                    nullable = false
                 })
         ) { entry ->
             val exerciseId =
                 if (entry.arguments != null) entry.arguments!!.getLong("groupId") else 0L
+            val seq =
+                if (entry.arguments != null) entry.arguments!!.getInt("seq") else 1
             ExerciseView(
                 navController = navController,
                 id = exerciseId,
+                seq = seq
             )
         }
 
