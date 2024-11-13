@@ -125,7 +125,7 @@ public class PoseDetectorProcessor
       textToSpeech.stop();
       textToSpeech.shutdown();
     }
-
+    poseClassifierProcessor.shutdown();
     detector.close();
   }
 
@@ -211,7 +211,7 @@ public class PoseDetectorProcessor
                      // Log.d("exer",String.valueOf(runClassification));
                       if (runClassification) {
                         if (poseClassifierProcessor == null) {
-                          Log.d("exer",ExerciseType);
+//                          Log.d("exer",ExerciseType);
                           poseClassifierProcessor = new PoseClassifierProcessor(context, isStreamMode,ExerciseType, viewModel);
                         }
                         classificationResult = poseClassifierProcessor.getPoseResult(pose,viewModel);
