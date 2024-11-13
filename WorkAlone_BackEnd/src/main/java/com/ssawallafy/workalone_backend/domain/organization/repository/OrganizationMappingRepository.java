@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface OrganizationMappingRepository extends JpaRepository<OrganizationMapping, Long> {
     List<OrganizationMapping> findByMemberId(Long memberId);
+
+    List<OrganizationMapping> findByOrganizationId(Long organizationId);
 }
