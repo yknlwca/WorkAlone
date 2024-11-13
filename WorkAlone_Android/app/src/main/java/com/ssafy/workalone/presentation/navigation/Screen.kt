@@ -4,8 +4,8 @@ sealed class Screen(val route: String) {
     object Home : Screen("home-screen")
     object Login : Screen("login")
     object ExerciseList : Screen("exercise-list")
-    object ExerciseDetail : Screen("exercise-detail/{groupId}") {
-        fun createRoute(groupId: Long) = "exercise-detail/$groupId"
+    object ExerciseDetail : Screen("exercise-detail/{groupId}/{seq}") {
+        fun createRoute(groupId: Long, seq: Int) = "exercise-detail/$groupId/$seq"
     }
 
     object IndividualComplete : Screen("individual-complete")

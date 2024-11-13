@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.ssafy.workalone.data.model.exercise.ExerciseData
-import com.ssafy.workalone.data.model.video.AwsUrl
+import com.ssafy.workalone.data.model.result.AwsUrl
 
 class ExerciseInfoPreferenceManager(context: Context) {
     private val preferences: SharedPreferences =

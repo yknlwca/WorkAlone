@@ -1,4 +1,4 @@
-package com.ssafy.workalone.data.model.video
+package com.ssafy.workalone.data.model.result
 
 import com.google.gson.annotations.SerializedName
 

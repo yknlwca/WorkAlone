@@ -3,8 +3,8 @@ package com.ssafy.workalone.presentation.viewmodels.video
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ssafy.workalone.data.model.video.AwsUrl
-import com.ssafy.workalone.data.repository.AWSS3Repository
+import com.ssafy.workalone.data.model.result.AwsUrl
+import com.ssafy.workalone.data.repository.ResultRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -13,7 +13,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 
-class AWSS3ViewModel(private val awsS3Repository: AWSS3Repository = AWSS3Repository()) :
+class AWSS3ViewModel(private val awsS3Repository: ResultRepository = ResultRepository()) :
     ViewModel() {
 
     private val _awsUrl = MutableStateFlow<AwsUrl?>(null)

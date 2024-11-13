@@ -22,12 +22,13 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 
 @Composable
-fun RepCounter(viewModel: ExerciseMLKitViewModel){
+fun RepCounter(viewModel: ExerciseMLKitViewModel = viewModel()){
 
     var isExercise = viewModel.isExercising.value
     var totalReps by viewModel.totalRep
