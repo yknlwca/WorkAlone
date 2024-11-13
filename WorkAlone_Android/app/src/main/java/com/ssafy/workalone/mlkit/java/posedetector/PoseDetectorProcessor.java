@@ -168,27 +168,29 @@ public class PoseDetectorProcessor
 
                       long currentTime = System.currentTimeMillis();
 
-                      // 화면 안에 들어온 경우
-                      if (isInFrame) {
-                        if (wasOutOfFrame) {
-                          // Cooldown 시간 이후에만 "안으로 들어왔습니다" 메시지 출력
-                          if (currentTime - lastTtsTimeInFrame >= TTS_COOLDOWN_MS) {
-                            textToSpeech.speak("안으로 들어왔습니다", TextToSpeech.QUEUE_FLUSH, null, null);
-                            lastTtsTimeInFrame = currentTime;
+                      if(   !viewModel.isResting().getValue()) {
+                        // 화면 안에 들어온 경우
+                        if (isInFrame) {
+                          if (wasOutOfFrame) {
+                            // Cooldown 시간 이후에만 "안으로 들어왔습니다" 메시지 출력
+                            if (currentTime - lastTtsTimeInFrame >= TTS_COOLDOWN_MS) {
+                              textToSpeech.speak("안으로 들어왔습니다", TextToSpeech.QUEUE_FLUSH, null, null);
+                              lastTtsTimeInFrame = currentTime;
+                            }
+                            wasOutOfFrame = false; // 상태를 화면 안에 있음으로 변경
                           }
-                          wasOutOfFrame = false; // 상태를 화면 안에 있음으로 변경
+                        } else { // 화면 밖에 있는 경우
+                          if (!wasOutOfFrame) {
+                            wasOutOfFrame = true; // 상태를 화면 밖으로 설정
+                          }
+                          viewModel.stopExercise();
+                          // Cooldown 시간 이후에만 "화면 안으로 들어와 주세요" 메시지 출력
+                          if (currentTime - lastTtsTimeOutOfFrame >= TTS_COOLDOWN_MS) {
+                            textToSpeech.speak("화면 안으로 모두 들어와주세요", TextToSpeech.QUEUE_FLUSH, null, null);
+                            lastTtsTimeOutOfFrame = currentTime;
+                          }
+                          return null; // 화면 밖에 있으면 포즈 인식을 진행하지 않음
                         }
-                      } else { // 화면 밖에 있는 경우
-                        if (!wasOutOfFrame) {
-                          wasOutOfFrame = true; // 상태를 화면 밖으로 설정
-                        }
-                        viewModel.stopExercise();
-                        // Cooldown 시간 이후에만 "화면 안으로 들어와 주세요" 메시지 출력
-                        if (currentTime - lastTtsTimeOutOfFrame >= TTS_COOLDOWN_MS) {
-                          textToSpeech.speak("화면 안으로 모두 들어와주세요", TextToSpeech.QUEUE_FLUSH, null, null);
-                          lastTtsTimeOutOfFrame = currentTime;
-                        }
-                        return null; // 화면 밖에 있으면 포즈 인식을 진행하지 않음
                       }
                       //Log.d("exer","dectectInImage");
                       List<String> classificationResult = new ArrayList<>();
