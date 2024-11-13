@@ -5,6 +5,7 @@ import android.app.Activity
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,14 +14,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,16 +38,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.ssafy.workalone.data.model.exercise.ExerciseSummary
 import com.ssafy.workalone.presentation.navigation.Screen
+import com.ssafy.workalone.presentation.ui.component.ExerciseRecordDetail
 import com.ssafy.workalone.presentation.ui.component.bottombar.BottomSheetContent
 import com.ssafy.workalone.presentation.ui.component.bottombar.CustomButton
 import com.ssafy.workalone.presentation.ui.component.calendar.Calendar
 import com.ssafy.workalone.presentation.ui.component.topbar.AppBarView
 import com.ssafy.workalone.presentation.ui.theme.LocalWorkAloneTypography
+import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray900
 import com.ssafy.workalone.presentation.ui.theme.WorkAloneTheme
@@ -65,6 +77,22 @@ fun HomeView(navController: NavController, name: String) {
             initialValue = ModalBottomSheetValue.Hidden,
             skipHalfExpanded = false
         )
+
+        val selectedDate = calendarViewModel.selectedDate
+        val summaryList = remember { mutableStateOf(
+            ExerciseSummary(
+                totalDuration = 0,
+                totalKcal = 0,
+                totalSummary = emptyList()
+            )
+        ) }
+
+        LaunchedEffect(selectedDate.value) {
+            summaryViewModel.getExerciseSummary(selectedDate.value.toString())
+                .collect { newSummary ->
+                    summaryList.value = newSummary
+                }
+        }
 
         BackHandler {
             if (System.currentTimeMillis() - backPressedTime < 2000) {
@@ -94,7 +122,8 @@ fun HomeView(navController: NavController, name: String) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(it),
+                        .padding(it)
+                        .padding(horizontal = 24.dp),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column(
@@ -109,7 +138,7 @@ fun HomeView(navController: NavController, name: String) {
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 8.dp, horizontal = 24.dp),
+                                .padding(vertical = 8.dp),
                         )
                         Box(
                             modifier = Modifier
@@ -120,16 +149,79 @@ fun HomeView(navController: NavController, name: String) {
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
-                            Calendar(calendarViewModel, summaryViewModel)
+                            Calendar(calendarViewModel)
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            androidx.compose.material.Text(
+                                text = selectedDate.value?.let { "${it.monthValue} / ${it.dayOfMonth}" }
+                                    ?: "선택된 날짜가 없습니다.",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color.Black,
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+//                                    .weight(1f)
+                            ) {
+                                itemsIndexed(summaryList.value.totalSummary) { index, exerciseDeetails ->
+                                    Card(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(bottom = 10.dp)
+                                            .border(
+                                                width = 1.dp,
+                                                color = WalkOneBlue500,
+                                                shape = RoundedCornerShape(8.dp)
+                                            ),
+                                        shape = RoundedCornerShape(8.dp),
+                                        elevation = 4.dp
+
+                                    ){
+                                        Column(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(16.dp)
+                                        ) {
+                                            exerciseDeetails.forEachIndexed { detailIndex, exerciseDetail ->
+                                                ExerciseRecordDetail(
+                                                    exerciseDetail.exerciseType,
+                                                    exerciseDetail.exerciseSet,
+                                                    exerciseDetail.exerciseRepeat,
+                                                    exerciseDetail.exerciseDuration,
+                                                    exerciseDetail.kcal
+                                                )
+                                                if (detailIndex < (exerciseDeetails.size-1)) {
+                                                    Divider(modifier = Modifier.padding(vertical = 10.dp))
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                }
+                            }
                         }
                     }
 
-
-                    Spacer(modifier = Modifier.height(24.dp))
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 16.dp),
+                            .padding(bottom = 16.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         CustomButton(
@@ -143,4 +235,12 @@ fun HomeView(navController: NavController, name: String) {
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Preview(showBackground = true)
+@Composable
+fun previewHomeView(){
+    val fake = rememberNavController()
+    HomeView(fake, "윤성현")
 }

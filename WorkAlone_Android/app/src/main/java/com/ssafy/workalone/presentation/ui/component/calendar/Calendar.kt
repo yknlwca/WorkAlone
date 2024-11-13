@@ -21,6 +21,8 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -50,32 +52,16 @@ import java.time.LocalDate
 
 @SuppressLint("NewApi")
 @Composable
-fun Calendar(
-    viewModel: CalendarViewModel,
-    summaryViewModel: ExerciseSummaryViewModel
-) {
+fun Calendar(viewModel: CalendarViewModel) {
     val calendarState = rememberSelectableCalendarState(initialSelectionMode = SelectionMode.Single)
-    val selectedDate = viewModel.selectedDate
 
-    val summaryList = remember { mutableStateOf(
-        ExerciseSummary(
-            totalDuration = 0,
-            totalKcal = 0,
-            totalSummary = emptyList()
-        )
-    ) }
-
-    LaunchedEffect(selectedDate.value) {
-        summaryViewModel.getExerciseSummary(selectedDate.value.toString())
-            .collect { newSummary ->
-                summaryList.value = newSummary
-            }
+    LaunchedEffect(Unit) {
+        viewModel.loadMarkedDates()
     }
-
 
     Column(modifier = Modifier
         .fillMaxWidth()
-        .padding(horizontal = 24.dp)) {
+    ) {
         SelectableCalendar(
             calendarState = calendarState,
             dayContent = { dayState ->
@@ -94,69 +80,6 @@ fun Calendar(
                 DefaultDaysOfWeekHeader(daysOfWeek)
             }
         )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = selectedDate.value?.let { "${it.monthValue} / ${it.dayOfMonth}" }
-                ?: "선택된 날짜가 없습니다.",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.ExtraBold,
-            color = Color.Black,
-        )
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        ) {
-//            summaryList.value.totalSummary.forEachIndexed { index, exerciseDetails ->
-//
-//                items(exerciseDetails) { exerciseDetail ->
-//                    ExerciseRecordDetail(
-//                        exerciseDetail.exerciseType,
-//                        3,
-//                        15,
-//                        3605,
-//                        exerciseDetail.kcal
-//                    )
-//                    Divider(modifier = Modifier.padding(vertical = 10.dp))
-//                }
-//
-//            }
-            itemsIndexed(summaryList.value.totalSummary) { index, exerciseDeetails ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 10.dp)
-                        .border(
-                            width = 1.dp,
-                            color = WalkOneBlue500,
-                            shape = RoundedCornerShape(8.dp)
-                        ),
-                    shape = RoundedCornerShape(8.dp),
-                    elevation = 4.dp
-
-                ){
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-                        exerciseDeetails.forEach {exerciseDetail ->
-                            ExerciseRecordDetail(
-                                exerciseDetail.exerciseType,
-                                exerciseDetail.exerciseSet,
-                                exerciseDetail.exerciseRepeat,
-                                exerciseDetail.exerciseDuration,
-                                exerciseDetail.kcal
-                            )
-                            Divider(modifier = Modifier.padding(vertical = 10.dp))
-                        }
-                    }
-                }
-
-            }
-        }
     }
 }
 
@@ -171,10 +94,12 @@ fun <T : SelectionState> CustomDay(
     onClick: (LocalDate) -> Unit = {},
     viewModel: CalendarViewModel
 ) {
+    val markedDates by viewModel.markedDates.collectAsState()
+
     val date = state.date
     val selectionState = state.selectionState
     val isSelected = viewModel.selectedDate.value == date
-    val isMarked = viewModel.markedDates.contains(date)
+    val isMarked = markedDates.contains(date.toString())
     val isToday = date == LocalDate.now()
     val isCurrentMonth = state.isFromCurrentMonth
 
@@ -222,7 +147,6 @@ fun <T : SelectionState> CustomDay(
 fun a() {
     // 단일 선택 달력
     Calendar(
-        viewModel = viewModel(),
-        summaryViewModel = viewModel()
+        viewModel = viewModel()
     )
 }
