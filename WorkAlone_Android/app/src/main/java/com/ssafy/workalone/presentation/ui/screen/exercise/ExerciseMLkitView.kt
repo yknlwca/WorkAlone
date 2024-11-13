@@ -10,11 +10,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -29,8 +36,10 @@ import com.ssafy.workalone.presentation.ui.component.bottombar.ExerciseTimer
 import com.ssafy.workalone.presentation.ui.component.bottombar.RepCounter
 import com.ssafy.workalone.presentation.ui.component.dialog.CustomDialog
 import com.ssafy.workalone.presentation.ui.component.dialog.ExerciseFinishDialog
+import com.ssafy.workalone.presentation.ui.component.toast.ExitMessage
 import com.ssafy.workalone.presentation.ui.component.topbar.StopwatchScreen
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun ExerciseMLkitView(
@@ -39,6 +48,14 @@ fun ExerciseMLkitView(
     recording: Recording?
 ) {
     val context = LocalContext.current
+    // 5초 후에 토스트 메시지 종료
+    LaunchedEffect(viewModel.showExitMessage.value) {
+        if(viewModel.showExitMessage.value){
+            delay(5000)  // 5초 동안 대기
+            viewModel.stopShowExitMessage()
+        }
+
+    }
     fun navigateToHome() {
         val intent = Intent(context, MainActivity::class.java).apply {
             putExtra("startDestination", Screen.Home.route)
@@ -89,12 +106,22 @@ fun ExerciseMLkitView(
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
-                        if (viewModel.nowExercise.value.title != "플랭크")
-                            RepCounter(viewModel)
-                        else
-                            ExerciseTimer(viewModel)
-                        recording?.resume()
-                        Log.d("Resume To Finish", "$recording")
+                        Column {
+                            if (viewModel.showExitMessage.value && !viewModel.isExercising.value && !viewModel.isExit.value) {
+
+                                Box(Modifier.padding(horizontal = 24.dp)){
+                                    ExitMessage()
+                                }
+                                Spacer(Modifier.height(8.dp))
+                            }
+
+                            if (viewModel.nowExercise.value.title != "플랭크")
+                                RepCounter(viewModel)
+                            else
+                                ExerciseTimer(viewModel)
+                            recording?.resume()
+                        }
+
                     }
                 }
 
@@ -112,18 +139,7 @@ fun ExerciseMLkitView(
                     )
                     recording?.pause()
                 }
-                if (!viewModel.isExercising.value && !viewModel.isExit.value) {
 
-                    val yOffsetInPx = with(density) { 240.dp.toPx().toInt() }
-                    val toast = Toast.makeText(
-                        context,
-                        "운동을 다시 진행하고 싶을 때 \"시작\"이라고 말해보세요!",
-                        Toast.LENGTH_LONG
-                    )
-                    toast.setGravity(Gravity.BOTTOM, 0, yOffsetInPx)
-                    toast.show()
-                    recording?.pause()
-                }
                 if (viewModel.isFinish.value) {
                     ExerciseFinishDialog { navigateToFinish() }
                     recording?.stop()

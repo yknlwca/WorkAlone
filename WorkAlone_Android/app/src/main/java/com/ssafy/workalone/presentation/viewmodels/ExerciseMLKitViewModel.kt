@@ -33,6 +33,7 @@ class ExerciseMLKitViewModel(context: Context): ViewModel() {
     private val _isExit: MutableState<Boolean> = mutableStateOf(false)
     private val _isFinish: MutableState<Boolean> = mutableStateOf(false)
     //운동시작전: ready, 쉬는시간 : rest, 다음세트 : nextSet, 다음운동 : nextExercise
+    private val _showExitMessage:MutableState<Boolean> = mutableStateOf(false)
 
     init {
         // 기본값 설정 (필요에 따라 수정)
@@ -55,23 +56,8 @@ class ExerciseMLKitViewModel(context: Context): ViewModel() {
     val preSetText: MutableState<String> = _preSetText
     val isExit: MutableState<Boolean> = _isExit
     val isFinish: MutableState<Boolean> = _isFinish
+    val showExitMessage: MutableState<Boolean> = _showExitMessage
 
-
-    fun setNowReps(rep:Int){
-        _nowRep.value = rep
-    }
-    fun setTotalReps(rep:Int){
-        _totalRep.value = rep
-    }
-    fun setNowSets(rep:Int){
-        _nowSet.value = rep
-    }
-    fun setTotalSets(rep:Int){
-        _totalSet.value = rep
-    }
-    fun setRestTime(rep:Int){
-        _restTime.value = rep
-    }
 
     fun addRep(type: String){
         if(type == "플랭크") {
@@ -89,12 +75,19 @@ class ExerciseMLKitViewModel(context: Context): ViewModel() {
         _nowSet.value += 1
         startResting()
         _stage.value="rest"
+
     }
     fun countDownRestTime(){
         if(_isResting.value){
             _restTime.value --
             if(_restTime.value==0){
-                _restTime.value = _nowExercise.value.restBtwSet
+                if(_nowSet.value==_totalSet.value){
+
+                    _restTime.value = _restTimeBtwExercise
+
+                }else{
+                    _restTime.value = _nowExercise.value.restBtwSet
+                }
                 stopResting()
                 _stage.value = "rest"
             }
@@ -128,13 +121,18 @@ class ExerciseMLKitViewModel(context: Context): ViewModel() {
     }
     fun stopResting() {
         _isResting.value = false
-        _isExercising.value = true
+        if(_nowExercise.value.title!="플랭크")
+            _isExercising.value = true
     }
     fun stopExercise(){
         _isExercising.value = false
+        _showExitMessage.value = true
     }
     fun startExercise(){
         _isExercising.value = true
+    }
+    fun stopShowExitMessage(){
+        _showExitMessage.value = false
     }
     fun clickExit(){
         _isExit.value = true
