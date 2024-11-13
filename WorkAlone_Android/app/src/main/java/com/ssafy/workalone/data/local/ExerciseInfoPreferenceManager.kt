@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.ssafy.workalone.data.model.exercise.ExerciseData
-import com.ssafy.workalone.data.model.video.PreSignedUrl
+import com.ssafy.workalone.data.model.video.AwsUrl
 
 class ExerciseInfoPreferenceManager(context: Context) {
     private val preferences: SharedPreferences =
@@ -35,14 +35,14 @@ class ExerciseInfoPreferenceManager(context: Context) {
         return gson.fromJson(json, type)
     }
 
-    fun setAWSUrl(preSignedUrl: PreSignedUrl){
+    fun setAWSUrl(preSignedUrl: AwsUrl){
         val json = gson.toJson(preSignedUrl)
         preferences.edit().putString("preSigned_url", json).apply()
     }
 
-    fun getAWSUrl() : PreSignedUrl{
-        val json = preferences.getString("preSigned_url", null) ?: return PreSignedUrl()
-        val type = object : TypeToken<PreSignedUrl>() {}.type
+    fun getAWSUrl() : AwsUrl{
+        val json = preferences.getString("preSigned_url", null) ?: return AwsUrl()
+        val type = object : TypeToken<AwsUrl>() {}.type
         return gson.fromJson(json, type)
     }
 
