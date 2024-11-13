@@ -169,50 +169,64 @@ fun HomeView(navController: NavController, name: String) {
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            LazyColumn(
+                        if(summaryList.value.totalSummary.isEmpty()) {
+                            Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-//                                    .weight(1f)
+                                    .weight(1f),
+                                contentAlignment = Alignment.Center
                             ) {
-                                itemsIndexed(summaryList.value.totalSummary) { index, exerciseDeetails ->
-                                    Card(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(bottom = 10.dp)
-                                            .border(
-                                                width = 1.dp,
-                                                color = WalkOneBlue500,
-                                                shape = RoundedCornerShape(8.dp)
-                                            ),
-                                        shape = RoundedCornerShape(8.dp),
-                                        elevation = 4.dp
-
-                                    ){
-                                        Column(
+                                Text(
+                                    text = "운동 기록이 없습니다.",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                LazyColumn(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                ) {
+                                    itemsIndexed(summaryList.value.totalSummary) { index, exerciseDeetails ->
+                                        Card(
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .padding(16.dp)
+                                                .padding(bottom = 10.dp)
+                                                .border(
+                                                    width = 1.dp,
+                                                    color = WalkOneBlue500,
+                                                    shape = RoundedCornerShape(8.dp)
+                                                ),
+                                            shape = RoundedCornerShape(8.dp),
+                                            elevation = 4.dp
+
                                         ) {
-                                            exerciseDeetails.forEachIndexed { detailIndex, exerciseDetail ->
-                                                ExerciseRecordDetail(
-                                                    exerciseDetail.exerciseType,
-                                                    exerciseDetail.exerciseSet,
-                                                    exerciseDetail.exerciseRepeat,
-                                                    exerciseDetail.exerciseDuration,
-                                                    exerciseDetail.kcal
-                                                )
-                                                if (detailIndex < (exerciseDeetails.size-1)) {
-                                                    Divider(modifier = Modifier.padding(vertical = 10.dp))
+                                            Column(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(16.dp)
+                                            ) {
+                                                exerciseDeetails.forEachIndexed { detailIndex, exerciseDetail ->
+                                                    ExerciseRecordDetail(
+                                                        exerciseDetail.exerciseType,
+                                                        exerciseDetail.exerciseSet,
+                                                        exerciseDetail.exerciseRepeat,
+                                                        exerciseDetail.exerciseDuration,
+                                                        exerciseDetail.kcal
+                                                    )
+                                                    if (detailIndex < (exerciseDeetails.size - 1)) {
+                                                        Divider(modifier = Modifier.padding(vertical = 10.dp))
+                                                    }
                                                 }
                                             }
                                         }
-                                    }
 
+                                    }
                                 }
                             }
                         }
