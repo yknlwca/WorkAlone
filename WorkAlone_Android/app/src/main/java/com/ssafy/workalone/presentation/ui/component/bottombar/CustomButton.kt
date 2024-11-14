@@ -28,6 +28,7 @@ fun CustomButton(
     contentColor: Color = WalkOneGray50,
     backgroundColor: Color = WalkOneBlue500,
     borderColor: Color = WalkOneBlue500,
+    enabled: Boolean = true,
     onClick: () -> Unit
 ) {
     Button(
@@ -40,7 +41,8 @@ fun CustomButton(
         border = BorderStroke(1.dp, borderColor),
         modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp)
+            .height(50.dp),
+        enabled = enabled
     ) {
         Text(
             text = text,

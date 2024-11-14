@@ -1,7 +1,7 @@
 package com.ssafy.workalone.data.remote
 
 import com.ssafy.workalone.data.model.result.AwsUrl
-import com.ssafy.workalone.data.model.result.ResultList
+import com.ssafy.workalone.data.model.result.SummaryList
 import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -22,6 +22,6 @@ interface ResultService {
 
     @POST("/summary")
     suspend fun sendExerciseResult(
-        @Body resultList: ResultList
+        @Body summaryList: SummaryList
     ): Response<Void>
 }

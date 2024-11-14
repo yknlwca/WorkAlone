@@ -16,13 +16,12 @@
 
 package com.ssafy.workalone.mlkit.java.posedetector;
 
-import static android.webkit.ConsoleMessage.MessageLevel.LOG;
-
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
-import androidx.lifecycle.ViewModel;
+import androidx.camera.video.Recording;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.odml.image.MlImage;
@@ -31,17 +30,17 @@ import com.google.mlkit.vision.pose.Pose;
 import com.google.mlkit.vision.pose.PoseDetection;
 import com.google.mlkit.vision.pose.PoseDetector;
 import com.google.mlkit.vision.pose.PoseDetectorOptionsBase;
+import com.google.mlkit.vision.pose.PoseLandmark;
+import com.ssafy.workalone.mlkit.GraphicOverlay;
+import com.ssafy.workalone.mlkit.java.VisionProcessorBase;
+import com.ssafy.workalone.mlkit.java.posedetector.classification.PoseClassifierProcessor;
+import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import com.google.mlkit.vision.pose.PoseLandmark;
-import com.google.mlkit.vision.pose.Pose;
-import com.ssafy.workalone.mlkit.GraphicOverlay;
-import com.ssafy.workalone.mlkit.java.VisionProcessorBase;
-import com.ssafy.workalone.mlkit.java.posedetector.classification.PoseClassifierProcessor;
-import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel;
 
 /** A processor to run pose detector. */
 public class PoseDetectorProcessor
@@ -98,7 +97,7 @@ public class PoseDetectorProcessor
           boolean runClassification,
           boolean isStreamMode,
           String ExerciseType,
-           ExerciseMLKitViewModel viewModel1) {
+          ExerciseMLKitViewModel viewModel1) {
     super(context);
 
     this.showInFrameLikelihood = showInFrameLikelihood;

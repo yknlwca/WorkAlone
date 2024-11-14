@@ -1,7 +1,8 @@
 package com.ssafy.workalone.presentation.ui.component.bottombar
 
-import android.content.Context
 import android.content.res.Configuration
+import android.speech.tts.TextToSpeech
+import androidx.camera.video.Recording
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,10 +17,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,14 +31,11 @@ import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 import kotlinx.coroutines.delay
-import android.speech.tts.TextToSpeech
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 import java.util.Locale
+
 // 운동 타이머 컴포넌트
 @Composable
-fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
+fun ExerciseTimer(viewModel: ExerciseMLKitViewModel, recording: Recording?) {
     val context = LocalContext.current
     var isExercise by viewModel.isExercising
     var goalTime by viewModel.totalRep
@@ -123,6 +124,7 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
             }
 
             if(isExercise){
+                recording?.resume()
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -137,6 +139,7 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
                     )
                 }
             } else {
+                recording?.pause()
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

@@ -2,9 +2,9 @@ package com.ssafy.workalone.presentation.ui.screen.exercise
 
 import android.content.Intent
 import android.util.Log
-import android.view.Gravity
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.annotation.OptIn
+import androidx.camera.video.ExperimentalPersistentRecording
 import androidx.camera.video.Recording
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,9 +19,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -30,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ssafy.workalone.MainActivity
+import com.ssafy.workalone.data.local.SettingsPreferenceManager
 import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.RestTime
 import com.ssafy.workalone.presentation.ui.component.bottombar.ExerciseTimer
@@ -41,6 +39,7 @@ import com.ssafy.workalone.presentation.ui.component.topbar.StopwatchScreen
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalPersistentRecording::class)
 @Composable
 fun ExerciseMLkitView(
 //    exerciseType: String?,
@@ -48,6 +47,8 @@ fun ExerciseMLkitView(
     recording: Recording?
 ) {
     val context = LocalContext.current
+    val settings = SettingsPreferenceManager(context)
+    val isResting by viewModel.isResting
     // 5초 후에 토스트 메시지 종료
     LaunchedEffect(viewModel.showExitMessage.value) {
         if(viewModel.showExitMessage.value){
@@ -79,7 +80,7 @@ fun ExerciseMLkitView(
         Log.d("Navigate To Finish", "$recording")
     }
     Scaffold(
-        topBar = { StopwatchScreen(true, viewModel) },
+        topBar = { StopwatchScreen(recording?.equals(recording.pause()) == false  && !isResting, viewModel) },
         containerColor = Color.Transparent,
         contentColor = Color.Transparent,
         content = {
@@ -116,9 +117,9 @@ fun ExerciseMLkitView(
                             }
 
                             if (viewModel.nowExercise.value.title != "플랭크")
-                                RepCounter(viewModel)
+                                RepCounter(viewModel, recording)
                             else
-                                ExerciseTimer(viewModel)
+                                ExerciseTimer(viewModel, recording)
                             recording?.resume()
                         }
 

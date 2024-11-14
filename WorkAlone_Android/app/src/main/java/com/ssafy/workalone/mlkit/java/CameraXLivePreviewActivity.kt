@@ -48,7 +48,6 @@ import com.ssafy.workalone.mlkit.preference.PreferenceUtils
 import com.ssafy.workalone.presentation.ui.screen.exercise.ExerciseMLkitView
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModelFactory
-import com.ssafy.workalone.presentation.viewmodels.member.MemberViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.ExecutorService
@@ -73,7 +72,6 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
     private val exerciseViewModel: ExerciseMLKitViewModel by viewModels {
         ExerciseMLKitViewModelFactory(this)
     }
-    private val memberViewModel : MemberViewModel by viewModels()
 
     private var videoCapture: VideoCapture<Recorder>? = null
     private var recording: Recording? = null // 최적화 -> 뷰 모델 이동
@@ -265,7 +263,7 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
                     runClassification,
                     /* isStreamMode = */ true,
                     exerciseViewModel.exerciseType.value,
-                    exerciseViewModel
+                    exerciseViewModel,
                 )
             } catch (e: Exception) {
                 Log.e(TAG, "Can not create image processor: $selectedModel", e)
@@ -386,8 +384,6 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
                     // 녹화 종료
                     is VideoRecordEvent.Finalize -> {
                         if (!recordEvent.hasError()) {
-                            val msg = "저장 : ${recordEvent.outputResults.outputUri}"
-                            Toast.makeText(this@CameraXLivePreviewActivity, msg, Toast.LENGTH_SHORT).show()
                             // 파일의 URI
                             val fileUri = recordEvent.outputResults.outputUri
                             preferenceManger.setFileUrl(fileUri.toString())
