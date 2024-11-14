@@ -254,13 +254,13 @@ public class PoseDetectorProcessor
     int[] requiredLandmarks = {
 
             PoseLandmark.LEFT_SHOULDER,
-//            PoseLandmark.RIGHT_SHOULDER,
-//            PoseLandmark.LEFT_HIP,
-//            PoseLandmark.RIGHT_HIP,
-//            PoseLandmark.LEFT_WRIST,
-//            PoseLandmark.RIGHT_WRIST,
-//            PoseLandmark.LEFT_ANKLE,
-//            PoseLandmark.RIGHT_ANKLE
+            PoseLandmark.RIGHT_SHOULDER,
+            PoseLandmark.LEFT_HIP,
+            PoseLandmark.RIGHT_HIP,
+            PoseLandmark.LEFT_WRIST,
+            PoseLandmark.RIGHT_WRIST,
+            PoseLandmark.LEFT_ANKLE,
+            PoseLandmark.RIGHT_ANKLE
 
 
     };

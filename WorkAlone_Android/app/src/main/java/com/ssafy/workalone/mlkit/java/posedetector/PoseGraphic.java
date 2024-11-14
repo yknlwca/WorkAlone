@@ -103,6 +103,23 @@ public class PoseGraphic extends Graphic {
 
     // Draw all the points
     for (PoseLandmark landmark : landmarks) {
+      // 얼굴 랜드마크를 건너뜁니다.
+      int landmarkType = landmark.getLandmarkType();
+
+      if (landmarkType == PoseLandmark.NOSE ||
+              landmarkType == PoseLandmark.LEFT_EYE_INNER ||
+              landmarkType == PoseLandmark.LEFT_EYE ||
+              landmarkType == PoseLandmark.LEFT_EYE_OUTER ||
+              landmarkType == PoseLandmark.RIGHT_EYE_INNER ||
+              landmarkType == PoseLandmark.RIGHT_EYE ||
+              landmarkType == PoseLandmark.RIGHT_EYE_OUTER ||
+              landmarkType == PoseLandmark.LEFT_EAR ||
+              landmarkType == PoseLandmark.RIGHT_EAR ||
+              landmarkType == PoseLandmark.LEFT_MOUTH ||
+              landmarkType == PoseLandmark.RIGHT_MOUTH) {
+        continue; // 얼굴 랜드마크는 그리지 않음
+      }
+
       drawPoint(canvas, landmark, whitePaint);
       if (visualizeZ && rescaleZForVisualization) {
         zMin = min(zMin, landmark.getPosition3D().getZ());
@@ -147,15 +164,15 @@ public class PoseGraphic extends Graphic {
     PoseLandmark rightFootIndex = pose.getPoseLandmark(PoseLandmark.RIGHT_FOOT_INDEX);
 
     // Face
-    drawLine(canvas, nose, leftEyeInner, whitePaint);
-    drawLine(canvas, leftEyeInner, leftEye, whitePaint);
-    drawLine(canvas, leftEye, leftEyeOuter, whitePaint);
-    drawLine(canvas, leftEyeOuter, leftEar, whitePaint);
-    drawLine(canvas, nose, rightEyeInner, whitePaint);
-    drawLine(canvas, rightEyeInner, rightEye, whitePaint);
-    drawLine(canvas, rightEye, rightEyeOuter, whitePaint);
-    drawLine(canvas, rightEyeOuter, rightEar, whitePaint);
-    drawLine(canvas, leftMouth, rightMouth, whitePaint);
+//    drawLine(canvas, nose, leftEyeInner, whitePaint);
+//    drawLine(canvas, leftEyeInner, leftEye, whitePaint);
+//    drawLine(canvas, leftEye, leftEyeOuter, whitePaint);
+//    drawLine(canvas, leftEyeOuter, leftEar, whitePaint);
+//    drawLine(canvas, nose, rightEyeInner, whitePaint);
+//    drawLine(canvas, rightEyeInner, rightEye, whitePaint);
+//    drawLine(canvas, rightEye, rightEyeOuter, whitePaint);
+//    drawLine(canvas, rightEyeOuter, rightEar, whitePaint);
+//    drawLine(canvas, leftMouth, rightMouth, whitePaint);
 
     drawLine(canvas, leftShoulder, rightShoulder, whitePaint);
     drawLine(canvas, leftHip, rightHip, whitePaint);
@@ -209,16 +226,44 @@ public class PoseGraphic extends Graphic {
     PointF3D start = startLandmark.getPosition3D();
     PointF3D end = endLandmark.getPosition3D();
 
+    int startLandmarkType = startLandmark.getLandmarkType();
+    int endLandmarkType = endLandmark.getLandmarkType();
+
+    // 손가락 및 발가락 랜드마크를 제외
+    if (startLandmarkType == PoseLandmark.LEFT_PINKY || startLandmarkType == PoseLandmark.RIGHT_PINKY ||
+            startLandmarkType == PoseLandmark.LEFT_INDEX || startLandmarkType == PoseLandmark.RIGHT_INDEX ||
+            startLandmarkType == PoseLandmark.LEFT_THUMB || startLandmarkType == PoseLandmark.RIGHT_THUMB ||
+            startLandmarkType == PoseLandmark.LEFT_FOOT_INDEX || startLandmarkType == PoseLandmark.RIGHT_FOOT_INDEX ||
+            endLandmarkType == PoseLandmark.LEFT_PINKY || endLandmarkType == PoseLandmark.RIGHT_PINKY ||
+            endLandmarkType == PoseLandmark.LEFT_INDEX || endLandmarkType == PoseLandmark.RIGHT_INDEX ||
+            endLandmarkType == PoseLandmark.LEFT_THUMB || endLandmarkType == PoseLandmark.RIGHT_THUMB ||
+            endLandmarkType == PoseLandmark.LEFT_FOOT_INDEX || endLandmarkType == PoseLandmark.RIGHT_FOOT_INDEX) {
+      // 손가락이나 발가락 부분은 동그라미를 그리지 않음
+      return;
+    }
+
     // Gets average z for the current body line
     float avgZInImagePixel = (start.getZ() + end.getZ()) / 2;
     updatePaintColorByZValue(
-        paint, canvas, visualizeZ, rescaleZForVisualization, avgZInImagePixel, zMin, zMax);
+            paint, canvas, visualizeZ, rescaleZForVisualization, avgZInImagePixel, zMin, zMax);
 
+    // Draw the line between the start and end landmarks
     canvas.drawLine(
-        translateX(start.getX()),
-        translateY(start.getY()),
-        translateX(end.getX()),
-        translateY(end.getY()),
-        paint);
+            translateX(start.getX()),
+            translateY(start.getY()),
+            translateX(end.getX()),
+            translateY(end.getY()),
+            paint);
+
+    // Create a red paint object for circles
+    Paint redPaint = new Paint();
+    redPaint.setColor(Color.WHITE);  // Set color to red
+    redPaint.setStyle(Paint.Style.FILL);  // Fill the circles with color
+
+    // Draw a red circle at the start of the line (joint point)
+    canvas.drawCircle(translateX(start.getX()), translateY(start.getY()), DOT_RADIUS + 4.0f, redPaint);
+
+    // Draw a red circle at the end of the line (joint point)
+    canvas.drawCircle(translateX(end.getX()), translateY(end.getY()), DOT_RADIUS + 4.0f, redPaint);
   }
 }
