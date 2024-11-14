@@ -98,7 +98,7 @@ public class GraphicOverlay extends View {
 
     protected void drawRect(
         Canvas canvas, float left, float top, float right, float bottom, Paint paint) {
-     // canvas.drawRect(left, top, right, bottom, paint);
+      // canvas.drawRect(left, top, right, bottom, paint);
     }
 
     protected void drawText(Canvas canvas, String text, float x, float y, Paint paint) {
@@ -170,44 +170,47 @@ public class GraphicOverlay extends View {
         float zInImagePixel,
         float zMin,
         float zMax) {
-      if (!visualizeZ) {
-     //   paint.setARGB(255, 0, 0, 255); // R, G, B 값으로 파란색 설정
-
-        return;
-      }
+      paint.setARGB(255, 0, 0, 255); // 파란색으로 통일
+//
+//      if (!visualizeZ) {
+//
+//        paint.setARGB(255, 0, 0, 255); // R, G, B 값으로 파란색 설정
+//
+//        return;
+//      }
 
       // When visualizeZ is true, sets up the paint to different colors based on z values.
       // Gets the range of z value.
-      float zLowerBoundInScreenPixel;
-      float zUpperBoundInScreenPixel;
-
-      if (rescaleZForVisualization) {
-        zLowerBoundInScreenPixel = min(-0.001f, scale(zMin));
-        zUpperBoundInScreenPixel = max(0.001f, scale(zMax));
-      } else {
-        // By default, assume the range of z value in screen pixel is [-canvasWidth, canvasWidth].
-        float defaultRangeFactor = 1f;
-        zLowerBoundInScreenPixel = -defaultRangeFactor * canvas.getWidth();
-        zUpperBoundInScreenPixel = defaultRangeFactor * canvas.getWidth();
-      }
-
-      float zInScreenPixel = scale(zInImagePixel);
-
-      if (zInScreenPixel < 0) {
-        // Sets up the paint to be red if the item is in front of the z origin.
-        // Maps values within [zLowerBoundInScreenPixel, 0) to [255, 0) and use it to control the
-        // color. The larger the value is, the more red it will be.
-        int v = (int) (zInScreenPixel / zLowerBoundInScreenPixel * 255);
-        v = Ints.constrainToRange(v, 0, 255);
-        paint.setARGB(255, 255, 255 - v, 255 - v);
-      } else {
-        // Sets up the paint to be blue if the item is behind the z origin.
-        // Maps values within [0, zUpperBoundInScreenPixel] to [0, 255] and use it to control the
-        // color. The larger the value is, the more blue it will be.
-        int v = (int) (zInScreenPixel / zUpperBoundInScreenPixel * 255);
-        v = Ints.constrainToRange(v, 0, 255);
-        paint.setARGB(255, 255 - v, 255 - v, 255);
-      }
+//      float zLowerBoundInScreenPixel;
+//      float zUpperBoundInScreenPixel;
+//
+//      if (rescaleZForVisualization) {
+//        zLowerBoundInScreenPixel = min(-0.001f, scale(zMin));
+//        zUpperBoundInScreenPixel = max(0.001f, scale(zMax));
+//      } else {
+//        // By default, assume the range of z value in screen pixel is [-canvasWidth, canvasWidth].
+//        float defaultRangeFactor = 1f;
+//        zLowerBoundInScreenPixel = -defaultRangeFactor * canvas.getWidth();
+//        zUpperBoundInScreenPixel = defaultRangeFactor * canvas.getWidth();
+//      }
+//
+//      float zInScreenPixel = scale(zInImagePixel);
+//
+//      if (zInScreenPixel < 0) {
+//        // Sets up the paint to be red if the item is in front of the z origin.
+//        // Maps values within [zLowerBoundInScreenPixel, 0) to [255, 0) and use it to control the
+//        // color. The larger the value is, the more red it will be.
+//        int v = (int) (zInScreenPixel / zLowerBoundInScreenPixel * 255);
+//        v = Ints.constrainToRange(v, 0, 255);
+//        paint.setARGB(255, 255, 255 - v, 255 - v);
+//      } else {
+//        // Sets up the paint to be blue if the item is behind the z origin.
+//        // Maps values within [0, zUpperBoundInScreenPixel] to [0, 255] and use it to control the
+//        // color. The larger the value is, the more blue it will be.
+//        int v = (int) (zInScreenPixel / zUpperBoundInScreenPixel * 255);
+//        v = Ints.constrainToRange(v, 0, 255);
+//        paint.setARGB(255, 255 - v, 255 - v, 255);
+//      }
     }
   }
 
@@ -308,6 +311,8 @@ public class GraphicOverlay extends View {
       updateTransformationIfNeeded();
 
       for (Graphic graphic : graphics) {
+
+
         graphic.draw(canvas);
       }
     }
