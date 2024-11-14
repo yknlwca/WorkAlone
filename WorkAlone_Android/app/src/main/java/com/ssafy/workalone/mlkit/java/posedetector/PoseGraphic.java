@@ -229,7 +229,7 @@ public class PoseGraphic extends Graphic {
     int startLandmarkType = startLandmark.getLandmarkType();
     int endLandmarkType = endLandmark.getLandmarkType();
 
-    // 손가락 및 발가락 랜드마크를 제외
+    // Exclude finger and toe landmarks
     if (startLandmarkType == PoseLandmark.LEFT_PINKY || startLandmarkType == PoseLandmark.RIGHT_PINKY ||
             startLandmarkType == PoseLandmark.LEFT_INDEX || startLandmarkType == PoseLandmark.RIGHT_INDEX ||
             startLandmarkType == PoseLandmark.LEFT_THUMB || startLandmarkType == PoseLandmark.RIGHT_THUMB ||
@@ -238,16 +238,15 @@ public class PoseGraphic extends Graphic {
             endLandmarkType == PoseLandmark.LEFT_INDEX || endLandmarkType == PoseLandmark.RIGHT_INDEX ||
             endLandmarkType == PoseLandmark.LEFT_THUMB || endLandmarkType == PoseLandmark.RIGHT_THUMB ||
             endLandmarkType == PoseLandmark.LEFT_FOOT_INDEX || endLandmarkType == PoseLandmark.RIGHT_FOOT_INDEX) {
-      // 손가락이나 발가락 부분은 동그라미를 그리지 않음
       return;
     }
 
-    // Gets average z for the current body line
+    // Calculate average z for color adjustment
     float avgZInImagePixel = (start.getZ() + end.getZ()) / 2;
     updatePaintColorByZValue(
             paint, canvas, visualizeZ, rescaleZForVisualization, avgZInImagePixel, zMin, zMax);
 
-    // Draw the line between the start and end landmarks
+    // Draw line between start and end landmarks
     canvas.drawLine(
             translateX(start.getX()),
             translateY(start.getY()),
@@ -255,15 +254,25 @@ public class PoseGraphic extends Graphic {
             translateY(end.getY()),
             paint);
 
-    // Create a red paint object for circles
-    Paint redPaint = new Paint();
-    redPaint.setColor(Color.WHITE);  // Set color to red
-    redPaint.setStyle(Paint.Style.FILL);  // Fill the circles with color
+    // Paint for white outline
+    Paint whitePaint = new Paint();
+    whitePaint.setColor(Color.WHITE);
+    whitePaint.setStyle(Paint.Style.FILL);
 
-    // Draw a red circle at the start of the line (joint point)
-    canvas.drawCircle(translateX(start.getX()), translateY(start.getY()), DOT_RADIUS + 4.0f, redPaint);
+    // Paint for blue fill
+    Paint bluePaint = new Paint();
+    bluePaint.setColor(Color.BLUE);
+    bluePaint.setStyle(Paint.Style.FILL);
 
-    // Draw a red circle at the end of the line (joint point)
-    canvas.drawCircle(translateX(end.getX()), translateY(end.getY()), DOT_RADIUS + 4.0f, redPaint);
+    // Draw white outline circle at start of the line
+    canvas.drawCircle(translateX(start.getX()), translateY(start.getY()), DOT_RADIUS + 6.0f, whitePaint);
+    // Draw blue fill circle at start of the line
+    canvas.drawCircle(translateX(start.getX()), translateY(start.getY()), DOT_RADIUS + 4.0f, bluePaint);
+
+    // Draw white outline circle at end of the line
+    canvas.drawCircle(translateX(end.getX()), translateY(end.getY()), DOT_RADIUS + 6.0f, whitePaint);
+    // Draw blue fill circle at end of the line
+    canvas.drawCircle(translateX(end.getX()), translateY(end.getY()), DOT_RADIUS + 4.0f, bluePaint);
   }
+
 }
