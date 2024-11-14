@@ -1,5 +1,6 @@
 package com.ssafy.workalone.presentation.ui.component.bottombar
 
+import android.content.Context
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,17 +27,31 @@ import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 import kotlinx.coroutines.delay
-
+import android.speech.tts.TextToSpeech
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import java.util.Locale
 // 운동 타이머 컴포넌트
 @Composable
 fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
-
+    val context = LocalContext.current
     var isExercise by viewModel.isExercising
     var goalTime by viewModel.totalRep
     val totalSets by viewModel.totalSet
     var currentSet by viewModel.nowSet
+    var tts by remember { mutableStateOf<TextToSpeech?>(null) }
 
     val configuration = LocalConfiguration.current
+
+    // TextToSpeech 객체
+   tts = remember {
+        TextToSpeech(context) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                tts?.language = Locale.getDefault()
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
         while (goalTime >0) {
@@ -44,7 +59,11 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
             delay(1000L)
             // 일시정지가 아닐 때만 감소
             if (isExercise&&!viewModel.isResting.value) {
-                    viewModel.addRep("플랭크")
+                viewModel.addRep("플랭크")
+                if(goalTime >0 && goalTime % 10 == 0){
+                    val text = "${goalTime}초 남았습니다."
+                    tts?.speak(text,TextToSpeech.QUEUE_FLUSH,null,null)
+                }
             }
             if(viewModel.totalRep.value==0){
                 viewModel.addSet()
