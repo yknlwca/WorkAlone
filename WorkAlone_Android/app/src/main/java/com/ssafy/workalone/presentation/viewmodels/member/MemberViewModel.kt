@@ -1,29 +1,54 @@
 package com.ssafy.workalone.presentation.viewmodels.member
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
-import com.ssafy.workalone.data.local.MemberPreferenceManager
+import androidx.lifecycle.viewModelScope
+import com.ssafy.workalone.data.model.member.Member
+import com.ssafy.workalone.data.model.member.SaveMember
+import com.ssafy.workalone.data.model.member.SaveRecording
+import com.ssafy.workalone.data.repository.MemberRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class MemberViewModel(
-    context: Context
+    private val memberRepository: MemberRepository = MemberRepository()
 ) : ViewModel() {
-    private val memberPreferenceManager = MemberPreferenceManager(context)
-    private val _name = MutableStateFlow(memberPreferenceManager.getName() ?: "")
-    val name: StateFlow<String> = _name
+    private var _member = MutableStateFlow<Member?>(null)
+    val member: StateFlow<Member?> = _member
 
-    private val _weight = MutableStateFlow(memberPreferenceManager.getWeight())
+    private val _name = MutableStateFlow("")
+    val name: StateFlow<String> = _name
+    private val _weight = MutableStateFlow(0)
     val weight: StateFlow<Int> = _weight
 
-    private val _login = MutableStateFlow(memberPreferenceManager.getLogin())
-    val login: StateFlow<Boolean> = _login
+    private val _isRecording = MutableStateFlow(false)
+    val isRecording: StateFlow<Boolean> = _isRecording
 
-    fun saveUserInfo(id: Long = 0L, name: String, weight: Int) {
-        memberPreferenceManager.setMemberInfo(id, name, weight)
-        _name.value = name
-        _weight.value = weight
-        memberPreferenceManager.setLogin(true)
-        _login.value = true
+    fun setMember(memberId: Long) {
+        viewModelScope.launch {
+            memberRepository.getMember(memberId).collect { member ->
+                _member.value = member
+                _name.value = member.memberName
+                _weight.value = member.memberWeight
+                _isRecording.value = member.isRecording
+            }
+        }
+    }
+
+    fun registerMember(member: SaveMember){
+        viewModelScope.launch {
+            memberRepository.registerMember(member).collect { member ->
+                _member.value = member
+            }
+        }
+    }
+
+    fun saveRecordingStatus(saveRecording: SaveRecording) {
+        viewModelScope.launch {
+            memberRepository.saveRecordingStatus(saveRecording).collect { member ->
+                _member.value = member
+                _isRecording.value = member.isRecording
+            }
+        }
     }
 }

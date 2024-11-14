@@ -1,9 +1,6 @@
 package com.ssafy.workalone.presentation.ui.component.bottombar
 
-import android.content.pm.PackageManager
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +12,8 @@ import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,34 +24,31 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.ssafy.workalone.data.local.MemberPreferenceManager
 import com.ssafy.workalone.data.local.SettingsPreferenceManager
+import com.ssafy.workalone.data.model.member.SaveRecording
+import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray700
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray900
 import com.ssafy.workalone.presentation.ui.theme.WorkAloneTheme
+import com.ssafy.workalone.presentation.viewmodels.member.MemberViewModel
 
 @Composable
-fun BottomSheetContent(navController: NavController) {
+fun BottomSheetContent(
+    navController: NavController, memberViewModel: MemberViewModel = viewModel()
+) {
     val context = LocalContext.current
     val settingsPreference = remember { SettingsPreferenceManager(context) }
+    val memberReference = remember { MemberPreferenceManager(context) }
     var isRecordingEnabled by remember { mutableStateOf(settingsPreference.getRecordingMode()) }
+    val isRecording by memberViewModel.isRecording.collectAsState()
 
-    val requestPermissionLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-            val cameraGranted = permissions[android.Manifest.permission.CAMERA] ?: false
-            val audioGranted = permissions[android.Manifest.permission.RECORD_AUDIO] ?: false
-            if (cameraGranted && audioGranted) {
-                Toast.makeText(context, "녹화 기능이 활성화되었습니다.", Toast.LENGTH_SHORT).show()
-            }
-            if (!cameraGranted) {
-                Toast.makeText(context, "녹화 기능은 카메라 권한이 필요합니다", Toast.LENGTH_SHORT).show()
-            }
-            if (!audioGranted) {
-                Toast.makeText(context, "녹화 기능은 오디오 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
-            }
-        }
-
+    LaunchedEffect(isRecording) {
+        isRecordingEnabled = isRecording
+        settingsPreference.setRecordingMode(isRecording)
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -82,32 +78,12 @@ fun BottomSheetContent(navController: NavController) {
                 checked = isRecordingEnabled,
                 onCheckedChange = { enabled ->
                     if (enabled) {
-                        // 권한이 있는지 확인
-                        val hasCameraPermission = ContextCompat.checkSelfPermission(
-                            context, android.Manifest.permission.CAMERA
-                        ) == PackageManager.PERMISSION_GRANTED
-                        val hasAudioPermission = ContextCompat.checkSelfPermission(
-                            context, android.Manifest.permission.RECORD_AUDIO
-                        ) == PackageManager.PERMISSION_GRANTED
-
-                        if (hasCameraPermission && hasAudioPermission) {
-                            // 이미 권한이 있는 경우
-                            isRecordingEnabled = true
-                            settingsPreference.setRecordingMode(true)
-                            Toast.makeText(context, "녹화 기능이 활성화되었습니다.", Toast.LENGTH_SHORT).show()
-                        } else {
-                            // 권한이 없는 경우 권한 요청
-                            requestPermissionLauncher.launch(
-                                arrayOf(
-                                    android.Manifest.permission.CAMERA,
-                                    android.Manifest.permission.RECORD_AUDIO
-                                )
-                            )
-                        }
+                        isRecordingEnabled = true
+                        memberViewModel.saveRecordingStatus(SaveRecording(memberReference.getId(), true))
+                        Toast.makeText(context, "녹화 기능이 활성화되었습니다.", Toast.LENGTH_SHORT).show()
                     } else {
-                        // 스위치를 OFF로 변경할 때
                         isRecordingEnabled = false
-                        settingsPreference.setRecordingMode(false)
+                        memberViewModel.saveRecordingStatus(SaveRecording(memberReference.getId(), false))
                         Toast.makeText(context, "녹화 기능이 비활성화되었습니다.", Toast.LENGTH_SHORT).show()
                     }
                 },
@@ -129,7 +105,10 @@ fun BottomSheetContent(navController: NavController) {
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
                 .clickable {
-
+                    memberReference.clear()
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                    }
                 },
             verticalAlignment = Alignment.CenterVertically
         ) {

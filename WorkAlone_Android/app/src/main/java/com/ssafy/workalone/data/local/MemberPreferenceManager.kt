@@ -14,8 +14,12 @@ class MemberPreferenceManager(context: Context) {
         return preferences.getString("name", "") ?: ""
     }
 
+    fun setId(id: Long) {
+        preferences.edit().putLong("memberId", id).apply()
+    }
+
     fun getId(): Long {
-        return preferences.getLong("memberId", 0L) ?: 0L
+        return preferences.getLong("memberId", 0L)
     }
 
     fun getWeight(): Int {
@@ -33,5 +37,10 @@ class MemberPreferenceManager(context: Context) {
 
     fun getLogin(): Boolean {
         return preferences.getBoolean("Login", false)
+    }
+
+    // 운동이 끝나면 삭제
+    fun clear() {
+        preferences.edit().clear().apply()
     }
 }

@@ -31,7 +31,6 @@ import androidx.camera.video.Recording
 import androidx.camera.video.VideoCapture
 import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.PreviewView
-import androidx.compose.runtime.snapshots.Snapshot.Companion.observe
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
@@ -49,7 +48,7 @@ import com.ssafy.workalone.mlkit.preference.PreferenceUtils
 import com.ssafy.workalone.presentation.ui.screen.exercise.ExerciseMLkitView
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModelFactory
-import com.ssafy.workalone.presentation.viewmodels.video.AWSS3ViewModel
+import com.ssafy.workalone.presentation.viewmodels.member.MemberViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.ExecutorService
@@ -74,8 +73,7 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
     private val exerciseViewModel: ExerciseMLKitViewModel by viewModels {
         ExerciseMLKitViewModelFactory(this)
     }
-
-    private val awss3ViewModel: AWSS3ViewModel by viewModels()
+    private val memberViewModel : MemberViewModel by viewModels()
 
     private var videoCapture: VideoCapture<Recorder>? = null
     private var recording: Recording? = null // 최적화 -> 뷰 모델 이동
@@ -84,8 +82,6 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var preferenceManger: ExerciseInfoPreferenceManager
     private lateinit var settingManager: SettingsPreferenceManager
-
-
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -107,7 +103,7 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
             cameraProvider = provider
             bindAllCameraUseCases()
             if (settingManager.getRecordingMode()) {
-            captureVideo()
+                captureVideo()
             }
         }
         exerciseViewModel.exerciseType.observe(this) { newExerciseType ->
@@ -390,11 +386,8 @@ class CameraXLivePreviewActivity : AppCompatActivity(), OnItemSelectedListener,
                     // 녹화 종료
                     is VideoRecordEvent.Finalize -> {
                         if (!recordEvent.hasError()) {
-                            val msg =
-                                "Video capture succeeded: ${recordEvent.outputResults.outputUri}"
-                            Toast.makeText(this@CameraXLivePreviewActivity, msg, Toast.LENGTH_SHORT)
-                                .show()
-                            Log.d(TAG, msg)
+                            val msg = "저장 : ${recordEvent.outputResults.outputUri}"
+                            Toast.makeText(this@CameraXLivePreviewActivity, msg, Toast.LENGTH_SHORT).show()
                             // 파일의 URI
                             val fileUri = recordEvent.outputResults.outputUri
                             preferenceManger.setFileUrl(fileUri.toString())
