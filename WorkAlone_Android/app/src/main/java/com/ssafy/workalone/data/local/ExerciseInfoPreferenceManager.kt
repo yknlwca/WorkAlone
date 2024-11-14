@@ -6,6 +6,7 @@ import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.ssafy.workalone.data.model.exercise.ExerciseData
 import com.ssafy.workalone.data.model.result.AwsUrl
+import com.ssafy.workalone.data.model.result.ResultList
 
 class ExerciseInfoPreferenceManager(context: Context) {
     private val preferences: SharedPreferences =
@@ -57,5 +58,18 @@ class ExerciseInfoPreferenceManager(context: Context) {
     // 운동이 끝나면 삭제
     fun clearAll() {
         preferences.edit().clear().apply()
+    }
+
+    // 운동 결과 저장
+    fun setExerciseResult(result: ResultList) {
+        val json = gson.toJson(result) // 리스트를 JSON으로 변환
+        preferences.edit().putString("exercise_result", json).apply()
+    }
+
+    //운동 결과 가져오기
+    fun getExerciseResult(): ResultList {
+        val json = preferences.getString("exercise_result", null)
+        val type = object : TypeToken<ResultList>() {}.type
+        return gson.fromJson(json, type)
     }
 }

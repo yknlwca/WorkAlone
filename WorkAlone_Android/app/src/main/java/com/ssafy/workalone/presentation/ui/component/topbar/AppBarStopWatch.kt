@@ -36,13 +36,12 @@ fun StopwatchScreen(
     isRunning: Boolean,
     viewModel: ExerciseMLKitViewModel
 ) {
-    var timeInSeconds by remember { mutableStateOf(0) }
-    val time = String.format("%02d:%02d", timeInSeconds / 60, timeInSeconds % 60)
+    val time = String.format("%02d:%02d", viewModel.exercisingTime.value / 60, viewModel.exercisingTime.value % 60)
 
     LaunchedEffect(isRunning) {
         while (isRunning) {
             kotlinx.coroutines.delay(1000L)
-            timeInSeconds++
+            viewModel.addExercisingTime()
         }
     }
 
