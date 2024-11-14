@@ -12,6 +12,4 @@ public class ExerciseSummarySaveDetail {
 	private LocalTime time;
 
 	private int kcal;
-
-	private String video_url;
 }

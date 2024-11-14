@@ -10,4 +10,6 @@ public class ExerciseSummarySaveReq {
 
 	private List<ExerciseSummarySaveDetail> summaryList;
 
+	private String video_url;
+
 }

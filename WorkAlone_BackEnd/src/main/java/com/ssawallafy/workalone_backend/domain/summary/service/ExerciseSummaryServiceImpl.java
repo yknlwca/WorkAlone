@@ -82,7 +82,7 @@ public class ExerciseSummaryServiceImpl implements ExerciseSummaryService {
 				.exercise(exercise)
 				.kcal(e.getKcal())
 				.time(e.getTime())
-				.video_url(e.getVideo_url())
+				.video_url(exerciseSummarySaveReq.getVideo_url())
 			.build();
 
 			exerciseSummaryRepository.save(exerciseSummary);
