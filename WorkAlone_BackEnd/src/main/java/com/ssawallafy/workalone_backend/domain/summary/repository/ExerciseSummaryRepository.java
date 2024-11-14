@@ -18,4 +18,6 @@ public interface ExerciseSummaryRepository extends JpaRepository<ExerciseSummary
 
 	@Query("SELECT e.date FROM ExerciseSummary e WHERE e.member.id = :memberId")
 	List<LocalDate> findAllDateByMemberId(long memberId);
+
+	List<ExerciseSummary> findAllByMemberId(long memberId);
 }
