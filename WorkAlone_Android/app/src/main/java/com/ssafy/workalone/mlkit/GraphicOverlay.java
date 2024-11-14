@@ -170,7 +170,7 @@ public class GraphicOverlay extends View {
         float zInImagePixel,
         float zMin,
         float zMax) {
-      paint.setARGB(255, 0, 0, 255); // 파란색으로 통일
+      paint.setARGB(255, 255, 255, 255); // 파란색으로 통일
 //
 //      if (!visualizeZ) {
 //
