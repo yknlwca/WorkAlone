@@ -1,6 +1,7 @@
 package com.ssafy.workalone.presentation.ui.component.bottombar
 
 import android.content.res.Configuration
+import androidx.camera.video.Recording
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,7 +29,7 @@ import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel
 
 @Composable
-fun RepCounter(viewModel: ExerciseMLKitViewModel = viewModel()){
+fun RepCounter(viewModel: ExerciseMLKitViewModel = viewModel(), recording: Recording?) {
 
     var isExercise = viewModel.isExercising.value
     var totalReps by viewModel.totalRep
@@ -48,7 +49,8 @@ fun RepCounter(viewModel: ExerciseMLKitViewModel = viewModel()){
                         topEnd = 20.dp,
                         bottomStart = 0.dp,
                         bottomEnd = 0.dp
-                    ))
+                    )
+                )
                 .fillMaxWidth()
                 .height(230.dp)
                 .padding(25.dp),
@@ -91,6 +93,7 @@ fun RepCounter(viewModel: ExerciseMLKitViewModel = viewModel()){
             }
 
             if(isExercise){
+                recording?.resume()
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -105,6 +108,7 @@ fun RepCounter(viewModel: ExerciseMLKitViewModel = viewModel()){
                     )
                 }
             } else {
+                recording?.pause()
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -149,7 +153,8 @@ fun RepCounter(viewModel: ExerciseMLKitViewModel = viewModel()){
                         topEnd = 20.dp,
                         bottomStart = 0.dp,
                         bottomEnd = 0.dp
-                    ))
+                    )
+                )
                 .fillMaxWidth()
                 .padding(25.dp),
 

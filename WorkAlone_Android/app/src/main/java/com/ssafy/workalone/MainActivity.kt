@@ -31,7 +31,6 @@ class MainActivity : ComponentActivity() {
                         .background(MaterialTheme.colorScheme.background)
                 ) {
                     Navigation(startDestination = startDestination)
-//                    IndividualCompleteView(rememberNavController())
                 }
             }
         }

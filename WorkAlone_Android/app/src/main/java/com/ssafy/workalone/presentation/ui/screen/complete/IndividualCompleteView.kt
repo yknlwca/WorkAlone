@@ -42,10 +42,11 @@ import com.ssafy.workalone.presentation.ui.component.bottombar.CustomButton
 import com.ssafy.workalone.presentation.ui.component.complete.ConfettiAnimation
 import com.ssafy.workalone.presentation.ui.component.complete.IndividualExerciseRecord
 import com.ssafy.workalone.presentation.ui.component.topbar.CloseButton
-import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue300
+import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue100
+import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
-import com.ssafy.workalone.presentation.viewmodels.video.AWSS3ViewModel
+import com.ssafy.workalone.presentation.viewmodels.video.ResultViewModel
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
@@ -55,37 +56,45 @@ import kotlin.math.roundToInt
 @Composable
 fun IndividualCompleteView(
     navController: NavController,
-    awsViewModel: AWSS3ViewModel = viewModel()
+    resultViewModel: ResultViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val exerciseManager = ExerciseInfoPreferenceManager(context)
     val settingManager = SettingsPreferenceManager(context)
     val videoUri = Uri.parse(exerciseManager.getFileUrl())
-
-
+    val resultList = exerciseManager.getExerciseResult()
     val uploadInProgress = remember { mutableStateOf(false) }
-    val uploadResponse by awsViewModel.uploadVideoResponse.collectAsState()
-    val awsUrl by awsViewModel.awsUrl.collectAsState()
+    val awsUrl by resultViewModel.awsUrl.collectAsState()
+    val exerciseData = exerciseManager.getExerciseList()
 
-
-
-    // TODO 운동 결과 바꾸자 이제
-    val exerciseCount = "3 X 5 세트"
-    val exerciseDuration: Int = 1808
-    val exerciseType: String = "푸쉬업"
+    val exerciseCount =
+        "${exerciseData.first().exerciseRepeat} X ${exerciseData.first().exerciseSet} 세트"
+    val time = resultList.result.first().time
+    val exerciseDuration = resultViewModel.convertTimeToSeconds(time)
+    val exerciseType = resultList.result.first().exerciseType
     val memberManager = MemberPreferenceManager(context)
     val weight = memberManager.getWeight()
-    val calorie: Int =
-        if (exerciseType == "스쿼트") {
-            (6.0 * weight * (exerciseDuration / 3600.0)).roundToInt()
-        } else if (exerciseType == "푸쉬업") {
-            (4.0 * weight * (exerciseDuration / 3600.0)).roundToInt()
-        } else if (exerciseType == "윗몸 일으키기") {
-            (4.0 * weight * (exerciseDuration / 3600.0)).roundToInt()
-        } else if (exerciseType == "플랭크") {
-            (3.0 * weight * (exerciseDuration / 3600.0)).roundToInt()
-        } else {
-            0
+    val calorie =
+        when (exerciseType) {
+            "스쿼트" -> {
+                (6.0 * weight * (exerciseDuration / 3600.0)).roundToInt()
+            }
+
+            "푸쉬업" -> {
+                (4.0 * weight * (exerciseDuration / 3600.0)).roundToInt()
+            }
+
+            "윗몸 일으키기" -> {
+                (4.0 * weight * (exerciseDuration / 3600.0)).roundToInt()
+            }
+
+            "플랭크" -> {
+                (3.0 * weight * (exerciseDuration / 3600.0)).roundToInt()
+            }
+
+            else -> {
+                0
+            }
         }
 
     //전체 화면
@@ -154,14 +163,14 @@ fun IndividualCompleteView(
                 Column {
                     if (settingManager.getRecordingMode()) {
                         CustomButton(
-                            text = if (uploadInProgress.value) "업로드 중"
-                            else if (uploadResponse == true) "업로드 완료"
+                            text = if (uploadInProgress.value) "업로드 완료"
                             else "운동 영상 업로드",
-                            backgroundColor = WalkOneBlue300,
-                            borderColor = WalkOneBlue300,
+                            backgroundColor = WalkOneBlue500,
+                            borderColor = if (uploadInProgress.value) WalkOneBlue100 else WalkOneBlue500,
+                            enabled = !uploadInProgress.value,
                             onClick = {
                                 uploadInProgress.value = true
-                                awsViewModel.getAwsUrlRequest()
+                                resultViewModel.getAwsUrlRequest()
                                 Log.d("File Uri", "$videoUri")
                             },
                         )
@@ -171,7 +180,7 @@ fun IndividualCompleteView(
                     CustomButton(
                         text = "확인",
                         onClick = {
-                            Log.d("Object Url", "${awsUrl?.objectUrl}")// TODO 운동 결과에 같이 보내기
+                            resultViewModel.sendExerciseResult(resultList, weight)
                             navController.navigate(Screen.Home.route) {
                                 popUpTo(Screen.Home.route) { inclusive = true }
                                 launchSingleTop = true
@@ -187,7 +196,13 @@ fun IndividualCompleteView(
         val file = getFileFromContentUri(videoUri, context)
         awsUrl?.let {
             if (file != null) {
-                awsViewModel.uploadVideo(it.preSignedUrl, file)
+                resultViewModel.uploadVideo(it.preSignedUrl, file)
+//                val rowsDeleted = context.contentResolver.delete(videoUri, null, null)
+//                if (rowsDeleted > 0) {
+//                    Log.d("File Delete", "Success")
+//                } else {
+//                    Log.d("File Delete", "Fail")
+//                }
             }
         }
     }
@@ -210,4 +225,3 @@ fun getFileFromContentUri(contentUri: Uri?, context: Context): File? {
         null
     }
 }
-

@@ -47,7 +47,6 @@ import androidx.annotation.WorkerThread;
 
 import com.google.common.base.Preconditions;
 import com.google.mlkit.vision.pose.Pose;
-import com.google.mlkit.vision.pose.PoseLandmark;
 import com.ssafy.workalone.presentation.viewmodels.ExerciseMLKitViewModel;
 
 import java.io.BufferedReader;
@@ -310,23 +309,23 @@ public class PoseClassifierProcessor {
         if (POSE_SAMPLES_FILE.equals("pose/plank.csv")) {
           if (classification.getMaxConfidenceClass().equals(PLANK_CLASS))
           {
-            // 플래그를 true로 설정하여 플랭크 자세 인식
-            plankFlag = true;
-            lastRepResult = String.format(Locale.KOREAN, "%s : 유지 중", PLANK_CLASS);
-            Log.d("exer","플랭크 자세 유지중 "+plankFlag);
+//            // 플래그를 true로 설정하여 플랭크 자세 인식
+//            plankFlag = true;
+//            lastRepResult = String.format(Locale.KOREAN, "%s : 유지 중", PLANK_CLASS);
+//            Log.d("exer","플랭크 자세 유지중 "+plankFlag);
           }
           else {
-            // 플랭크 자세를 벗어나면 플래그를 false로 설정
-            plankFlag = false;
-
-            lastRepResult = String.format(Locale.KOREAN, "%s : 중단됨", PLANK_CLASS);
-            Log.d("exer","플랭크 자세 유지 X "+plankFlag);
+//            // 플랭크 자세를 벗어나면 플래그를 false로 설정
+//            plankFlag = false;
+//
+//            lastRepResult = String.format(Locale.KOREAN, "%s : 중단됨", PLANK_CLASS);
+//            Log.d("exer","플랭크 자세 유지 X "+plankFlag);
           }
-          if(plankFlag){
-            viewModel.startExercise();
-          }else{
-            viewModel.stopExercise();
-          }
+//          if(plankFlag){
+//            viewModel.startExercise();
+//          }else{
+//            viewModel.stopExercise();
+//          }
         }
         else {
           int repsBefore = repCounter.getNumRepeats();

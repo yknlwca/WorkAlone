@@ -1,5 +1,7 @@
 package com.ssafy.workalone.presentation.ui.screen.complete
 
+import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +20,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,20 +34,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.ssafy.workalone.R
 import com.ssafy.workalone.data.local.ExerciseInfoPreferenceManager
+import com.ssafy.workalone.data.local.MemberPreferenceManager
+import com.ssafy.workalone.data.local.SettingsPreferenceManager
 import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.ExerciseRecordDetail
 import com.ssafy.workalone.presentation.ui.component.bottombar.CustomButton
 import com.ssafy.workalone.presentation.ui.component.complete.ConfettiAnimation
 import com.ssafy.workalone.presentation.ui.component.complete.IntegratedExerciseRecord
 import com.ssafy.workalone.presentation.ui.component.topbar.CloseButton
-import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue300
+import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue100
+import com.ssafy.workalone.presentation.ui.theme.WalkOneBlue500
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray300
 import com.ssafy.workalone.presentation.ui.theme.WalkOneGray50
-import com.ssafy.workalone.presentation.viewmodels.video.AWSS3ViewModel
+import com.ssafy.workalone.presentation.viewmodels.video.ResultViewModel
+import kotlin.math.roundToInt
 
 data class IntegratedExerciseRecordData(
     val title: String,
@@ -57,28 +66,39 @@ data class IntegratedExerciseRecordData(
 @Composable
 fun IntegratedCompleteView(
     navController: NavController,
-    awsViewModel: AWSS3ViewModel = AWSS3ViewModel()
+    resultViewModel: ResultViewModel = viewModel()
 ) {
-    val integratedExerciseRecordDataList: List<IntegratedExerciseRecordData> = listOf(
-        IntegratedExerciseRecordData("스쿼트",3, 15,1000, 200),
-        IntegratedExerciseRecordData("푸쉬업",3, 0, 100,300),
-        IntegratedExerciseRecordData("플랭크",3, 15,2000, 400),
-        IntegratedExerciseRecordData("플랭크",3, 15,4000, 500),
-        IntegratedExerciseRecordData("플랭크",3, 0, 22200,250),
-        IntegratedExerciseRecordData("플랭크",3, 0, 300,600),
-        IntegratedExerciseRecordData("플랭크",3, 15,10, 700),
-    )
     val context = LocalContext.current
-    val preferenceManager = ExerciseInfoPreferenceManager(context)
+    val exerciseManager = ExerciseInfoPreferenceManager(context)
+    val settingManager = SettingsPreferenceManager(context)
+    val memberManager = MemberPreferenceManager(context)
+    val videoUri = Uri.parse(exerciseManager.getFileUrl())
+    val resultList = exerciseManager.getExerciseResult()
+    val uploadInProgress = remember { mutableStateOf(false) }
+    val awsUrl by resultViewModel.awsUrl.collectAsState()
+    val exerciseData = exerciseManager.getExerciseList()
+    val weight = memberManager.getWeight()
+    val integratedExerciseRecordDataList= resultList.result.mapIndexed{index, result ->
+        val exerciseInfo = exerciseData.getOrNull(index)
+        val exerciseDuration = convertTimeToSeconds(result.time)
+        val calorie = when (result.exerciseType) {
+            "스쿼트" -> (6.0 * weight * (exerciseDuration / 3600.0)).roundToInt()
+            "푸쉬업" -> (4.0 * weight * (exerciseDuration / 3600.0)).roundToInt()
+            "윗몸 일으키기" -> (4.0 * weight *(exerciseDuration / 3600.0)).roundToInt()
+            "플랭크" -> (3.0 * weight *(exerciseDuration / 3600.0)).roundToInt()
+            else -> 0
+        }
+        IntegratedExerciseRecordData(
+            title = result.exerciseType,
+            setCount = exerciseInfo?.exerciseSet ?: 0,
+            exerciseCount = exerciseInfo?.exerciseRepeat ?: 0,
+            exerciseDuration = exerciseDuration,
+            calorie = calorie
+        )
+    }
+    val totalTime = integratedExerciseRecordDataList.sumOf { it.exerciseDuration }
+    val totalCalorie = integratedExerciseRecordDataList.sumOf { it.calorie }
 
-    val totalTime: Int = 3000
-    val totalCalorie: Int = 300
-    val exerciseType: String = "윗몸일으키기"
-    val weight = 60
-
-    val selectedFileUri by remember { mutableStateOf(preferenceManager.getAWSUrl()) }
-//    val preSignedUrl by awsViewModel.preSignedUrl.collectAsStateWithLifecycle()
-//    val uploadResponse by awsViewModel.uploadVideoResponse.collectAsStateWithLifecycle()
 
     //전체 화면
     Box(
@@ -166,18 +186,6 @@ fun IntegratedCompleteView(
                         LazyColumn {
                             // 기록 상세 표
                             items(integratedExerciseRecordDataList) { record ->
-//                                val calorie: Int =
-//                                    if (exerciseType == "스쿼트") {
-//                                        (6.0 * weight * (record.totalExerciseDuration / 3600.0)).roundToInt()
-//                                    } else if (exerciseType == "푸쉬업") {
-//                                        (4.0 * weight * (record.totalExerciseDuration / 3600.0)).roundToInt()
-//                                    } else if (exerciseType == "윗몸일으키기") {
-//                                        (4.0 * weight * (record.totalExerciseDuration / 3600.0)).roundToInt()
-//                                    } else if (exerciseType == "플랭크") {
-//                                        (3.0 * weight * (record.totalExerciseDuration / 3600.0)).roundToInt()
-//                                    } else {
-//                                        0
-//                                    }
                                 Column {
                                     ExerciseRecordDetail(
                                         record.title,
@@ -202,19 +210,26 @@ fun IntegratedCompleteView(
                     }
                 }
                 Column {
-                    CustomButton(
-                        text = "운동 영상 업로드",
-                        backgroundColor = WalkOneBlue300,
-                        borderColor = WalkOneBlue300,
-                        onClick = {
-                            awsViewModel.getAwsUrlRequest()
-                        },
-                    )
+                    if (settingManager.getRecordingMode()) {
+                        CustomButton(
+                            text = if (uploadInProgress.value) "업로드 완료"
+                            else "운동 영상 업로드",
+                            backgroundColor = WalkOneBlue500,
+                            borderColor = if(uploadInProgress.value) WalkOneBlue100 else WalkOneBlue500,
+                            enabled = !uploadInProgress.value,
+                            onClick = {
+                                uploadInProgress.value = true
+                                resultViewModel.getAwsUrlRequest()
+                                Log.d("File Uri", "$videoUri")
+                            },
+                        )
+                    }
                     Spacer(modifier = Modifier.height(8.dp))
                     //확인 버튼
                     CustomButton(
                         text = "확인",
                         onClick = {
+                            resultViewModel.sendExerciseResult(resultList, weight)
                             navController.navigate(Screen.Home.route) {
                                 popUpTo(Screen.Home.route) { inclusive = true }
                                 launchSingleTop = true
@@ -226,10 +241,32 @@ fun IntegratedCompleteView(
         }
         ConfettiAnimation()
     }
+    LaunchedEffect(awsUrl) {
+        val file = getFileFromContentUri(videoUri, context)
+        awsUrl?.let {
+            if (file != null) {
+                resultViewModel.uploadVideo(it.preSignedUrl, file)
+//                val rowsDeleted = context.contentResolver.delete(videoUri, null, null)
+//                if (rowsDeleted > 0) {
+//                    Log.d("File Delete", "Success")
+//                } else {
+//                    Log.d("File Delete", "Fail")
+//                }
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewIntegratedCompleteView() {
     IntegratedCompleteView(rememberNavController())
+}
+
+
+fun convertTimeToSeconds(time: String): Int {
+    val parts = time.split(":")
+    val minutes = parts[0].toInt()
+    val seconds = parts[1].toInt()
+    return (minutes * 60) + seconds
 }

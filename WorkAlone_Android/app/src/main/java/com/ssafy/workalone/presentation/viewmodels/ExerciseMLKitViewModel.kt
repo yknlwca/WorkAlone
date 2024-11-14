@@ -3,13 +3,9 @@ package com.ssafy.workalone.presentation.viewmodels
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
-import androidx.camera.video.Recording
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.ssafy.workalone.data.local.ExerciseInfoPreferenceManager
 import com.ssafy.workalone.data.model.exercise.ExerciseData
@@ -110,7 +106,6 @@ class ExerciseMLKitViewModel(context: Context): ViewModel() {
     }
     @SuppressLint("DefaultLocale")
     fun exerciseFinish() {
-        Log.d("exerciseResult", _nowExercise.value.toString())
 
         // 운동 결과 저장 -> mutable타입이므로 복사본 사용
         _exerciseResult.value = _exerciseResult.value.copy(
@@ -131,6 +126,7 @@ class ExerciseMLKitViewModel(context: Context): ViewModel() {
             val totalTime: Int = _exercisingTime.value
             _exerciseResultList.value.totalTime = String.format("%02d:%02d", totalTime / 60, totalTime % 60)
             exerciseInfoPreferenceManager.setExerciseResult(_exerciseResultList.value)
+            Log.d("1234", exerciseInfoPreferenceManager.getExerciseResult().toString())
             _isFinish.value = true
         } else {
             // 다음 운동으로 이동

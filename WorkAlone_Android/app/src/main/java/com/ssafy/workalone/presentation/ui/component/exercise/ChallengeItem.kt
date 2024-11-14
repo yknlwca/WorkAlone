@@ -93,7 +93,7 @@ fun ExerciseItem(challenge: Challenge, onClick: () -> Unit) {
                     Row {
                         if (challenge.exerciseRepeat != null && challenge.exerciseSet != null) {
                             Text(
-                                text = "${challenge.exerciseRepeat} 개",
+                                text = if (challenge.exerciseType.equals("플랭크")) "${challenge.exerciseRepeat} 초" else "${challenge.exerciseRepeat} 개",
                                 style = typography.Body03,
                                 color = WalkOneGray700,
                             )

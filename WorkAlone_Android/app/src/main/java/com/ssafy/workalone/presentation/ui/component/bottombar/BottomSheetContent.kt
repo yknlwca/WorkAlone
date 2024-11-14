@@ -15,9 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -42,13 +40,13 @@ fun BottomSheetContent(
     val context = LocalContext.current
     val settingsPreference = remember { SettingsPreferenceManager(context) }
     val memberReference = remember { MemberPreferenceManager(context) }
-    var isRecordingEnabled by remember { mutableStateOf(settingsPreference.getRecordingMode()) }
     val isRecording by memberViewModel.isRecording.collectAsState()
 
     LaunchedEffect(isRecording) {
-        isRecordingEnabled = isRecording
+        memberViewModel.setMember(memberReference.getId())
         settingsPreference.setRecordingMode(isRecording)
     }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -61,7 +59,7 @@ fun BottomSheetContent(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // 녹음 설정 스위치
+        // 녹화 설정 스위치
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -75,17 +73,19 @@ fun BottomSheetContent(
             )
             Spacer(modifier = Modifier.weight(1f))
             Switch(
-                checked = isRecordingEnabled,
+                checked = isRecording,
                 onCheckedChange = { enabled ->
-                    if (enabled) {
-                        isRecordingEnabled = true
-                        memberViewModel.saveRecordingStatus(SaveRecording(memberReference.getId(), true))
-                        Toast.makeText(context, "녹화 기능이 활성화되었습니다.", Toast.LENGTH_SHORT).show()
-                    } else {
-                        isRecordingEnabled = false
-                        memberViewModel.saveRecordingStatus(SaveRecording(memberReference.getId(), false))
-                        Toast.makeText(context, "녹화 기능이 비활성화되었습니다.", Toast.LENGTH_SHORT).show()
-                    }
+                    memberViewModel.saveRecordingStatus(
+                        SaveRecording(
+                            memberReference.getId(),
+                            enabled
+                        )
+                    )
+                    Toast.makeText(
+                        context,
+                        if (enabled) "녹화 기능이 활성화되었습니다." else "녹화 기능이 비활성화되었습니다.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 },
                 modifier = Modifier.scale(1.5f),
                 colors = SwitchDefaults.colors(
@@ -120,4 +120,3 @@ fun BottomSheetContent(
         }
     }
 }
-
