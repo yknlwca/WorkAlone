@@ -12,7 +12,7 @@ public interface MemberService {
 
 	Member saveMember(MemberSaveReq memberSaveReq);
 
-	Member findMember(String name);
+	Member findMember(long memberId);
 
 	Member modifyMember(MemberUpdateReq memberUpdateReq);
 }

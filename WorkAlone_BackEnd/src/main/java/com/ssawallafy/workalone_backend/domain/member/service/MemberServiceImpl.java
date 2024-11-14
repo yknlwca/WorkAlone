@@ -36,9 +36,9 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public Member findMember(String name) {
+	public Member findMember(long memberId) {
 
-		Member member = (Member) memberRepository.findByName(name)
+		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new BusinessLogicException(ErrorCode.NOT_FOUND));
 
 		return member;
