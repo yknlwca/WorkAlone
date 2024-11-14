@@ -5,6 +5,6 @@ data class LocalMember(
 
     val memberName: String,
 
-    val memberWeight: Float?,
+    val memberWeight: Int,
 
 )

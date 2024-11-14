@@ -23,7 +23,6 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,12 +37,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.ssafy.workalone.data.local.MemberPreferenceManager
 import com.ssafy.workalone.data.model.exercise.ExerciseSummary
 import com.ssafy.workalone.presentation.navigation.Screen
 import com.ssafy.workalone.presentation.ui.component.ExerciseRecordDetail
@@ -64,12 +62,15 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("NewApi")
 @Composable
-fun HomeView(navController: NavController, name: String) {
+fun HomeView(
+    navController: NavController
+) {
     WorkAloneTheme {
-        val typography = LocalWorkAloneTypography.current
+        val context = LocalContext.current
         val calendarViewModel: CalendarViewModel = viewModel()
         val summaryViewModel: ExerciseSummaryViewModel = viewModel()
-        val context = LocalContext.current
+        val typography = LocalWorkAloneTypography.current
+        val memberManager = MemberPreferenceManager(context)
         var backPressedTime by remember { mutableStateOf(0L) }
         val coroutineScope = rememberCoroutineScope()
         // BottomSheet 상태 관리
@@ -130,7 +131,7 @@ fun HomeView(navController: NavController, name: String) {
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(
-                            text = "${name}님, 반갑습니다!",
+                            text = "${memberManager.getName()}님, 반갑습니다!",
                             style = typography.Heading01.copy(
                                 color = WalkOneGray900,
                                 fontWeight = FontWeight.Bold,
@@ -249,12 +250,4 @@ fun HomeView(navController: NavController, name: String) {
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Preview(showBackground = true)
-@Composable
-fun previewHomeView(){
-    val fake = rememberNavController()
-    HomeView(fake, "윤성현")
 }
