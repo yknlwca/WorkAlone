@@ -48,12 +48,13 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel){
             }
             if(viewModel.totalRep.value==0){
                 viewModel.addSet()
+                //세트 다 채우면 다음 운동 or 운동 완료
+                if (viewModel.nowSet.value == viewModel.totalSet.value + 1) {
+                    viewModel.exerciseFinish()
+                }
             }
 
-            //세트 다 채우면 다음 운동 or 운동 완료
-            if (viewModel.nowSet.value == viewModel.totalSet.value + 1) {
-                viewModel.exerciseFinish()
-            }
+
         }
 
     }

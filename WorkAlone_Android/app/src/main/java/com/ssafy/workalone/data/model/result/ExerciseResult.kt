@@ -1,14 +1,13 @@
 package com.ssafy.workalone.data.model.result
 
 data class ExerciseResult(
-    val exerciseId: Long,
-    val kcal: Int,
-    val time: String,
+    var exerciseId: Long,
+    var exerciseType: String,
+    var time: String,
 )
 
 data class ResultList(
-    val result: List<ExerciseResult>,
-    val totalKcal: Int,
-    val totalTime: String,
-    val videoUri: String
+    var result: List<ExerciseResult>,
+    var totalTime: String,
+    var videoUri: String
 )
