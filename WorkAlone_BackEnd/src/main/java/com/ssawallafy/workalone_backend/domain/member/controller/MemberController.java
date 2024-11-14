@@ -43,10 +43,10 @@ public class MemberController {
 	}
 
 	@GetMapping("/read")
-	@Operation(summary = "회원정보 조회", description = "이름을 통해 회원정보 조회")
-	public ResponseEntity<Member> readMember(@RequestParam String name){
+	@Operation(summary = "회원정보 조회", description = "회원 ID를 통해 회원정보 조회")
+	public ResponseEntity<Member> readMember(@RequestParam long memberId){
 
-		Member res = memberService.findMember(name);
+		Member res = memberService.findMember(memberId);
 
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
