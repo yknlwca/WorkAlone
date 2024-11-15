@@ -1,6 +1,8 @@
 package com.ssawallafy.workalone_backend.domain.summary.service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -71,6 +73,9 @@ public class ExerciseSummaryServiceImpl implements ExerciseSummaryService {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new BusinessLogicException(ErrorCode.NOT_FOUND));
 
+		// "mm:ss" 형식의 DateTimeFormatter 생성
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
 		for (ExerciseSummarySaveDetail e: exerciseSummarySaveReq.getSummaryList()){
 
 			Exercise exercise = exerciseRepository.findById(e.getExercise_id())
@@ -81,7 +86,7 @@ public class ExerciseSummaryServiceImpl implements ExerciseSummaryService {
 				.date(LocalDate.now())
 				.exercise(exercise)
 				.kcal(e.getKcal())
-				.time(e.getTime())
+				.time(LocalTime.parse("00:" + e.getTime(), formatter))
 				.video_url(exerciseSummarySaveReq.getVideo_url())
 			.build();
 
