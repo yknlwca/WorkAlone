@@ -9,7 +9,7 @@ public class ExerciseSummarySaveDetail {
 
 	private long exercise_id;
 
-	private LocalTime time;
+	private String time;
 
 	private int kcal;
 }
