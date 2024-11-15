@@ -3,6 +3,7 @@ package com.ssawallafy.workalone_backend.domain.summary.repository;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.ssawallafy.workalone_backend.domain.admin_members.dto.ReadVideoResDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -18,4 +19,13 @@ public interface ExerciseSummaryRepository extends JpaRepository<ExerciseSummary
 
 	@Query("SELECT e.date FROM ExerciseSummary e WHERE e.member.id = :memberId")
 	List<LocalDate> findAllDateByMemberId(long memberId);
+
+	List<ExerciseSummary> findAllByMemberId(long memberId);
+
+	@Query("SELECT new com.ssawallafy.workalone_backend.domain.admin_members.dto.ReadVideoResDetail("
+			+ "s.date, s.video_url, g.title) "
+			+ "FROM ExerciseSummary s JOIN s.exercise e JOIN e.exerciseGroup g "
+			+ "WHERE s.member.id = :memberId AND s.video_url IS NOT NULL AND e.seq = 1 "
+			+ "ORDER BY s.date DESC ")
+    List<ReadVideoResDetail> findAllAndTitleByMemberId(Long memberId);
 }

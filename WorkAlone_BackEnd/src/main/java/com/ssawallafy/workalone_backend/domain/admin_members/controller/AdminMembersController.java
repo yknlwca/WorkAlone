@@ -1,5 +1,7 @@
 package com.ssawallafy.workalone_backend.domain.admin_members.controller;
 
+import com.ssawallafy.workalone_backend.domain.admin_members.dto.ReadVideoRes;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,4 +30,14 @@ public class AdminMembersController {
 
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
+
+	@GetMapping("/video")
+	@Operation(summary = "운동영상 저장", description = "회원의 운동 영상을 조회합니다.")
+	public ResponseEntity<ReadVideoRes> readVideoList(@RequestParam Long memberId){
+
+		ReadVideoRes res = adminMemberService.readVideo(memberId);
+
+		return new ResponseEntity<>(res, HttpStatus.OK);
+	}
+
 }
