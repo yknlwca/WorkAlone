@@ -84,30 +84,30 @@ VALUES (1, 1),
        (5, 1);
 
 
-INSERT INTO exercise_summary (member_id, date, exercise_id, kcal, time)
+INSERT INTO exercise_summary (member_id, date, exercise_id, kcal, time, video_url)
 VALUES
-    (1, '2024-11-01', 1, 150, '00:15:00'),
-    (1, '2024-11-01', 2, 200, '00:20:00'),
-    (1, '2024-11-01', 3, 250, '00:25:00'),
+    (1, '2024-11-01', 1, 150, '00:15:00', "https://work-alone.s3.ap-northeast-2.amazonaws.com/video/e4f8a484-5800-421f-b37d-5e1b22fbda5f.mp4"),
+    (1, '2024-11-01', 2, 200, '00:20:00', "https://work-alone.s3.ap-northeast-2.amazonaws.com/video/e4f8a484-5800-421f-b37d-5e1b22fbda5f.mp4"),
+    (1, '2024-11-01', 3, 250, '00:25:00', "https://work-alone.s3.ap-northeast-2.amazonaws.com/video/e4f8a484-5800-421f-b37d-5e1b22fbda5f.mp4"),
 
-    (1, '2024-11-01', 4, 180, '00:18:00'),
-    (1, '2024-11-01', 5, 220, '00:22:00'),
-    (1, '2024-11-01', 6, 270, '00:27:00'),
+    (1, '2024-11-01', 4, 180, '00:18:00', "https://work-alone.s3.ap-northeast-2.amazonaws.com/video/71e850b3-248a-4a49-b6b1-75e1e157e989.mp4"),
+    (1, '2024-11-01', 5, 220, '00:22:00', "https://work-alone.s3.ap-northeast-2.amazonaws.com/video/71e850b3-248a-4a49-b6b1-75e1e157e989.mp4"),
+    (1, '2024-11-01', 6, 270, '00:27:00', "https://work-alone.s3.ap-northeast-2.amazonaws.com/video/71e850b3-248a-4a49-b6b1-75e1e157e989.mp4"),
 
-    (1, '2024-11-01', 7, 120, '00:12:00'),
+    (1, '2024-11-01', 7, 120, '00:12:00', null),
 
-    (1, '2024-11-02', 1, 150, '00:15:00'),
-    (1, '2024-11-02', 2, 200, '00:20:00'),
-    (1, '2024-11-02', 3, 250, '00:25:00'),
+    (1, '2024-11-02', 1, 150, '00:15:00', null),
+    (1, '2024-11-02', 2, 200, '00:20:00', null),
+    (1, '2024-11-02', 3, 250, '00:25:00', null),
 
-    (1, '2024-11-02', 7, 120, '00:12:00'),
+    (1, '2024-11-02', 7, 120, '00:12:00', null),
 
-    (1, '2024-11-04', 4, 180, '00:18:00'),
-    (1, '2024-11-04', 5, 220, '00:22:00'),
-    (1, '2024-11-04', 6, 270, '00:27:00'),
+    (1, '2024-11-04', 4, 180, '00:18:00', "https://work-alone.s3.ap-northeast-2.amazonaws.com/video/e4f8a484-5800-421f-b37d-5e1b22fbda5f.mp4"),
+    (1, '2024-11-04', 5, 220, '00:22:00', "https://work-alone.s3.ap-northeast-2.amazonaws.com/video/e4f8a484-5800-421f-b37d-5e1b22fbda5f.mp4"),
+    (1, '2024-11-04', 6, 270, '00:27:00', "https://work-alone.s3.ap-northeast-2.amazonaws.com/video/e4f8a484-5800-421f-b37d-5e1b22fbda5f.mp4"),
 
-    (1, '2024-11-06', 7, 120, '00:12:00'),
+    (1, '2024-11-06', 7, 120, '00:12:00', "https://work-alone.s3.ap-northeast-2.amazonaws.com/video/e4f8a484-5800-421f-b37d-5e1b22fbda5f.mp4"),
 
-    (1, '2024-11-08', 4, 180, '00:18:00'),
-    (1, '2024-11-08', 5, 220, '00:22:00'),
-    (1, '2024-11-08', 6, 270, '00:27:00');
+    (1, '2024-11-08', 4, 180, '00:18:00', "https://work-alone.s3.ap-northeast-2.amazonaws.com/video/e4f8a484-5800-421f-b37d-5e1b22fbda5f.mp4"),
+    (1, '2024-11-08', 5, 220, '00:22:00', "https://work-alone.s3.ap-northeast-2.amazonaws.com/video/e4f8a484-5800-421f-b37d-5e1b22fbda5f.mp4"),
+    (1, '2024-11-08', 6, 270, '00:27:00', "https://work-alone.s3.ap-northeast-2.amazonaws.com/video/e4f8a484-5800-421f-b37d-5e1b22fbda5f.mp4");
