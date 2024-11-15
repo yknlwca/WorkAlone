@@ -17,7 +17,7 @@ data class ResultList(
 data class Summary(
     @SerializedName("exercise_id")
     val exerciseId: Long,
-    @SerializedName("name")
+    @SerializedName("time")
     val time: String,
     @SerializedName("kcal")
     val kcal: Int,
