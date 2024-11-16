@@ -23,7 +23,7 @@ public interface ExerciseSummaryRepository extends JpaRepository<ExerciseSummary
 	List<ExerciseSummary> findAllByMemberId(long memberId);
 
 	@Query("SELECT new com.ssawallafy.workalone_backend.domain.admin_members.dto.ReadVideoResDetail("
-			+ "s.date, s.video_url, g.title) "
+			+ "s.date, g.title, s.video_url) "
 			+ "FROM ExerciseSummary s JOIN s.exercise e JOIN e.exerciseGroup g "
 			+ "WHERE s.member.id = :memberId AND s.video_url IS NOT NULL AND e.seq = 1 "
 			+ "ORDER BY s.date DESC ")
