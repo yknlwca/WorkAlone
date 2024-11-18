@@ -32,7 +32,7 @@ public class AdminMembersController {
 	}
 
 	@GetMapping("/video")
-	@Operation(summary = "운동영상 저장", description = "회원의 운동 영상을 조회합니다.")
+	@Operation(summary = "운동영상 조회", description = "회원의 운동 영상을 조회합니다.")
 	public ResponseEntity<ReadVideoRes> readVideoList(@RequestParam Long memberId){
 
 		ReadVideoRes res = adminMemberService.readVideo(memberId);

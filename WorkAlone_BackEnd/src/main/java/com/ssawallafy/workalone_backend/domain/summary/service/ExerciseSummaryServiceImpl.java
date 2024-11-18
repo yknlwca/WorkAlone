@@ -81,14 +81,27 @@ public class ExerciseSummaryServiceImpl implements ExerciseSummaryService {
 			Exercise exercise = exerciseRepository.findById(e.getExercise_id())
 				.orElseThrow(() -> new BusinessLogicException(ErrorCode.NOT_FOUND));
 
-			ExerciseSummary exerciseSummary = ExerciseSummary.builder()
-				.member(member)
-				.date(LocalDate.now())
-				.exercise(exercise)
-				.kcal(e.getKcal())
-				.time(LocalTime.parse("00:" + e.getTime(), formatter))
-				.video_url(exerciseSummarySaveReq.getVideo_url())
-			.build();
+			ExerciseSummary exerciseSummary;
+
+			if (exerciseSummarySaveReq.getVideo_url().equals("null")){
+				 exerciseSummary = ExerciseSummary.builder()
+					.member(member)
+					.date(LocalDate.now())
+					.exercise(exercise)
+					.kcal(e.getKcal())
+					.time(LocalTime.parse("00:" + e.getTime(), formatter))
+					.build();
+			}
+			else {
+				 exerciseSummary = ExerciseSummary.builder()
+					.member(member)
+					.date(LocalDate.now())
+					.exercise(exercise)
+					.kcal(e.getKcal())
+					.time(LocalTime.parse("00:" + e.getTime(), formatter))
+					.video_url(exerciseSummarySaveReq.getVideo_url())
+					.build();
+			}
 
 			exerciseSummaryRepository.save(exerciseSummary);
 		}
