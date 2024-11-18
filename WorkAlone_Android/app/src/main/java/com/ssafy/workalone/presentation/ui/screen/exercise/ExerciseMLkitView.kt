@@ -63,7 +63,6 @@ fun ExerciseMLkitView(
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         context.startActivity(intent)
-        recording?.pause()
     }
 
     fun navigateToFinish() {
@@ -76,7 +75,6 @@ fun ExerciseMLkitView(
             }
         }
         context.startActivity(intent)
-        recording?.stop()
         Log.d("Navigate To Finish", "$recording")
     }
     Scaffold(

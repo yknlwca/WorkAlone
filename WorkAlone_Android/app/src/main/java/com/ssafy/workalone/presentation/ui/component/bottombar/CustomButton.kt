@@ -51,7 +51,6 @@ fun CustomButton(
         )
     }
 }
-
 @Composable
 fun NavigationButtons(
     navController: NavController,
@@ -62,6 +61,7 @@ fun NavigationButtons(
     onStartExercise: () -> Unit
 ) {
     Row(modifier = Modifier.fillMaxWidth()) {
+        // "이전" 버튼은 첫 번째 운동이 아닐 때만 표시
         if (!isFirst) {
             Box(modifier = Modifier.weight(1f)) {
                 NavigationButton(
@@ -78,12 +78,17 @@ fun NavigationButtons(
             Spacer(modifier = Modifier.width(10.dp))
         }
 
+        // 마지막 운동일 때는 "시작하기" 버튼, 아니면 "다음 운동" 버튼
         if (isLast) {
+            // 마지막 운동일 때는 "이전"과 "시작하기" 버튼이 모두 있어야 한다.
+            Box(modifier = Modifier.weight(1f)) {
                 CustomButton(
                     text = "시작하기",
                     onClick = onStartExercise
                 )
+            }
         } else {
+            // 마지막 운동이 아니면 "다음 운동" 버튼
             Box(modifier = Modifier.weight(1f)) {
                 CustomButton(
                     text = "다음",

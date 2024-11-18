@@ -91,5 +91,4 @@ class ResultViewModel(private val resultRepository: ResultRepository = ResultRep
         val seconds = timeParts[1].toInt()
         return (minutes * 60) + seconds
     }
-
 }
