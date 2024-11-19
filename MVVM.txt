@@ -1,0 +1,56 @@
+com.ssafy.workalone
+│
+├── data
+│   ├── local            // 로컬 데이터 소스 (Room, SharedPreferences 등)
+│   │   ├── ExerciseDao.kt
+│   │   ├── ExerciseDatabase.kt
+│   │   └── LocalDataSource.kt
+│   │
+│   ├── remote           // 원격 데이터 소스 (Retrofit API 인터페이스 등)
+│   │   ├── ExerciseApiService.kt
+│   │   ├── NetworkDataSource.kt
+│   │   └── ApiResponse.kt
+│   │
+│   ├── repository       // 데이터 관리 레이어, 리모트와 로컬 데이터 소스의 통합 관리
+│   │   └── ExerciseRepository.kt
+│   │
+│   ├── model            // 모델 또는 엔티티 클래스
+│   │   └── Exercise.kt
+│   │
+│   └── mapper           // 데이터 변환을 위한 Mapper 클래스
+│       └── ExerciseMapper.kt
+│
+├── domain
+│   ├── model            // 도메인 레이어의 모델 클래스
+│   │   └── ExerciseDomainModel.kt
+│   │
+│   ├── usecase          // 유스케이스 클래스
+│   │   ├── GetExerciseListUseCase.kt
+│   │   └── AddExerciseUseCase.kt
+│   │
+│   └── repository       // 인터페이스, 실제 구현체는 data 레이어에서 구현
+│       └── ExerciseRepository.kt
+│
+├── presentation
+│   ├── viewmodel        // ViewModel 클래스들
+│   │   └── ExerciseViewModel.kt
+│   │
+│   ├── navigation       // 네비게이션 관리
+│   │   ├── Graph.kt
+│   │   ├── Screen.kt
+│   │   └── Navigation.kt
+│   │
+│   ├── ui.theme         // 테마 및 스타일 관련 파일
+│   │   ├── Color.kt
+│   │   ├── Theme.kt
+│   │   └── Type.kt
+│   │
+│   ├── ui.component     // 재사용 가능한 UI 컴포넌트 (AppBar, BottomNav 등)
+│   │   └── AppBar.kt
+│   │
+│   └── ui.screen        // 각 화면의 UI 코드
+│       ├── HomeScreen.kt
+│       ├── AddEditDetailScreen.kt
+│       └── ExerciseListScreen.kt
+│
+└── MainActivity.kt      // 애플리케이션의 진입점
