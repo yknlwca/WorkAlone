@@ -1,0 +1,31 @@
+services:
+  workalone:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: workaloneApp
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://workaloneDB:3306/workalone?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      SPRING_DATASOURCE_USERNAME: swallaby
+      SPRING_DATASOURCE_PASSWORD: swallaby1234!
+      SPRING_PROFILES_ACTIVE: local # 어차피 local과 prod 의 compose 파일 구성이 다르니 상관 없을듯
+    depends_on:
+      workalone_db:
+        condition: service_healthy
+
+  workalone_db:
+    image: mysql
+    container_name: workaloneDB
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ssafyssafyfighting
+      MYSQL_DATABASE: workalone
+      MYSQL_USER: swallaby
+      MYSQL_PASSWORD: swallaby1234!
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      retries: 3
