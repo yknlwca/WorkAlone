@@ -93,7 +93,6 @@ fun RepCounter(viewModel: ExerciseMLKitViewModel = viewModel(), recording: Recor
             }
 
             if(isExercise){
-                recording?.resume()
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -108,7 +107,6 @@ fun RepCounter(viewModel: ExerciseMLKitViewModel = viewModel(), recording: Recor
                     )
                 }
             } else {
-                recording?.pause()
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

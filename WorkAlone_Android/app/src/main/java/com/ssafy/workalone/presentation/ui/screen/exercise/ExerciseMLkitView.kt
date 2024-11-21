@@ -63,7 +63,7 @@ fun ExerciseMLkitView(
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         context.startActivity(intent)
-        recording?.pause()
+        recording?.stop()
     }
 
     fun navigateToFinish() {
@@ -129,7 +129,6 @@ fun ExerciseMLkitView(
                 // 쉬는 시간일 때 RestTime이 최상단에 위치하도록 설정
                 if (viewModel.isResting.value) {
                     RestTime(viewModel)
-                    recording?.pause()
                     Log.d("Pause To Finish", "$recording")
                 }
                 if (viewModel.isExit.value) {
@@ -138,12 +137,10 @@ fun ExerciseMLkitView(
                         { navigateToHome() },
                         "운동을 완료해야 기록이 저장됩니다.\n정말로 종료하시겠어요?"
                     )
-                    recording?.pause()
                 }
 
                 if (viewModel.isFinish.value) {
                     ExerciseFinishDialog { navigateToFinish() }
-                    recording?.stop()
                 }
                 BackHandler {
                     viewModel.clickExit()
