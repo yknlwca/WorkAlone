@@ -281,18 +281,18 @@ public class PoseClassifierProcessor {
 
     ClassificationResult classification = poseClassifier.classify(pose);
 
-    if (viewModel.isResting().getValue()) {result.add("추적이 종료되었습니다.");
-      result.add("isTracking: " + isTracking);
-      result.add("isPaused: " + isPaused);
-      return result;
-    }
-
-    if (!viewModel.isExercising().getValue()) {
-      result.add("추적이 현재 일시 중지 상태입니다.");
-      result.add("isTracking: " + isTracking);
-      result.add("isPaused: " + isPaused);
-      return result;
-    }
+//    if (viewModel.isResting().getValue()) {result.add("추적이 종료되었습니다.");
+//      result.add("isTracking: " + isTracking);
+//      result.add("isPaused: " + isPaused);
+//      return result;
+//    }
+//
+//    if (!viewModel.isExercising().getValue()) {
+//      result.add("추적이 현재 일시 중지 상태입니다.");
+//      result.add("isTracking: " + isTracking);
+//      result.add("isPaused: " + isPaused);
+//      return result;
+//    }
 
     if (isStreamMode) {
       classification = emaSmoothing.getSmoothedResult(classification);
