@@ -73,10 +73,7 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel, recording: Recording?) {
                     viewModel.exerciseFinish()
                 }
             }
-
-
         }
-
     }
 
     if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -139,7 +136,6 @@ fun ExerciseTimer(viewModel: ExerciseMLKitViewModel, recording: Recording?) {
                     )
                 }
             } else {
-                recording?.pause()
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

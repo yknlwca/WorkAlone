@@ -197,12 +197,12 @@ fun IndividualCompleteView(
         awsUrl?.let {
             if (file != null) {
                 resultViewModel.uploadVideo(it.preSignedUrl, file)
-//                val rowsDeleted = context.contentResolver.delete(videoUri, null, null)
-//                if (rowsDeleted > 0) {
-//                    Log.d("File Delete", "Success")
-//                } else {
-//                    Log.d("File Delete", "Fail")
-//                }
+                val rowsDeleted = context.contentResolver.delete(videoUri, null, null)
+                if (rowsDeleted > 0) {
+                    Log.d("File Delete", "Success")
+                } else {
+                    Log.d("File Delete", "Fail")
+                }
             }
         }
     }
