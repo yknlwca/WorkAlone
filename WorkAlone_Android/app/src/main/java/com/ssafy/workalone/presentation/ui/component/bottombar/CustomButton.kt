@@ -51,6 +51,7 @@ fun CustomButton(
         )
     }
 }
+
 @Composable
 fun NavigationButtons(
     navController: NavController,
