@@ -37,7 +37,7 @@ Spring Boot:3.3.2
 
 ---
 
-### 🎨 FrontEnd
+### 🎨 Android
 
 <p>
   <img src="https://img.shields.io/badge/android%20studio-3DDC84.svg?&style=for-the-badge&logo=androidstudio&logoColor=white"/>
@@ -120,7 +120,7 @@ Android API:35<br>
 
 # 🏗️시스템 아키텍처
 
-<img src="upload/systemArchitecture.drawio.svg"/>
+<img src="upload/systemArchitecture.drawio.png"/>
 
 # 📄 명세서
 
